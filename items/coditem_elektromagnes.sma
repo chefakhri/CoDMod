@@ -9,7 +9,7 @@
 #define NAME        "Electromagnet"
 #define DESCRIPTION "Every round you can place an electromagnet that pulls enemy weapons"
 
-new const itemModel[] = "models/CodMod/magnet.mdl";
+new const itemModel[] = "models/CoDMod/magnet.mdl";
 
 new itemUsed;
 
