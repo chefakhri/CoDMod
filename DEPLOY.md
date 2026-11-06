@@ -238,12 +238,17 @@ Then press `=` while alive.
 
 ```bash
 cd ~/cs16
-screen -S cs16 ./hlds_run -game cstrike -console +ip 0.0.0.0 +port 27015 \
+screen -S cs16 ./hlds_run -game cstrike -console -pidfile hlds.pid +ip 0.0.0.0 +port 27015 \
   +maxplayers 12 +map de_dust2 +sv_lan 1
 ```
 - Detach with `Ctrl+A`, then `D`. Reattach with `screen -r cs16`.
-- Use `+sv_lan 0` for a public internet server.
 - `hlds_run` restarts the server automatically when it exits, so `quit` in the console is a restart.
+- **Always pass `-pidfile hlds.pid`.** Without it, `hlds_run`'s crash handler hangs (it runs `cat`
+  with no file name and waits for keyboard input), so after a crash the server stays down instead
+  of restarting. With it, the server is back within about 10 seconds.
+- `+sv_lan 1` (LAN mode) lets non-Steam clients join, but only from private addresses or through
+  a tunnel such as playit.gg. `+sv_lan 0` makes Steam validate every player, which kicks
+  non-Steam clients.
 
 Check that everything loaded, in the server console:
 ```
@@ -285,6 +290,7 @@ Recent CS 1.6 clients block servers from changing these, so players have to set 
 | `SteamAPI_Init() failed` / `steamclient.so` errors at start | Copy `steamclient.so` to `~/.steam/sdk32/` (step 1). |
 | `meta list` says "Unknown command" (Metamod not loaded) | Check the `gamedll_linux` line in `liblist.gam`, and strip Windows line endings with `sed -i 's/\r$//' liblist.gam` (step 2). |
 | amxmodx.org download hangs or fails | Use `wget -4` to force IPv4 (step 3). |
+| After a crash the server never comes back; `screen -r cs16` shows the crash message and nothing after it | `hlds_run` is stuck in its crash handler. Start it with `-pidfile hlds.pid` (step 11). To unstick a running one: `pkill -P "$(pgrep -f 'sh ./hlds_run')" -x cat`. |
 | A COD plugin shows as "paused"/"bad load" in `amx_plugins`; error log says "Missing file cod_menu.ini" (or skins/missions) | The configs from `resources/` weren't copied (step 6). |
 | Map won't start, "can't find model" or "precache" error | A file path doesn't match the real folder name. Linux is case-sensitive (`CoDMod` ≠ `CodMod`). |
 | `Load fails: Plugin file open error (plugin "a.amxxb.amxx")` | Two lines in `plugins-cod.ini` merged; add the missing line break. |
