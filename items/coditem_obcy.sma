@@ -7,8 +7,8 @@
 #define VERSION "1.1"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Obcy"
-#define DESCRIPTION "Zabicie przeciwnika powoduje jego eksplozje zadajaca %s (+int) obrazen"
+#define NAME        "Alien"
+#define DESCRIPTION "Killing an enemy makes them explode, dealing %s (+int) damage"
 #define RANDOM_MIN  100
 #define RANDOM_MAX  150
 #define UPGRADE_MIN -5

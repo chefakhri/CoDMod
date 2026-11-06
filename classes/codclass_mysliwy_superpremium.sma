@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Mysliwy"
-#define DESCRIPTION  "Ma 1/2 na natychmiastowe zabicie ze Scouta, podwojny skok, mala widocznosc na nozu i teleport."
+#define NAME         "Stalker"
+#define DESCRIPTION  "1/2 chance to instantly kill with Scout, double jump, low visibility with knife and a teleport."
 #define FRACTION     "SuperPremium"
 #define WEAPONS      (1<<CSW_SCOUT)|(1<<CSW_MP5NAVY)|(1<<CSW_DEAGLE)
 #define HEALTH       30

@@ -7,8 +7,8 @@
 
 #define TASK_ITEM 783426
 
-#define NAME        "Bezglowie"
-#define DESCRIPTION "Po aktywacji przez %ss jestes odporny na strzaly w glowe"
+#define NAME        "Headless"
+#define DESCRIPTION "When activated, for %ss you are immune to headshots"
 #define RANDOM_MIN  25
 #define RANDOM_MAX  30
 #define UPGRADE_MIN -2
@@ -53,7 +53,7 @@ public cod_item_value(id)
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Bezglowia mozesz uzyc tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You can use Headless only once per round!");
 
 		return;
 	}

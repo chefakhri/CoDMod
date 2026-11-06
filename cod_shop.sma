@@ -67,137 +67,137 @@ public shop_menu(id)
 
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new menuData[128], menuPrice[10], menu = menu_create("\yMenu \rSklepu\w:", "shop_menu_handle");
+	new menuData[128], menuPrice[10], menu = menu_create("\yShop \rMenu\w:", "shop_menu_handle");
 
 	if (cvarMaxDurability && cvarCostRepair) {
-		formatex(menuData, charsmax(menuData), "Napraw Przedmiot \r[\y+%i Wytrzymalosci\r] \wKoszt:\r %iH", cvarDurabilityAmount, cvarCostRepair);
+		formatex(menuData, charsmax(menuData), "Repair Item \r[\y+%i Durability\r] \wCost:\r %iH", cvarDurabilityAmount, cvarCostRepair);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostRepair, REPAIR);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostItem) {
-		formatex(menuData, charsmax(menuData), "Kup Przedmiot \r[\yLosowy Przedmiot\r] \wKoszt:\r %iH", cvarCostItem);
+		formatex(menuData, charsmax(menuData), "Buy Item \r[\yRandom Item\r] \wCost:\r %iH", cvarCostItem);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostItem, BUY);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostUpgrade) {
-		formatex(menuData, charsmax(menuData), "Ulepsz Przedmiot \r[\yWzmocnienie Przedmiotu\r] \wKoszt:\r %iH", cvarCostUpgrade);
+		formatex(menuData, charsmax(menuData), "Upgrade Item \r[\yItem Enhancement\r] \wCost:\r %iH", cvarCostUpgrade);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostUpgrade, UPGRADE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostSmallBandage) {
-		formatex(menuData, charsmax(menuData), "Maly Bandaz \r[\y+%i HP\r] \wKoszt:\r %iH", cvarSmallBandageHP, cvarCostSmallBandage);
+		formatex(menuData, charsmax(menuData), "Small Bandage \r[\y+%i HP\r] \wCost:\r %iH", cvarSmallBandageHP, cvarCostSmallBandage);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostSmallBandage, SMALL_BANDAGE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostBigBandage) {
-		formatex(menuData, charsmax(menuData), "Duzy Bandaz \r[\y+%i HP\r] \wKoszt:\r %iH", cvarBigBandageHP, cvarCostBigBandage);
+		formatex(menuData, charsmax(menuData), "Big Bandage \r[\y+%i HP\r] \wCost:\r %iH", cvarBigBandageHP, cvarCostBigBandage);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostBigBandage, BIG_BANDAGE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostSmallExp) {
-		formatex(menuData, charsmax(menuData), "Male Doswiadczenie \r[\y%i Expa\r] \wKoszt:\r %iH", cvarSmallExp, cvarCostSmallExp);
+		formatex(menuData, charsmax(menuData), "Small Experience \r[\y%i Exp\r] \wCost:\r %iH", cvarSmallExp, cvarCostSmallExp);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostSmallExp, SMALL_EXP);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostMediumExp) {
-		formatex(menuData, charsmax(menuData), "Srednie Doswiadczenie \r[\y%i Expa\r] \wKoszt:\r %iH", cvarMediumExp, cvarCostMediumExp);
+		formatex(menuData, charsmax(menuData), "Medium Experience \r[\y%i Exp\r] \wCost:\r %iH", cvarMediumExp, cvarCostMediumExp);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostMediumExp, MEDIUM_EXP);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostBigExp) {
-		formatex(menuData, charsmax(menuData), "Duze Doswiadczenie \r[\y%i Expa\r] \wKoszt:\r %iH", cvarBigExp, cvarCostBigExp);
+		formatex(menuData, charsmax(menuData), "Big Experience \r[\y%i Exp\r] \wCost:\r %iH", cvarBigExp, cvarCostBigExp);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostBigExp, BIG_EXP);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostRandomExp) {
-		formatex(menuData, charsmax(menuData), "Losowe Doswiadczenie \r[\yLosowo od %i do %i Expa\r] \wKoszt:\r %iH", cvarMinRandomExp, cvarMaxRandomExp, cvarCostRandomExp);
+		formatex(menuData, charsmax(menuData), "Random Experience \r[\yRandom %i to %i Exp\r] \wCost:\r %iH", cvarMinRandomExp, cvarMaxRandomExp, cvarCostRandomExp);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostRandomExp, RANDOM_EXP);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostRocket) {
-		formatex(menuData, charsmax(menuData), "Dodatkowa Rakieta \r[\y+1 Rakieta\r] \wKoszt:\r %iH", cvarCostRocket);
+		formatex(menuData, charsmax(menuData), "Extra Rocket \r[\y+1 Rocket\r] \wCost:\r %iH", cvarCostRocket);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostRocket, ROCKET);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostMine) {
-		formatex(menuData, charsmax(menuData), "Dodatkowa Mina \r[\y+1 Mina\r] \wKoszt:\r %iH", cvarCostMine);
+		formatex(menuData, charsmax(menuData), "Extra Mine \r[\y+1 Mine\r] \wCost:\r %iH", cvarCostMine);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostMine, MINE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostDynamite) {
-		formatex(menuData, charsmax(menuData), "Dodatkowy Dynamit \r[\y+1 Dynamit\r] \wKoszt:\r %iH", cvarCostDynamite);
+		formatex(menuData, charsmax(menuData), "Extra Dynamite \r[\y+1 Dynamite\r] \wCost:\r %iH", cvarCostDynamite);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostDynamite, DYNAMITE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostMedkit) {
-		formatex(menuData, charsmax(menuData), "Dodatkowa Apteczka \r[\y+1 Apteczka\r] \wKoszt:\r %iH", cvarCostMedkit);
+		formatex(menuData, charsmax(menuData), "Extra Medkit \r[\y+1 Medkit\r] \wCost:\r %iH", cvarCostMedkit);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostMedkit, MEDKIT);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostThunder) {
-		formatex(menuData, charsmax(menuData), "Dodatkowy Piorun \r[\y+1 Piorun\r] \wKoszt:\r %iH", cvarCostThunder);
+		formatex(menuData, charsmax(menuData), "Extra Lightning \r[\y+1 Lightning\r] \wCost:\r %iH", cvarCostThunder);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostThunder, THUNDER);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostTeleport) {
-		formatex(menuData, charsmax(menuData), "Dodatkowy Teleport \r[\y+1 Teleport\r] \wKoszt:\r %iH", cvarCostTeleport);
+		formatex(menuData, charsmax(menuData), "Extra Teleport \r[\y+1 Teleport\r] \wCost:\r %iH", cvarCostTeleport);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostTeleport, TELEPORT);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostJump) {
-		formatex(menuData, charsmax(menuData), "Dodatkowy Skok \r[\y+1 Skok w Powietrzu\r] \wKoszt:\r %iH", cvarCostJump);
+		formatex(menuData, charsmax(menuData), "Extra Jump \r[\y+1 Mid-Air Jump\r] \wCost:\r %iH", cvarCostJump);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostJump, JUMP);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostBunnyHop) {
-		formatex(menuData, charsmax(menuData), "Bunny Hop \r[\yAuto BunnyHop\r] \wKoszt:\r %iH", cvarCostBunnyHop);
+		formatex(menuData, charsmax(menuData), "Bunny Hop \r[\yAuto BunnyHop\r] \wCost:\r %iH", cvarCostBunnyHop);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostBunnyHop, BUNNY_HOP);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostSilent) {
-		formatex(menuData, charsmax(menuData), "Ciche Chodzenie \r[\yBrak Dzwieku Biegu\r] \wKoszt:\r %iH", cvarCostSilent);
+		formatex(menuData, charsmax(menuData), "Silent Walk \r[\yNo Footstep Sounds\r] \wCost:\r %iH", cvarCostSilent);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostSilent, SILENT);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostArmor) {
-		formatex(menuData, charsmax(menuData), "Dodatkowy Pancerz \r[\y+%i Kamizelki\r] \wKoszt:\r %iH", cvarArmorAmount, cvarCostArmor);
+		formatex(menuData, charsmax(menuData), "Extra Armor \r[\y+%i Armor\r] \wCost:\r %iH", cvarArmorAmount, cvarCostArmor);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostArmor, ARMOR);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostDamage) {
-		formatex(menuData, charsmax(menuData), "Wieksze Obrazenia \r[\y+%i Obrazen\r] \wKoszt:\r %iH", cvarDamageAmount, cvarCostDamage);
+		formatex(menuData, charsmax(menuData), "More Damage \r[\y+%i Damage\r] \wCost:\r %iH", cvarDamageAmount, cvarCostDamage);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostDamage, DAMAGE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
 	if (cvarCostInvisible) {
-		formatex(menuData, charsmax(menuData), "Peleryna Niewidka \r[\yPelna Niewidzialnosc\r] \wKoszt:\r %iH", cvarCostInvisible);
+		formatex(menuData, charsmax(menuData), "Invisibility Cloak \r[\yFull Invisibility\r] \wCost:\r %iH", cvarCostInvisible);
 		formatex(menuPrice, charsmax(menuPrice), "%i#%i", cvarCostInvisible, INVISIBLE);
 		menu_additem(menu, menuData, menuPrice);
 	}
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -230,7 +230,7 @@ public shop_menu_handle(id, menu, item)
 	item = str_to_num(dataParts[1]);
 
 	if (cod_get_user_honor(id) < price) {
-		cod_print_chat(id, "Nie masz wystarczajaco duzo^x03 Honoru^x01!");
+		cod_print_chat(id, "You don't have enough^x03 Honor^x01!");
 
 		return PLUGIN_HANDLED;
 	}
@@ -238,186 +238,186 @@ public shop_menu_handle(id, menu, item)
 	switch (item) {
 		case REPAIR: {
 			if (!cod_get_user_item(id)) {
-				cod_print_chat(id, "Nie masz zadnego przedmiotu^x01!");
+				cod_print_chat(id, "You don't have any item^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
 			if (cod_get_item_durability(id) >= cod_max_item_durability()) {
-				cod_print_chat(id, "Twoj przedmiot jest juz w pelni^x03 naprawiony^x01!");
+				cod_print_chat(id, "Your item is already fully^x03 repaired^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 +%i^x01 wytrzymalosci przedmiotu!", cvarDurabilityAmount);
+			cod_print_chat(id, "You bought^x03 +%i^x01 item durability!", cvarDurabilityAmount);
 
 			if (cod_get_item_durability(id) + cvarDurabilityAmount >= cod_max_item_durability()) {
 				cod_set_item_durability(id, cod_max_item_durability());
 
-				cod_print_chat(id, "Twoj przedmiot jest teraz w pelni naprawiony!");
+				cod_print_chat(id, "Your item is now fully repaired!");
 			} else {
 				cod_set_item_durability(id, cod_get_item_durability(id) + cvarDurabilityAmount);
 
-				cod_print_chat(id, "Wytrzymalosc twojego przedmiotu wynosi^x03 %i^x01!", cod_get_item_durability(id));
+				cod_print_chat(id, "Your item's durability is now^x03 %i^x01!", cod_get_item_durability(id));
 			}
 		} case BUY: {
-			cod_print_chat(id, "Kupiles^x03 Losowy Przedmiot^x01!");
+			cod_print_chat(id, "You bought a^x03 Random Item^x01!");
 
 			cod_set_user_item(id, RANDOM);
 		} case UPGRADE: {
 			if (!cod_get_user_item(id)) {
-				cod_print_chat(id, "Nie masz zadnego przedmiotu!");
+				cod_print_chat(id, "You don't have any item!");
 
 				return PLUGIN_HANDLED;
 			}
 
 			if (!cod_upgrade_user_item(id, 1)) {
-				cod_print_chat(id, "Ulepszenie twojego przedmiotu nie jest mozliwe!");
+				cod_print_chat(id, "Your item can't be upgraded!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Ulepszenie Przedmiotu^x01!");
+			cod_print_chat(id, "You bought an^x03 Item Upgrade^x01!");
 
 			if (!cod_upgrade_user_item(id)) {
-				cod_print_chat(id, "Twoj przedmiot nie moze juz zostac^x03 ulepszony^x01. Honor nie zostal pobrany z konta.");
+				cod_print_chat(id, "Your item can no longer be^x03 upgraded^x01. No honor was charged.");
 
 				return PLUGIN_HANDLED;
 			}
 		} case SMALL_BANDAGE: {
 			if (cod_get_user_health(id, 1) >= cod_get_user_max_health(id)) {
-				cod_print_chat(id, "Jestes juz w pelni^x03 uzdrowiony^x01!");
+				cod_print_chat(id, "You are already fully^x03 healed^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
 			cod_set_user_health(id, cod_get_user_health(id, 1) + cvarSmallBandageHP);
 
-			cod_print_chat(id, "Kupiles^x03 Maly Bandaz^x01!");
+			cod_print_chat(id, "You bought a^x03 Small Bandage^x01!");
 		} case BIG_BANDAGE: {
 			if (cod_get_user_health(id, 1) >= cod_get_user_max_health(id)) {
-				cod_print_chat(id, "Jestes juz w pelni^x03 uzdrowiony^x01!");
+				cod_print_chat(id, "You are already fully^x03 healed^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
 			cod_set_user_health(id, cod_get_user_health(id, 1) + cvarBigBandageHP);
 
-			cod_print_chat(id, "Kupiles^x03 Duzy Bandaz^x01!");
+			cod_print_chat(id, "You bought a^x03 Big Bandage^x01!");
 		} case SMALL_EXP: {
-			cod_print_chat(id, "Kupiles^x03 Male Doswiadczenie^x01!");
+			cod_print_chat(id, "You bought^x03 Small Experience^x01!");
 
-			cod_print_chat(id, "Dostales^x03 %i^x01 expa!", cvarSmallExp);
+			cod_print_chat(id, "You got^x03 %i^x01 exp!", cvarSmallExp);
 
 			cod_set_user_exp(id, cvarSmallExp);
 		} case MEDIUM_EXP: {
-			cod_print_chat(id, "Kupiles^x03 Srednie Doswiadczenie^x01!");
+			cod_print_chat(id, "You bought^x03 Medium Experience^x01!");
 
-			cod_print_chat(id, "Dostales^x03 %i^x01 expa!", cvarMediumExp);
+			cod_print_chat(id, "You got^x03 %i^x01 exp!", cvarMediumExp);
 
 			cod_set_user_exp(id, cvarMediumExp);
 		} case BIG_EXP: {
-			cod_print_chat(id, "Kupiles^x03 Duze Doswiadczenie^x01!");
+			cod_print_chat(id, "You bought^x03 Big Experience^x01!");
 
-			cod_print_chat(id, "Dostales^x03 %i^x01 expa!", cvarBigExp);
+			cod_print_chat(id, "You got^x03 %i^x01 exp!", cvarBigExp);
 
 			cod_set_user_exp(id, cvarBigExp);
 		} case RANDOM_EXP: {
 			new randomExp = random_num(cvarMinRandomExp, cvarMaxRandomExp);
 
-			cod_print_chat(id, "Kupiles^x03 Losowe Doswiadczenie^x01!");
+			cod_print_chat(id, "You bought^x03 Random Experience^x01!");
 
-			cod_print_chat(id, "Dostales^x03 %i^x01 expa!", randomExp);
+			cod_print_chat(id, "You got^x03 %i^x01 exp!", randomExp);
 
 			cod_set_user_exp(id, randomExp);
 		} case ROCKET: {
-			cod_print_chat(id, "Kupiles^x03 Dodatkowa Rakiete^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Rocket^x01!");
 
 			cod_add_user_rockets(id, 1, ADDITIONAL);
 		} case MINE: {
-			cod_print_chat(id, "Kupiles^x03 Dodatkowa Mine^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Mine^x01!");
 
 			cod_add_user_mines(id, 1, ADDITIONAL);
 		} case DYNAMITE: {
-			cod_print_chat(id, "Kupiles^x03 Dodatkowy Dynamit^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Dynamite^x01!");
 
 			cod_add_user_dynamites(id, 1, ADDITIONAL);
 		} case MEDKIT: {
-			cod_print_chat(id, "Kupiles^x03 Dodatkowa Apteczke^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Medkit^x01!");
 
 			cod_add_user_medkits(id, 1, ADDITIONAL);
 		} case THUNDER: {
-			cod_print_chat(id, "Kupiles^x03 Dodatkowy Piorun^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Lightning^x01!");
 
 			cod_add_user_thunders(id, 1, ADDITIONAL);
 		} case TELEPORT: {
 			if (cod_get_user_teleports(id) == FULL) {
-				cod_print_chat(id, "Masz juz nielimitowany^x03 Teleport^x01!");
+				cod_print_chat(id, "You already have an unlimited^x03 Teleport^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Dodatkowy Teleport^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Teleport^x01!");
 
 			cod_add_user_teleports(id, 1, ADDITIONAL);
 		} case JUMP: {
 			if (cod_get_user_multijumps(id) >= 3) {
-				cod_print_chat(id, "Mozesz miec maksymalnie^x03 3 Dodatkowe Skoki^x01!");
+				cod_print_chat(id, "You can have at most^x03 3 Extra Jumps^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Dodatkowy Skok^x01!");
+			cod_print_chat(id, "You bought an^x03 Extra Jump^x01!");
 
 			cod_add_user_multijumps(id, 1, ROUND);
 		} case BUNNY_HOP: {
 			if (cod_get_user_bunnyhop(id)) {
-				cod_print_chat(id, "Masz juz ^x03 Bunny Hop^x01!");
+				cod_print_chat(id, "You already have^x03 Bunny Hop^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 BunnyHop^x01!");
+			cod_print_chat(id, "You bought^x03 BunnyHop^x01!");
 
 			cod_set_user_bunnyhop(id, 1, ROUND);
 		} case SILENT: {
 			if (cod_get_user_footsteps(id)) {
-				cod_print_chat(id, "Masz juz ^x03 Ciche Chodzenie^x01!");
+				cod_print_chat(id, "You already have^x03 Silent Walk^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Ciche Chodzenie^x01!");
+			cod_print_chat(id, "You bought^x03 Silent Walk^x01!");
 
 			cod_set_user_footsteps(id, 1, ROUND);
 		} case ARMOR: {
 			if (cod_get_user_armor(id) >= 300) {
-				cod_print_chat(id, "Mozesz miec maksymalnie^x03 300 Pancerza^x01!");
+				cod_print_chat(id, "You can have at most^x03 300 Armor^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Dodatkowy Pancerz^x01!");
+			cod_print_chat(id, "You bought^x03 Extra Armor^x01!");
 
 			cod_add_user_armor(id, cvarArmorAmount);
 		} case DAMAGE: {
 			if (get_bit(id, damageBonus)) {
-				cod_print_chat(id, "W tej rundzie juz kupiles^x03 Wieksze Obrazenia^x01!");
+				cod_print_chat(id, "You already bought^x03 More Damage^x01 this round!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Wieksze Obrazenia^x01!");
+			cod_print_chat(id, "You bought^x03 More Damage^x01!");
 
 			set_bit(id, damageBonus);
 		} case INVISIBLE: {
 			if (!cod_get_user_render(id)) {
-				cod_print_chat(id, "Masz juz^x03 Pelna Niewidzialnosc^x01!");
+				cod_print_chat(id, "You already have^x03 Full Invisibility^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			cod_print_chat(id, "Kupiles^x03 Peleryne Niewidke^x01!");
+			cod_print_chat(id, "You bought the^x03 Invisibility Cloak^x01!");
 
 			cod_set_user_render(id, 0, ROUND);
 		}

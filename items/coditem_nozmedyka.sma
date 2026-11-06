@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Noz Medyka"
-#define DESCRIPTION "Na nozu regenerujesz %s HP co sekunde"
+#define NAME        "Medic's Knife"
+#define DESCRIPTION "With knife you regenerate %s HP per second"
 #define RANDOM_MIN  2
 #define RANDOM_MAX  3
 

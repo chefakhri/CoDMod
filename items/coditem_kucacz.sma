@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Kucacz"
-#define DESCRIPTION "Gdy kucasz jestes praktycznie niewidzialny"
+#define NAME        "Croucher"
+#define DESCRIPTION "You are practically invisible while crouching"
 
 public plugin_init()
 {

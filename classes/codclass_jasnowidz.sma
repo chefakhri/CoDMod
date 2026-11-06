@@ -6,9 +6,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Jasnowidz"
-#define DESCRIPTION  "Co 30 sekund moze przechodzic w cialo przeciwnika, zeby go sledzic i oznaczyc na radarze."
-#define FRACTION     "Podstawowe"
+#define NAME         "Clairvoyant"
+#define DESCRIPTION  "Every 30 seconds can enter an enemy's body to follow them and mark them on the radar."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_AUG)|(1<<CSW_DEAGLE)
 #define HEALTH       20
 #define INTELLIGENCE 5
@@ -35,12 +35,12 @@ public cod_class_enabled(id, promotion)
 public cod_class_skill_used(id)
 {
 	if (classLastUsed[id] + 30.0 > get_gametime()) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Jasnowidzenia mozesz uzyc raz na 30 sekund!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can use clairvoyance once every 30 seconds!");
 
 		return PLUGIN_CONTINUE;
 	}
 
-	new playerName[32], playerId[3], menu = menu_create("\wWybierz \rGracza\w, ktorego chcesz \ysledzic\w:", "cod_class_skill_used_handle");
+	new playerName[32], playerId[3], menu = menu_create("\wSelect the \rPlayer\w you want to \yfollow\w:", "cod_class_skill_used_handle");
 
 	for (new i = 1; i <= MAX_PLAYERS; i++) {
 		if (!is_user_alive(i) || get_user_team(i) == get_user_team(id) || i == id) continue;
@@ -52,9 +52,9 @@ public cod_class_skill_used(id)
 		menu_additem(menu, playerName, playerId);
 	}
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -83,12 +83,12 @@ public cod_class_skill_used_handle(id, menu, item)
 	new player = str_to_num(playerId);
 
 	if (!is_user_alive(player)) {
-		cod_print_chat(id, "Wybrany gracz juz nie zyje.");
+		cod_print_chat(id, "The selected player is already dead.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	cod_show_hud(id, TYPE_DHUD, 59, 255, 0, -1.0, 0.36, 0, 0.0, 3.0, 0.0, 0.0, "Obserwujesz %s", playerName);
+	cod_show_hud(id, TYPE_DHUD, 59, 255, 0, -1.0, 0.36, 0, 0.0, 3.0, 0.0, 0.0, "Watching %s", playerName);
 	cod_display_fade(id, 1, 1, 0x0000, 254, 254, 254, 25);
 	cod_set_user_render(id, 10, .timer = 3.0);
 	cod_make_bartimer(id, 3);
@@ -133,7 +133,7 @@ public deactivate_class(data[])
 	if (!is_user_alive(player)) return;
 
 	if (!is_user_alive(id)) {
-		cod_print_chat(id, "Niestety zginales. Nie udostepnisz namiarow wroga swojej druzynie.");
+		cod_print_chat(id, "Unfortunately you died. You can't share the enemy's location with your team.");
 
 		return;
 	}

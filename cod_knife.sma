@@ -9,13 +9,13 @@
 
 new const knifeModels[][][] =
 {
-	{ "Standardowy", "(+2 Kazdej Statystyki)", "models/v_knife.mdl" },
-	{ "Mysliwski", "(+10 Zdrowia)", "models/CoDMod/hunting.mdl" },
-	{ "Kieszonkowy", "(+10 Inteligencji)", "models/CoDMod/pocket.mdl" },
-	{ "Tasak", "(+10 Wytrzymalosci)", "models/CoDMod/chopper.mdl" },
-	{ "Maczeta", "(+10 Sily)", "models/CoDMod/machete.mdl" },
-	{ "Katana", "(+10 Kondycji)", "models/CoDMod/katana.mdl" },
-	{ "Siekiera", "(+4 Kazdej Statystyki)", "models/CoDMod/axe.mdl" }
+	{ "Standard", "(+2 To Every Stat)", "models/v_knife.mdl" },
+	{ "Hunting", "(+10 Health)", "models/CoDMod/hunting.mdl" },
+	{ "Pocket", "(+10 Intelligence)", "models/CoDMod/pocket.mdl" },
+	{ "Cleaver", "(+10 Stamina)", "models/CoDMod/chopper.mdl" },
+	{ "Machete", "(+10 Strength)", "models/CoDMod/machete.mdl" },
+	{ "Katana", "(+10 Condition)", "models/CoDMod/katana.mdl" },
+	{ "Axe", "(+4 To Every Stat)", "models/CoDMod/axe.mdl" }
 };
 
 new const commandKnives[][] = { "noze", "say /noz", "say_team /noz", "say /noze", "say_team /noze", "say /knife", "say_team /knife",
@@ -36,7 +36,7 @@ public plugin_init()
 
 	knives = nvault_open("cod_knives");
 
-	if (knives == INVALID_HANDLE) set_fail_state("[COD] Nie mozna otworzyc pliku cod_knives.vault");
+	if (knives == INVALID_HANDLE) set_fail_state("[COD] Unable to open file cod_knives.vault");
 }
 
 public plugin_precache()
@@ -74,7 +74,7 @@ public change_knife(id)
 
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new knifeData[64], knifeId[3], menu = menu_create("\yWybierz \rModel Noza\w:", "change_knife_handle"), callback = menu_makecallback("change_knife_callback");
+	new knifeData[64], knifeId[3], menu = menu_create("\ySelect \rKnife Model\w:", "change_knife_handle"), callback = menu_makecallback("change_knife_callback");
 
 	for (new i = 0; i < sizeof(knifeModels); i++) {
 		if (i == VIP && !cvarKnifeVIP) continue;
@@ -86,9 +86,9 @@ public change_knife(id)
 		menu_additem(menu, knifeData, knifeId, _, callback);
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Wroc");
-	menu_setprop(menu, MPROP_NEXTNAME, "Dalej");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -120,7 +120,7 @@ public change_knife_handle(id, menu, item)
 
 	save_knife(id);
 
-	cod_print_chat(id, "Twoj nowy noz to:^x03 %s %s^x01.", knifeModels[playerKnife[id]][NAME], knifeModels[playerKnife[id]][BONUS]);
+	cod_print_chat(id, "Your new knife is:^x03 %s %s^x01.", knifeModels[playerKnife[id]][NAME], knifeModels[playerKnife[id]][BONUS]);
 
 	menu_destroy(menu);
 

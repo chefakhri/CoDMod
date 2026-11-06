@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "AWP Weterana"
-#define DESCRIPTION "Masz 50 procent szansy na natychmiastowe zabicie z AWP i 30 procent widocznosci z nim. Dostajesz +%s zdrowia"
+#define NAME        "Veteran's AWP"
+#define DESCRIPTION "You have a 50 percent chance to instantly kill with AWP and 30 percent visibility with it. You get +%s health"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  25
 #define UPGRADE_MIN -2

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Licznik Zycia"
-#define DESCRIPTION "Po zadaniu obrazen przeciwnikowi widzisz jego pozostale HP"
+#define NAME        "Health Meter"
+#define DESCRIPTION "After damaging an enemy you can see their remaining HP"
 
 new itemActive;
 
@@ -30,6 +30,6 @@ public cod_damage_post(attacker, victim, weapon, Float:damage, damageBits, hitPl
 
 		get_user_name(victim, name, charsmax(name));
 
-		cod_show_hud(attacker, TYPE_DHUD, 0, 255, 0, -1.0, 0.55, 0, 0.0, 2.0, 0.0, 0.0, "Pozostale HP %s: %d", name, get_user_health(victim));
+		cod_show_hud(attacker, TYPE_DHUD, 0, 255, 0, -1.0, 0.55, 0, 0.0, 2.0, 0.0, 0.0, "%s remaining HP: %d", name, get_user_health(victim));
 	}
 }

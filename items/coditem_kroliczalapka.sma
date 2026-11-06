@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Krolicza Lapka"
-#define DESCRIPTION "Masz automatycznego BunnyHopa - przytrzymaj spacje"
+#define NAME        "Rabbit's Foot"
+#define DESCRIPTION "You have automatic BunnyHop - hold space"
 
 public plugin_init()
 {

@@ -6,7 +6,7 @@
 #define AUTHOR "O'Zone"
 
 #define NAME        "Radar"
-#define DESCRIPTION "Widzisz wrogow na radarze"
+#define DESCRIPTION "You see enemies on the radar"
 
 #define TASK_RADAR 84722
 

@@ -7,8 +7,8 @@
 #define VERSION "1.2"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Niespodziewany Cios"
-#define DESCRIPTION "Przy trafieniu masz 1/%s szansy na teleport za gracza"
+#define NAME        "Unexpected Blow"
+#define DESCRIPTION "On hit you have a 1/%s chance to teleport behind the player"
 #define RANDOM_MIN  5
 #define RANDOM_MAX  7
 #define VALUE_MIN 3

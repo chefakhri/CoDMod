@@ -6,9 +6,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Snajper"
-#define DESCRIPTION  "Ma 130 procent obrazen z AWP (+int) i 1/2 na natychmiastowe zabicie z noza (PPM)."
-#define FRACTION     "Podstawowe"
+#define NAME         "Sniper"
+#define DESCRIPTION  "Deals 130 percent damage with AWP (+int) and has a 1/2 chance to instantly kill with knife (RMB)."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_AWP)|(1<<CSW_DEAGLE)
 #define HEALTH       0
 #define INTELLIGENCE 0

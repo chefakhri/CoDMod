@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Tajemnica Generala"
-#define DESCRIPTION "Natychmiastowe zabicie z HE"
+#define NAME        "General's Secret"
+#define DESCRIPTION "Instant kill with HE"
 
 public plugin_init()
 {

@@ -60,7 +60,7 @@ public show_info(id)
 		return;
 	}
 
-	client_print(id, print_center, "Granaty zostana odblokowane za %0.1fs", currentTime);
+	client_print(id, print_center, "Grenades will be unlocked in %0.1fs", currentTime);
 }
 
 public block_he(weapon)

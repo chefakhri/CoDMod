@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Potrojna Moc"
-#define DESCRIPTION "Po uzyciu przez %s sekund zadajesz potrojne obrazenia"
+#define NAME        "Triple Power"
+#define DESCRIPTION "When used, for %s seconds you deal triple damage"
 #define RANDOM_MIN  3
 #define RANDOM_MAX  5
 #define VALUE_MAX   10
@@ -52,7 +52,7 @@ public cod_item_upgrade(id)
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Potrojnej Mocy mozesz uzyc tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You can use Triple Power only once per round!");
 
 		return;
 	}

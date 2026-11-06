@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Mocne AK47"
-#define DESCRIPTION "Dostajesz AK47, z ktorego zadajesz o %s wieksze obrazenia"
+#define NAME        "Strong AK47"
+#define DESCRIPTION "You get an AK47 that deals %s extra damage"
 #define RANDOM_MIN  8
 #define RANDOM_MAX  13
 #define UPGRADE_MIN -2

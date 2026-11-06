@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Farbowany Lis"
-#define DESCRIPTION "Masz 1/%s szansy na odrodzenie na respie wroga. Posiadasz ubranie wroga."
+#define NAME        "Wolf in Sheep's Clothing"
+#define DESCRIPTION "You have a 1/%s chance to respawn at the enemy spawn. You wear the enemy uniform."
 #define RANDOM_MIN  3
 #define RANDOM_MAX  4
 #define VALUE_MIN   2

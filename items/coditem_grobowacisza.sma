@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Grobowa Cisza"
-#define DESCRIPTION "Po smierci wybuchasz zadajac %s (+int) obrazen wrogom w poblizu"
+#define NAME        "Deathly Silence"
+#define DESCRIPTION "When you die you explode, dealing %s (+int) damage to nearby enemies"
 #define RANDOM_MIN  150
 #define RANDOM_MAX  175
 #define UPGRADE_MIN -5

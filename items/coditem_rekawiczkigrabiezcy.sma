@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Rekawiczki Grabiezcy"
-#define DESCRIPTION "Dostajesz %s HP i pelny magazynek po zabiciu"
+#define NAME        "Plunderer's Gloves"
+#define DESCRIPTION "You get %s HP and a full magazine after a kill"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  35
 #define UPGRADE_MIN -3

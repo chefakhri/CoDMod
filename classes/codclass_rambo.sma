@@ -6,8 +6,8 @@
 #define AUTHOR "O'Zone"
 
 #define NAME         "Rambo"
-#define DESCRIPTION  "Zadaje 30 (+int) procent wiecej obrazen z Famasa, nie slychac jego krokow, ma 4 flashe."
-#define FRACTION     "Podstawowe"
+#define DESCRIPTION  "Deals 30 (+int) percent more damage with Famas, silent footsteps, has 4 flashes."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_FAMAS)|(1<<CSW_USP)|(1<<CSW_FLASHBANG)
 #define HEALTH       20
 #define INTELLIGENCE 0

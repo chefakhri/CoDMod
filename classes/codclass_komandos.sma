@@ -6,9 +6,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Komandos"
-#define DESCRIPTION  "Natychmiastowe zabicie z noza (PPM), 1/10 na zabicie z Deagle, mniejsza widocznosc na nozu."
-#define FRACTION     "Podstawowe"
+#define NAME         "Commando"
+#define DESCRIPTION  "Instant kill with knife (RMB), 1/10 chance to instantly kill with Deagle, reduced visibility with knife."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_DEAGLE)
 #define HEALTH       30
 #define INTELLIGENCE 0

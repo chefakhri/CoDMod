@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Msciciel"
-#define DESCRIPTION  "Ma 1/2 na natychmiastowe zabicie z AWP i noza (PPM), mniej widoczny podczas kucania, mniejsza grawitacja."
+#define NAME         "Avenger"
+#define DESCRIPTION  "1/2 chance to instantly kill with AWP and knife (RMB), less visible while crouching, lower gravity."
 #define FRACTION     "Premium"
 #define WEAPONS      (1<<CSW_AWP)|(1<<CSW_USP)
 #define HEALTH       20

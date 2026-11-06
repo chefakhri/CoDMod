@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Tajemnica Komandosa"
-#define DESCRIPTION "Dostajesz +%s kondycji i +25 zdrowia"
+#define NAME        "Commando's Secret"
+#define DESCRIPTION "You get +%s condition and +25 health"
 #define RANDOM_MIN  25
 #define RANDOM_MAX  40
 #define UPGRADE_MIN -3

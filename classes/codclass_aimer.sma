@@ -6,8 +6,8 @@
 #define AUTHOR "O'Zone"
 
 #define NAME         "Aimer"
-#define DESCRIPTION  "Ma 20 procent szansy na natychmiastowe zabicie HeadShotem."
-#define FRACTION     "Podstawowe"
+#define DESCRIPTION  "Has a 20 percent chance to instantly kill with a HeadShot."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_P228)
 #define HEALTH       10
 #define INTELLIGENCE 0

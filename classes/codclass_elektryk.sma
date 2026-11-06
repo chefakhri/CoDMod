@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Elektryk"
-#define DESCRIPTION  "Posiada 3 blyskawice. Ma 20 procent szansy na podpalenie przeciwnika po trafieniu USP."
-#define FRACTION     "Podstawowe"
+#define NAME         "Electrician"
+#define DESCRIPTION  "Has 3 lightning bolts. 20 percent chance to set the enemy on fire when hit with USP."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_USP)
 #define HEALTH       15
 #define INTELLIGENCE 0

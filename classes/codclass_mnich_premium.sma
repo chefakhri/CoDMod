@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Mnich"
-#define DESCRIPTION  "Cicho biega i posiada 3 teleporty, ktorych moze uzyc co 15 sekund."
+#define NAME         "Monk"
+#define DESCRIPTION  "Runs silently and has 3 teleports, usable every 15 seconds."
 #define FRACTION     "Premium"
 #define WEAPONS      (1<<CSW_AK47)|(1<<CSW_USP)
 #define HEALTH       10

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Naboje Lowcy Glow"
-#define DESCRIPTION "Zadajesz o %s procent wieksze obrazenia przy trafieniu w glowe"
+#define NAME        "Headhunter Bullets"
+#define DESCRIPTION "You deal %s percent more damage on headshots"
 #define RANDOM_MIN  50
 #define RANDOM_MAX  75
 #define UPGRADE_MIN -3

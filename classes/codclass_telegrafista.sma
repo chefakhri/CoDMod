@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Telegrafista"
-#define DESCRIPTION  "Moze aktywowac na 30s radar pokazujacy pozycje przeciwnikow. Ma ubranie wroga."
-#define FRACTION     "Podstawowe"
+#define NAME         "Radio Operator"
+#define DESCRIPTION  "Can activate a radar for 30s showing enemy positions. Has enemy uniform."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_AK47)|(1<<CSW_GLOCK18)
 #define HEALTH       10
 #define INTELLIGENCE 0
@@ -53,7 +53,7 @@ public cod_class_spawned(id, respawn)
 public cod_class_skill_used(id)
 {
 	if (get_bit(id, classUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Radar mozesz aktywowac tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can activate the radar only once per round!");
 
 		return PLUGIN_CONTINUE;
 	}

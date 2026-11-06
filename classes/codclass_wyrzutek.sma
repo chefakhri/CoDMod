@@ -6,9 +6,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Wyrzutek"
-#define DESCRIPTION  "Ma 1/6 szansy na wyrzucenie wroga w powietrze. Wrogom w powietrzu zadaje mu podwojne obrazenia"
-#define FRACTION     "Podstawowe"
+#define NAME         "Outcast"
+#define DESCRIPTION  "1/6 chance to launch the enemy into the air. Deals double damage to enemies in the air."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_USP)
 #define HEALTH       20
 #define INTELLIGENCE 0

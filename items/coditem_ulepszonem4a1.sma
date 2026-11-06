@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Ulepszone M4A1"
-#define DESCRIPTION "Dostajesz M4A1, z ktorego zadajesz o %s wieksze obrazenia"
+#define NAME        "Upgraded M4A1"
+#define DESCRIPTION "You get an M4A1 that deals %s extra damage"
 #define RANDOM_MIN  8
 #define RANDOM_MAX  13
 #define UPGRADE_MIN -2

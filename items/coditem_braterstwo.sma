@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Braterstwo"
-#define DESCRIPTION "Bedac niedaleko osoby z druzyny zadajesz o %s procent wieksze obrazenia"
+#define NAME        "Brotherhood"
+#define DESCRIPTION "When near a teammate you deal %s percent more damage"
 #define RANDOM_MIN  35
 #define RANDOM_MAX  50
 #define UPGRADE_MIN -2

@@ -7,9 +7,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Pulkownik"
-#define DESCRIPTION  "Zadaje coraz wieksze obrazenia wraz ze spadkiem ilosci amunicji w M249. Ma mine i rakiete."
-#define FRACTION     "Podstawowe"
+#define NAME         "Colonel"
+#define DESCRIPTION  "Deals more damage the less ammo is left in the M249. Has a mine and a rocket."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M249)|(1<<CSW_GLOCK18)
 #define HEALTH       20
 #define INTELLIGENCE 0

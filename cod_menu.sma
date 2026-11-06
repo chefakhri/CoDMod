@@ -26,7 +26,7 @@ public plugin_cfg()
 	get_localinfo("amxx_configsdir", menuFile, charsmax(menuFile));
 	format(menuFile, charsmax(menuFile), "%s/cod_menu.ini", menuFile);
 
-	if (!file_exists(menuFile)) set_fail_state("[CoD Menu] Brak pliku cod_menu.ini z zawartoscia glownego menu!");
+	if (!file_exists(menuFile)) set_fail_state("[CoD Menu] Missing file cod_menu.ini with the main menu contents!");
 
 	new lineContent[128], menuTitle[64], menuCommand[64], file = fopen(menuFile, "r");
 
@@ -65,9 +65,9 @@ public display_menu(id)
 		menu_additem(menu, menuTitle);
 	}
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 

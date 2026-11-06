@@ -6,8 +6,8 @@
 #define AUTHOR "O'Zone"
 
 #define NAME         "Test"
-#define DESCRIPTION  "Posiada 2 miny. Ma 10 procent szansy na natychmiastowe zabicie przeciwnika po trafieniu USP."
-#define FRACTION     "Podstawowe"
+#define DESCRIPTION  "Has 2 mines. 10 percent chance to instantly kill the enemy when hit with USP."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_USP)
 #define HEALTH       10
 #define INTELLIGENCE 0
@@ -15,17 +15,17 @@
 #define STAMINA      10
 #define CONDITION    5
 
-#define NAME2        "Wyszkolony Test"
-#define DESCRIPTION2 "Posiada 3 miny. Ma 10 procent szansy na natychmiastowe zabicie przeciwnika po trafieniu USP."
+#define NAME2        "Trained Test"
+#define DESCRIPTION2 "Has 3 mines. 10 percent chance to instantly kill the enemy when hit with USP."
 #define HEALTH2      15
 
-#define NAME3        "Elitarny Test"
-#define DESCRIPTION3 "Posiada 4 miny. Ma 20 procent szansy na natychmiastowe zabicie przeciwnika po trafieniu USP."
+#define NAME3        "Elite Test"
+#define DESCRIPTION3 "Has 4 mines. 20 percent chance to instantly kill the enemy when hit with USP."
 #define HEALTH3      15
 #define CONDITION3   10
 
-#define NAME4        "Mistrzowski Test"
-#define DESCRIPTION4 "Posiada 5 min. Ma 20 procent szansy na natychmiastowe zabicie przeciwnika po trafieniu USP."
+#define NAME4        "Master Test"
+#define DESCRIPTION4 "Has 5 mines. 20 percent chance to instantly kill the enemy when hit with USP."
 #define WEAPONS4     (1<<CSW_M4A1)|(1<<CSW_AK47)|(1<<CSW_USP)
 #define HEALTH4      15
 #define CONDITION4   20

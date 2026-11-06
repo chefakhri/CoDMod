@@ -7,8 +7,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Lowca"
-#define DESCRIPTION  "Dostaje kusze (R na nozu) i 10 beltow, ktore zabijaja po trafieniu. Ma dwie miny."
+#define NAME         "Hunter"
+#define DESCRIPTION  "Gets a crossbow (R with knife) and 10 bolts that kill on hit. Has two mines."
 #define FRACTION     "Premium"
 #define WEAPONS      (1<<CSW_AK47)|(1<<CSW_FIVESEVEN)
 #define HEALTH       15
@@ -103,19 +103,19 @@ public shoot_belt(id)
 	if (!is_user_alive(id)) return;
 
 	if (!crossbowBelts[id]) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Juz wykorzystales wszystkie belty!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You have used all your bolts!");
 
 		return;
 	}
 
 	if (!get_bit(id, crossbowActive)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Przeladuj kusze na R!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Reload the crossbow with R!");
 
 		return;
 	}
 
 	if (lastCrossbowBelt[id] + 3.0 > get_gametime()) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Belt mozesz wystrzelic raz na 3 sekundy!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can fire a bolt once every 3 seconds!");
 
 		return;
 	}

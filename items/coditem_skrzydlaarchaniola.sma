@@ -7,8 +7,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Skrzydla Archaniola"
-#define DESCRIPTION "Masz zmniejszona grawitacje. Kiedy podczas skoku uzyjesz przedmiotu spadasz na ziemie i wywolujesz trzesienie"
+#define NAME        "Archangel's Wings"
+#define DESCRIPTION "You have lower gravity. Using the item mid-jump slams you to the ground, causing an earthquake"
 
 #define TASK_FALL	3921
 

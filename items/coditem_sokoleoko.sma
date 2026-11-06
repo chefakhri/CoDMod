@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Sokole Oko"
-#define DESCRIPTION "Widzisz wszystkich niewidzialnych"
+#define NAME        "Hawk Eye"
+#define DESCRIPTION "You see all invisible players"
 
 new itemActive;
 
@@ -17,7 +17,7 @@ public plugin_init()
 
 	cod_register_item(NAME, DESCRIPTION);
 
-	register_forward(FM_AddToFullPack, "add_to_full_pack", 1)
+	register_forward(FM_AddToFullPack, "add_to_full_pack", 1);
 }
 
 public cod_item_enabled(id, value)

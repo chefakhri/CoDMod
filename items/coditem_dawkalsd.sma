@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Dawka LSD"
-#define DESCRIPTION "Dostajesz +%s do kazdej statystyki"
+#define NAME        "Dose of LSD"
+#define DESCRIPTION "You get +%s to every stat"
 #define RANDOM_MIN  15
 #define RANDOM_MAX  25
 #define UPGRADE_MIN -2

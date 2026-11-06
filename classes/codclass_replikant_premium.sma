@@ -9,8 +9,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Replikant"
-#define DESCRIPTION  "Ma trzy repliki odbijajace polowe obrazen, podwojny skok i teleport."
+#define NAME         "Replicant"
+#define DESCRIPTION  "Has three replicas that reflect half the damage, a double jump and a teleport."
 #define FRACTION     "Premium"
 #define WEAPONS      (1<<CSW_AK47)|(1<<CSW_DEAGLE)
 #define HEALTH       25
@@ -57,19 +57,19 @@ public cod_new_round()
 public cod_class_skill_used(id)
 {
 	if (!itemUse[id]) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Juz wykorzystales wszystkie repliki!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You have used all your replicas!");
 
 		return PLUGIN_CONTINUE;
 	}
 
 	if (itemLastUse[id] + 5.0 > get_gametime()) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Replike mozesz postawic raz na 5 sekund!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can place a replica once every 5 seconds!");
 
 		return PLUGIN_CONTINUE;
 	}
 
 	if (!(pev(id, pev_flags) & FL_ONGROUND)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Musisz stac na podlozu, zeby postawic replike!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You must stand on the ground to place a replica!");
 
 		return PLUGIN_CONTINUE;
 	}
@@ -77,7 +77,7 @@ public cod_class_skill_used(id)
 	new Float:entOrigin[3];
 
 	if (!get_origin_in_distance(id, entOrigin, 45.0)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Musisz odsunac sie nieco dalej od przeszkody, aby postawic replike!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You must move a bit further away from the obstacle to place a replica!");
 
 		return PLUGIN_CONTINUE;
 	}
@@ -110,7 +110,7 @@ public cod_class_skill_used(id)
 	entity_set_int(ent, EV_INT_iuser1, id);
 
 	if (!cod_is_enough_space(ent, 150.0)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Nie mozesz postawic repliki w przejsciu!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can't place a replica in a passage!");
 
 		remove_entity(ent);
 

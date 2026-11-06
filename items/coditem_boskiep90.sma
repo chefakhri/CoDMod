@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Boskie P90"
-#define DESCRIPTION "Dostajesz P90, ktore ma nieskonczona amunicje i brak rozrzutu"
+#define NAME        "Divine P90"
+#define DESCRIPTION "You get a P90 with unlimited ammo and no recoil"
 
 public plugin_init()
 {

@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Wojskowy"
-#define DESCRIPTION  "Ma 1/7 na oslepienie przeciwnika przy trafieniu. Posiada 3 rakiety."
-#define FRACTION     "Podstawowe"
+#define NAME         "Soldier"
+#define DESCRIPTION  "1/7 chance to blind the enemy on hit. Has 3 rockets."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_FAMAS)|(1<<CSW_XM1014)|(1<<CSW_P228)
 #define HEALTH       20
 #define INTELLIGENCE 0

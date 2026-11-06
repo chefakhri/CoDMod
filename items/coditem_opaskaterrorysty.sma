@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Opaska Terrorysty"
-#define DESCRIPTION "Zadajesz %s obrazen wiecej. Masz 50 procent szansy na natychmiastowe zabicie z HE"
+#define NAME        "Terrorist's Armband"
+#define DESCRIPTION "You deal %s more damage. You have a 50 percent chance to instantly kill with HE"
 #define RANDOM_MIN  6
 #define RANDOM_MAX  8
 #define UPGRADE_MIN -2

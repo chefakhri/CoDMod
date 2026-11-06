@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Strzelec"
-#define DESCRIPTION  "Ma 10 procent szansy na natychmiastowe zabicie z M4A1/AK47, dodatkowo posiada 1 mine."
-#define FRACTION     "Podstawowe"
+#define NAME         "Marksman"
+#define DESCRIPTION  "10 percent chance to instantly kill with M4A1/AK47, also has 1 mine."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_AK47)|(1<<CSW_GLOCK18)
 #define HEALTH       10
 #define INTELLIGENCE 0

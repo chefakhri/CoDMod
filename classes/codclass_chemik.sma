@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Chemik"
-#define DESCRIPTION  "Posiada dwie trucizny. Ma 10 procent szansy na zatrucie przeciwnika przy trafieniu."
-#define FRACTION     "Podstawowe"
+#define NAME         "Chemist"
+#define DESCRIPTION  "Has two poisons. 10 percent chance to poison the enemy on hit."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_DEAGLE)
 #define HEALTH       20
 #define INTELLIGENCE 10

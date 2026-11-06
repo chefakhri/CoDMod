@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Miecz Jedi"
-#define DESCRIPTION "1/2 na natychmiastowe zabicie z kosy i 1/%s na odbicie pocisku na nozu"
+#define NAME        "Jedi Sword"
+#define DESCRIPTION "1/2 chance to instantly kill with knife and 1/%s chance to reflect a bullet with knife"
 #define RANDOM_MIN  4
 #define RANDOM_MAX  5
 #define VALUE_MIN   2

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Eliminator Rozrzutu"
-#define DESCRIPTION "Nie masz rozrzutu we wszystkich broniach"
+#define NAME        "Recoil Eliminator"
+#define DESCRIPTION "You have no recoil with any weapon"
 
 public plugin_init()
 {

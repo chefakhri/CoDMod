@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Ksiega Doswiadczenia"
-#define DESCRIPTION "Za kazdego fraga dostajesz dodatkowe +%s expa"
+#define NAME        "Book of Experience"
+#define DESCRIPTION "You get an extra +%s exp for every frag"
 #define RANDOM_MIN  80
 #define RANDOM_MAX  100
 #define UPGRADE_MIN -4

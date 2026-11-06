@@ -8,7 +8,7 @@
 #define AUTHOR "O'Zone"
 
 #define NAME        "Agent 007"
-#define DESCRIPTION "Masz 1/%s na natychmiastowe zabicie z USP z zalozonym tlumikiem"
+#define DESCRIPTION "You have a 1/%s chance to instantly kill with a silenced USP"
 #define RANDOM_MIN  4
 #define RANDOM_MAX  6
 #define VALUE_MIN   2

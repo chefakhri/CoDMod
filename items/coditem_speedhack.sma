@@ -6,7 +6,7 @@
 #define AUTHOR "O'Zone"
 
 #define NAME        "Speedhack"
-#define DESCRIPTION "Dostajesz %s kondycji"
+#define DESCRIPTION "You get %s condition"
 #define RANDOM_MIN  75
 #define RANDOM_MAX  100
 #define UPGRADE_MIN -5

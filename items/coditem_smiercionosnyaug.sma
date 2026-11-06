@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Smiercionosny AUG"
-#define DESCRIPTION "Masz 1/%s na natychmiastowe zabicie z AUGa"
+#define NAME        "Deadly AUG"
+#define DESCRIPTION "You have a 1/%s chance to instantly kill with AUG"
 #define RANDOM_MIN  6
 #define RANDOM_MAX  8
 #define VALUE_MIN   3

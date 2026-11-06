@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Kurtka Kampera"
-#define DESCRIPTION "Jestes niewidoczny podczas bezruchu do momentu otrzymania obrazen."
+#define NAME        "Camper's Jacket"
+#define DESCRIPTION "You are invisible while standing still until you take damage."
 
 public plugin_init()
 {

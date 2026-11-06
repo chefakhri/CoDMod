@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Dobra Krowka"
-#define DESCRIPTION "Dostajesz zestaw granatow i Krowe (M249), z ktorej zadajesz o %s zwiekszone obrazenia"
+#define NAME        "Good Cow"
+#define DESCRIPTION "You get a set of grenades and the Cow (M249), dealing %s extra damage with it"
 #define RANDOM_MIN  6
 #define RANDOM_MAX  10
 #define UPGRADE_MIN -1

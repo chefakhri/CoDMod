@@ -8,9 +8,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Czolgista"
-#define DESCRIPTION  "Ma podwojny skok, posiada Bazooke (R na nozu) i 10 pociskow do niej."
-#define FRACTION     "Podstawowe"
+#define NAME         "Tanker"
+#define DESCRIPTION  "Has a double jump, a Bazooka (R with knife) and 10 rockets for it."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_GALIL)|(1<<CSW_GLOCK18)
 #define HEALTH       10
 #define INTELLIGENCE 0
@@ -101,13 +101,13 @@ public shoot_missile(id)
 	if (!is_user_alive(id)) return;
 
 	if (!bazookaMissiles[id]) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Wykorzystales juz wszystkie pociski bazooki!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You have used all your bazooka rockets!");
 
 		return;
 	}
 
 	if (lastBazookaMissile[id] + 3.0 > get_gametime()) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Pocisk mozesz wystrzelic raz na 3 sekundy!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can fire a rocket once every 3 seconds!");
 
 		return;
 	}

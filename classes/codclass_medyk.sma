@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Medyk"
-#define DESCRIPTION  "Ma 3 apteczki, ktorymi moze leczyc siebie i innych. Pelny magazynek po zabiciu."
-#define FRACTION     "Podstawowe"
+#define NAME         "Medic"
+#define DESCRIPTION  "Has 3 medkits to heal himself and others. Full magazine refill after a kill."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_UMP45)|(1<<CSW_GLOCK18)
 #define HEALTH       20
 #define INTELLIGENCE 0

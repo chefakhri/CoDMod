@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Duch"
-#define DESCRIPTION  "Po trzymaniu obrazen znika na sekunde. Ma 1 rakiete."
-#define FRACTION     "Podstawowe"
+#define NAME         "Ghost"
+#define DESCRIPTION  "Vanishes for a second after taking damage. Has 1 rocket."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_MP5NAVY)|(1<<CSW_DEAGLE)
 #define HEALTH       20
 #define INTELLIGENCE 0

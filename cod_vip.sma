@@ -110,7 +110,7 @@ public client_infochanged(id)
 }
 
 public show_vip_motd(id)
-	show_motd(id, "vip.txt", "Informacje o VIPie");
+	show_motd(id, "vip.txt", "VIP Information");
 
 public show_vips(id)
 {
@@ -125,7 +125,7 @@ public show_vips(id)
 		else add(message, charsmax(message), ", ");
 	}
 
-	cod_print_chat(id, "^x03VIPy^x01 na serwerze:^x04 %s", message);
+	cod_print_chat(id, "^x03VIPs^x01 on the server:^x04 %s", message);
 
 	return PLUGIN_CONTINUE;
 }
@@ -166,7 +166,7 @@ public cod_killed(killer, victim, weaponId, hitPlace)
 	cod_add_user_health(killer, hs ? 15 : 10);
 
 	if (hs) cod_show_hud(killer, TYPE_DHUD, 38, 218, 116, -1.0, 0.35, 0, 0.0, 1.0, 0.0, 0.0, "HeadShot! +15HP");
-	else cod_show_hud(killer, TYPE_DHUD, 255, 212, 0, -1.0, 0.31, 0, 0.0, 1.0, 0.0, 0.0, "Zabiles! +10HP");
+	else cod_show_hud(killer, TYPE_DHUD, 255, 212, 0, -1.0, 0.31, 0, 0.0, 1.0, 0.0, 0.0, "Kill! +10HP");
 
 	return PLUGIN_CONTINUE;
 }

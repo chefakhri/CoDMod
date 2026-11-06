@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Krwawe Naboje"
-#define DESCRIPTION "Wraz ze spadkiem twojego zycia rosna zadawane obrazenia (-1% zycia = +1% obrazen)"
+#define NAME        "Bloody Bullets"
+#define DESCRIPTION "The lower your health, the more damage you deal (-1% health = +1% damage)"
 
 public plugin_init()
 {

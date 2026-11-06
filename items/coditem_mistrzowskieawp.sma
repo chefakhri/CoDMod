@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Mistrzowskie AWP"
-#define DESCRIPTION "Natychmiastowe zabicie z AWP"
+#define NAME        "Master AWP"
+#define DESCRIPTION "Instant kill with AWP"
 
 public plugin_init()
 {

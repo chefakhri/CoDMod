@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Zestaw Powiekszony"
-#define DESCRIPTION "Dostajesz po %s granatow z kazdego typu"
+#define NAME        "Extended Kit"
+#define DESCRIPTION "You get %s grenades of each type"
 #define RANDOM_MIN  3
 #define RANDOM_MAX  5
 #define VALUE_MAX   10

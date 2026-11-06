@@ -6,8 +6,8 @@
 #define VERSION "1.1"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Intelekt O'Zone"
-#define DESCRIPTION "Masz 1/%s szansy na zmiane trajektorii lotu kuli na glowe przy trafieniu"
+#define NAME        "O'Zone's Intellect"
+#define DESCRIPTION "You have a 1/%s chance to redirect your bullet to the head on hit"
 #define RANDOM_MIN  3
 #define RANDOM_MAX  5
 #define VALUE_MIN   2
@@ -52,7 +52,7 @@ public process_trace(id, trace)
 
 	static ent; ent = get_tr2(trace, TR_pHit);
 
-	if (!is_user_alive(ent) || cod_get_user_item(ent) == cod_get_item_id("Bezglowie")) return FMRES_IGNORED;
+	if (!is_user_alive(ent) || cod_get_user_item(ent) == cod_get_item_id("Headless")) return FMRES_IGNORED;
 
 	new Float:origin[3], Float:angles[3];
 

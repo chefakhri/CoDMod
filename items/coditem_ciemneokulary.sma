@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Ciemne Okulary"
-#define DESCRIPTION "Nie dzialaja na ciebie flashe. Dostajesz 2 flashe"
+#define NAME        "Dark Glasses"
+#define DESCRIPTION "Flashbangs don't affect you. You get 2 flashes"
 
 new itemActive;
 

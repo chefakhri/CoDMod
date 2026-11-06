@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Buty Hefajstosa"
-#define DESCRIPTION "Nie otrzymujesz obrazen od upadku. Dostajesz +%s kondycji"
+#define NAME        "Boots of Hephaestus"
+#define DESCRIPTION "You take no fall damage. You get +%s condition"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  25
 #define UPGRADE_MIN -2

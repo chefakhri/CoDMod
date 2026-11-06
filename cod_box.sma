@@ -123,7 +123,7 @@ public get_box(id)
 
 			set_user_frags(id, get_user_frags(id) + frags);
 
-			cod_print_chat(id, "Dostales^x04 %i frag%s^x01!", frags, frags == 1 ? "a" : "i");
+			cod_print_chat(id, "You got^x04 %i frag%s^x01!", frags, frags == 1 ? "" : "s");
 		} case 2: {
 			new deaths = random_num(1, 2), frags = deaths - cs_get_user_deaths(id);
 
@@ -131,7 +131,7 @@ public get_box(id)
 
 			cs_set_user_deaths(id, max(0, cs_get_user_deaths(id) - deaths));
 
-			cod_print_chat(id, "Masz o^x04 %i zgon%s^x01 mniej!", deaths, deaths == 1 ? "" : "y");
+			cod_print_chat(id, "You have^x04 %i death%s^x01 less!", deaths, deaths == 1 ? "" : "s");
 		} case 3: {
 			if (cod_get_user_item(id)) {
 				get_box(id);
@@ -141,41 +141,41 @@ public get_box(id)
 
 			cod_set_user_item(id, RANDOM);
 
-			cod_print_chat(id, "Trafiles na^x04 losowy item^x01!");
+			cod_print_chat(id, "You found a^x04 random item^x01!");
 		} case 4: {
 			new health = random_num(15, 75);
 
 			cod_set_user_health(id, cod_get_user_health(id, 1) + health);
 
-			cod_print_chat(id, "Dostales^x04 +%i HP^x01!", health);
+			cod_print_chat(id, "You got^x04 +%i HP^x01!", health);
 		} case 5: {
 			new exp = random_num(25, 75);
 
 			cod_set_user_exp(id, exp);
 
-			cod_print_chat(id, "Dostales^x04 %i Expa^x01!", exp);
+			cod_print_chat(id, "You got^x04 %i Exp^x01!", exp);
 		} case 6: {
 			new honor = random_num(5, 25);
 
 			cod_add_user_honor(id, honor);
 
-			cod_print_chat(id, "Dostales^x04 %i Honoru^x01!", honor);
+			cod_print_chat(id, "You got^x04 %i Honor^x01!", honor);
 		} case 7: {
 			cod_add_user_rockets(id, 1);
 
-			cod_print_chat(id, "Dostales^x04 Rakiete^x01!");
+			cod_print_chat(id, "You got a^x04 Rocket^x01!");
 		} case 8: {
 			cod_add_user_mines(id, 1);
 
-			cod_print_chat(id, "Dostales^x04 Mine^x01!");
+			cod_print_chat(id, "You got a^x04 Mine^x01!");
 		} case 9: {
 			cod_add_user_medkits(id, 1);
 
-			cod_print_chat(id, "Dostales^x04 Apteczke^x01!");
+			cod_print_chat(id, "You got a^x04 Medkit^x01!");
 		} case 10: {
 			cod_add_user_dynamites(id, 1);
 
-			cod_print_chat(id, "Dostales^x04 Dynamit^x01!");
+			cod_print_chat(id, "You got a^x04 Dynamite^x01!");
 		}
 	}
 

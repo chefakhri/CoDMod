@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Kosmiczne Klapki"
-#define DESCRIPTION "Dostajesz +%s kondycji oraz masz o 50 procent zmniejszona grawitacje"
+#define NAME        "Space Slippers"
+#define DESCRIPTION "You get +%s condition and 50 percent lower gravity"
 #define RANDOM_MIN  25
 #define RANDOM_MAX  35
 #define UPGRADE_MIN -2

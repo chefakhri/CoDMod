@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Rosyjska Ruletka"
-#define DESCRIPTION "Masz 5/6 szansy na natychmiastowe zabicie i 1/6 za samobojstwo przy trafieniu przeciwnika z Deagle."
+#define NAME        "Russian Roulette"
+#define DESCRIPTION "When hitting an enemy with Deagle: 5/6 chance to instantly kill and 1/6 chance of suicide."
 
 public plugin_init()
 {

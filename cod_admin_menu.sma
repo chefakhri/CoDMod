@@ -8,13 +8,13 @@
 #define ACCESS_FLAG ADMIN_CVAR
 
 new const menuOptions[][] = {
-	"Daj \rPrzedmiot",
-	"Ustaw \rPoziom",
-	"Dodaj \rPoziom",
-	"Dodaj \rDoswiadczenie",
-	"Zamien \rDoswiadczenie",
-	"Przenies \rDoswiadczenie",
-	"Dodaj \rHonor"
+	"Give \rItem",
+	"Set \rLevel",
+	"Add \rLevel",
+	"Add \rExperience",
+	"Swap \rExperience",
+	"Move \rExperience",
+	"Add \rHonor"
 };
 
 enum _:options {
@@ -37,14 +37,14 @@ public plugin_init()
 
 	for (new i; i < sizeof(commandMenu); i++) register_clcmd(commandMenu[i], "admin_menu");
 
-	register_clcmd("WPISZ_ILOSC", "amount_handle");
+	register_clcmd("ENTER_AMOUNT", "amount_handle");
 }
 
 public admin_menu(id)
 {
 	if (!(cod_get_user_flags(id) & ACCESS_FLAG)) return PLUGIN_HANDLED;
 
-	new menu = menu_create("\yMenu \rAdmina\w:", "admin_menu_handle");
+	new menu = menu_create("\yAdmin \rMenu\w:", "admin_menu_handle");
 
 	for (new i; i < sizeof(menuOptions); i++) menu_additem(menu, menuOptions[i]);
 
@@ -80,7 +80,7 @@ public player_menu(id)
 {
 	if (!is_user_connected(id)) return PLUGIN_HANDLED;
 
-	new playerName[MAX_NAME], playerId[6], menu = menu_create("\yWybierz \rGracza\w:", "player_menu_handle");
+	new playerName[MAX_NAME], playerId[6], menu = menu_create("\ySelect \rPlayer\w:", "player_menu_handle");
 
 	for (new player = 1; player <= MAX_PLAYERS; player++) {
 		if (!is_user_connected(player) || is_user_hltv(player)) continue;
@@ -92,9 +92,9 @@ public player_menu(id)
 		menu_additem(menu, playerName, playerId);
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -124,7 +124,7 @@ public player_menu_handle(id, menu, item)
 	new player = str_to_num(itemData);
 
 	if (!is_user_connected(player)) {
-		cod_print_chat(id, "Wybranego gracza nie ma juz na serwerze.");
+		cod_print_chat(id, "The selected player is no longer on the server.");
 
 		return PLUGIN_HANDLED;
 	}
@@ -135,25 +135,25 @@ public player_menu_handle(id, menu, item)
 		case GIVE_ITEM: select_item_menu(id);
 		case EXCHANGE_EXP, TRANSFER_EXP: select_class_menu(id);
 		case SET_LEVEL: {
-			client_cmd(id, "messagemode WPISZ_ILOSC");
+			client_cmd(id, "messagemode ENTER_AMOUNT");
 
-			client_print(id, print_center, "Wpisz, ktory poziom chcesz ustawic graczowi.");
-			cod_print_chat(id, "Wpisz, ktory poziom chcesz ustawic graczowi.");
+			client_print(id, print_center, "Enter the level you want to set for the player.");
+			cod_print_chat(id, "Enter the level you want to set for the player.");
 		} case ADD_LEVEL: {
-			client_cmd(id, "messagemode WPISZ_ILOSC");
+			client_cmd(id, "messagemode ENTER_AMOUNT");
 
-			client_print(id, print_center, "Wpisz ile poziomow chcesz dodac graczowi.");
-			cod_print_chat(id, "Wpisz ile poziomow chcesz dodac graczowi.");
+			client_print(id, print_center, "Enter how many levels you want to add to the player.");
+			cod_print_chat(id, "Enter how many levels you want to add to the player.");
 		} case ADD_EXP: {
-			client_cmd(id, "messagemode WPISZ_ILOSC");
+			client_cmd(id, "messagemode ENTER_AMOUNT");
 
-			client_print(id, print_center, "Wpisz ile doswiadczenia chcesz dodac graczowi.");
-			cod_print_chat(id, "Wpisz ile doswiadczenia chcesz dodac graczowi.");
+			client_print(id, print_center, "Enter how much experience you want to add to the player.");
+			cod_print_chat(id, "Enter how much experience you want to add to the player.");
 		} case ADD_HONOR: {
-			client_cmd(id, "messagemode WPISZ_ILOSC");
+			client_cmd(id, "messagemode ENTER_AMOUNT");
 
-			client_print(id, print_center, "Wpisz ile honoru chcesz dodac graczowi.");
-			cod_print_chat(id, "Wpisz ile honoru chcesz dodac graczowi.");
+			client_print(id, print_center, "Enter how much honor you want to add to the player.");
+			cod_print_chat(id, "Enter how much honor you want to add to the player.");
 		}
 	}
 
@@ -167,12 +167,12 @@ public select_item_menu(id)
 	if (!is_user_connected(selectedPlayer[id])) {
 		client_cmd(id, "spk %s", codSounds[SOUND_EXIT]);
 
-		cod_print_chat(id, "Wybranego gracza nie ma juz na serwerze.");
+		cod_print_chat(id, "The selected player is no longer on the server.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	new menuData[128], itemName[MAX_NAME], itemId[6], menu = menu_create("\yWybierz \rPrzedmiot\w:", "select_menu_handle");
+	new menuData[128], itemName[MAX_NAME], itemId[6], menu = menu_create("\ySelect \rItem\w:", "select_menu_handle");
 
 	for (new i = 1; i <= cod_get_items_num(); i++) {
 		cod_get_item_name(i, itemName, charsmax(itemName));
@@ -184,9 +184,9 @@ public select_item_menu(id)
 		menu_additem(menu, menuData, itemId);
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -200,12 +200,12 @@ public select_class_menu(id)
 	if (!is_user_connected(selectedPlayer[id])) {
 		client_cmd(id, "spk %s", codSounds[SOUND_EXIT]);
 
-		cod_print_chat(id, "Wybranego gracza nie ma juz na serwerze.");
+		cod_print_chat(id, "The selected player is no longer on the server.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	new menuData[128], className[MAX_NAME], classId[6], menu = menu_create("\yWybierz \rKlase\w:", "select_menu_handle");
+	new menuData[128], className[MAX_NAME], classId[6], menu = menu_create("\ySelect \rClass\w:", "select_menu_handle");
 
 	for (new i = 1; i < cod_get_classes_num(); i++) {
 		if (cod_get_user_class(selectedPlayer[id]) == i) continue;
@@ -219,9 +219,9 @@ public select_class_menu(id)
 		menu_additem(menu, menuData, classId);
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -243,7 +243,7 @@ public select_menu_handle(id, menu, item)
 	if (!is_user_connected(selectedPlayer[id])) {
 		client_cmd(id, "spk %s", codSounds[SOUND_EXIT]);
 
-		cod_print_chat(id, "Wybranego gracza nie ma juz na serwerze.");
+		cod_print_chat(id, "The selected player is no longer on the server.");
 
 		return PLUGIN_HANDLED;
 	}
@@ -264,7 +264,7 @@ public select_menu_handle(id, menu, item)
 		case GIVE_ITEM: {
 			cod_set_user_item(selectedPlayer[id], selected, RANDOM, true);
 
-			cod_print_chat(id, "Dales przedmiot^x04 %s^x01 graczowi^x03 %s^x01.", itemName, playerName);
+			cod_print_chat(id, "You gave the item^x04 %s^x01 to player^x03 %s^x01.", itemName, playerName);
 		} case EXCHANGE_EXP: {
 			new firstClassName[MAX_NAME], secondClassName[MAX_NAME],
 				firstClassExp = cod_get_user_exp(selectedPlayer[id]),
@@ -285,7 +285,7 @@ public select_menu_handle(id, menu, item)
 				cod_set_user_class(selectedPlayer[id], selected, 1);
 			}
 
-			cod_print_chat(id, "Zamieniles doswiadczenie miedzy klasami^x04 %s^x01 i^x04 %s^x01 graczowi^x03 %s^x01.", firstClassName, secondClassName, playerName);
+			cod_print_chat(id, "You swapped experience between classes^x04 %s^x01 and^x04 %s^x01 for player^x03 %s^x01.", firstClassName, secondClassName, playerName);
 		} case TRANSFER_EXP: {
 			new firstClassName[MAX_NAME], secondClassName[MAX_NAME],
 				firstClassExp = cod_get_user_exp(selectedPlayer[id]),
@@ -298,7 +298,7 @@ public select_menu_handle(id, menu, item)
 			cod_set_user_class(selectedPlayer[id], selected, 1);
 			cod_set_user_exp(selectedPlayer[id], firstClassExp);
 
-			cod_print_chat(id, "Przeniosles doswiadczenie z klasy^x04 %s^x01 na klase^x04 %s^x01 graczowi^x03 %s^x01.", firstClassName, secondClassName, playerName);
+			cod_print_chat(id, "You moved experience from class^x04 %s^x01 to class^x04 %s^x01 for player^x03 %s^x01.", firstClassName, secondClassName, playerName);
 		}
 	}
 
@@ -310,7 +310,7 @@ public amount_handle(id)
 	if (!is_user_connected(id) || !(cod_get_user_flags(id) & ACCESS_FLAG)) return PLUGIN_HANDLED;
 
 	if (!is_user_connected(selectedPlayer[id])) {
-		cod_print_chat(id, "Wybranego gracza nie ma juz na serwerze.");
+		cod_print_chat(id, "The selected player is no longer on the server.");
 
 		return PLUGIN_HANDLED;
 	}
@@ -325,7 +325,7 @@ public amount_handle(id)
 	amount = str_to_num(amountData);
 
 	if (amount <= 0) {
-		cod_print_chat(id, "Ilosc nie moze byc mniejsza niz^x03 1^x01!");
+		cod_print_chat(id, "The amount can't be less than^x03 1^x01!");
 
 		return PLUGIN_HANDLED;
 	}
@@ -338,19 +338,19 @@ public amount_handle(id)
 		case SET_LEVEL: {
 			cod_set_user_exp(selectedPlayer[id], -cod_get_user_exp(selectedPlayer[id]) + cod_get_level_exp(amount - 1));
 
-			cod_print_chat(id, "Ustawiles^x04 %i^x01 poziom graczowi^x03 %s^x01.", amount, playerName);
+			cod_print_chat(id, "You set level^x04 %i^x01 for player^x03 %s^x01.", amount, playerName);
 		} case ADD_LEVEL: {
 			cod_set_user_exp(selectedPlayer[id], cod_get_level_exp(cod_get_user_level(selectedPlayer[id]) + amount - 1) - cod_get_user_exp(selectedPlayer[id]));
 
-			cod_print_chat(id, "Dodales^x04 %i^x01 poziomow graczowi^x03 %s^x01.", amount, playerName);
+			cod_print_chat(id, "You added^x04 %i^x01 levels to player^x03 %s^x01.", amount, playerName);
 		} case ADD_EXP: {
 			cod_set_user_exp(selectedPlayer[id], amount);
 
-			cod_print_chat(id, "Dodales^x04 %i^x01 doswiadczenia graczowi^x03 %s^x01.", amount, playerName);
+			cod_print_chat(id, "You added^x04 %i^x01 experience to player^x03 %s^x01.", amount, playerName);
 		} case ADD_HONOR: {
 			cod_add_user_honor(selectedPlayer[id], amount);
 
-			cod_print_chat(id, "Dodales^x04 %i^x01 honoru graczowi^x03 %s^x01.", amount, playerName);
+			cod_print_chat(id, "You added^x04 %i^x01 honor to player^x03 %s^x01.", amount, playerName);
 		}
 	}
 

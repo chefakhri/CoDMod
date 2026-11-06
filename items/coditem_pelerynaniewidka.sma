@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Peleryna Niewidka"
-#define DESCRIPTION "Po uzyciu jestes niewidzialny do momentu zadania lub otrzymania obrazen"
+#define NAME        "Invisibility Cloak"
+#define DESCRIPTION "When used you are invisible until you deal or take damage"
 
 new itemUsed;
 
@@ -32,7 +32,7 @@ public cod_item_spawned(id, respawn)
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Peleryny mozesz uzyc tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You can use the Cloak only once per round!");
 
 		return COD_CONTINUE;
 	}

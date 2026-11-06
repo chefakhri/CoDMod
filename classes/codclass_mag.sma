@@ -7,9 +7,9 @@
 #define VERSION "1.1"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Mag"
-#define DESCRIPTION  "Ma latarke (E) naswietlajaca niewidzialnych. Na nozu regeneruje sobie 3 (+ int) HP co sekunde."
-#define FRACTION     "Podstawowe"
+#define NAME         "Mage"
+#define DESCRIPTION  "Has a flashlight (E) that reveals invisible players. Regenerates 3 (+int) HP per second with knife."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_AUG)|(1<<CSW_FIVESEVEN)
 #define HEALTH       0
 #define INTELLIGENCE 0

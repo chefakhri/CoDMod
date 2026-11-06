@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Kamuflarz"
-#define DESCRIPTION "Twoja widocznosc spada do %s procent"
+#define NAME        "Camouflage"
+#define DESCRIPTION "Your visibility drops to %s percent"
 #define RANDOM_MIN  25
 #define RANDOM_MAX  35
 #define UPGRADE_MIN -3

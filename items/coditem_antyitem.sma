@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Anty Item"
-#define DESCRIPTION "Po uzyciu mozesz zniszczyc item dowolnego gracza i swoj"
+#define NAME        "Anti Item"
+#define DESCRIPTION "When used, you can destroy any player's item along with your own"
 
 public plugin_init()
 {
@@ -17,7 +17,7 @@ public plugin_init()
 
 public cod_item_skill_used(id)
 {
-	new menuData[128], playerName[32], playerItem[64], playerId[3], playerItems, menu = menu_create("Wybierz \rGracza\w, ktoremu chcesz zniszczyc item:", "cod_item_skill_used_handle");
+	new menuData[128], playerName[32], playerItem[64], playerId[3], playerItems, menu = menu_create("Select the \rPlayer\w whose item you want to destroy:", "cod_item_skill_used_handle");
 
 	for (new i = 1; i <= MAX_PLAYERS; i++) {
 	    if (!is_user_connected(i) || !cod_get_user_item(i) || get_user_team(i) == get_user_team(id)) continue;
@@ -33,16 +33,16 @@ public cod_item_skill_used(id)
 	    playerItems++;
 	}
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	if (playerItems) {
 		menu_display(id, menu);
 	} else {
 		menu_destroy(menu);
 
-		cod_print_chat(id, "Zaden z przeciwnikow nie posiada przedmiotu!");
+		cod_print_chat(id, "None of the enemies has an item!");
 	}
 }
 
@@ -63,8 +63,8 @@ public cod_item_skill_used_handle(id, menu, item)
 	get_user_name(player, playerName, charsmax(playerName));
 	get_user_name(id, name, charsmax(name));
 
-	cod_print_chat(player, "^x03%s^x01 zniszczyl ci item!", name);
-	cod_print_chat(id, "Zniszczyles item graczowi^x03 %s^x01.", playerName);
+	cod_print_chat(player, "^x03%s^x01 destroyed your item!", name);
+	cod_print_chat(id, "You destroyed the item of^x03 %s^x01.", playerName);
 
 	cod_set_user_item(player);
 	cod_set_user_item(id);

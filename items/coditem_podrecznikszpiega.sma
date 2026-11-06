@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Podrecznik Szpiega"
-#define DESCRIPTION "Masz 1/%s szansy na natychmiastowe zabicie z HE"
+#define NAME        "Spy's Handbook"
+#define DESCRIPTION "You have a 1/%s chance to instantly kill with HE"
 #define RANDOM_MIN  3
 #define RANDOM_MAX  6
 

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Epicki Deagle"
-#define DESCRIPTION "Dostajesz Deagle, z ktorego masz 1/6 szansy na natychmiastowe zabicie i zadajesz +%s obrazen"
+#define NAME        "Epic Deagle"
+#define DESCRIPTION "You get a Deagle with a 1/6 chance to instantly kill and +%s damage"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  35
 #define UPGRADE_MIN -3

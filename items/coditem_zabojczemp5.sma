@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Zabojcze MP5"
-#define DESCRIPTION "Dostajesz MP5, z ktorego zadajesz +%s obrazen i masz 1/2 na uzupelnienie magazynka po zabiciu"
+#define NAME        "Deadly MP5"
+#define DESCRIPTION "You get an MP5 that deals +%s damage and a 1/2 chance to refill the magazine after a kill"
 #define RANDOM_MIN  7
 #define RANDOM_MAX  12
 #define UPGRADE_MIN -2

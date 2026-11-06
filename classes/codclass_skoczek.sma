@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Skoczek"
-#define DESCRIPTION  "Ma automatycznego BunnyHopa i dodatkowy skok."
-#define FRACTION     "Podstawowe"
+#define NAME         "Jumper"
+#define DESCRIPTION  "Has automatic BunnyHop and an extra jump."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_MAC10)|(1<<CSW_USP)
 #define HEALTH       0
 #define INTELLIGENCE 0

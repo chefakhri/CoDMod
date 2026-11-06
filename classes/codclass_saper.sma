@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Saper"
-#define DESCRIPTION  "Ma 2 miny i nieco zmniejszona grawitacje. Jest mniej widoczny z P90."
-#define FRACTION     "Podstawowe"
+#define NAME         "Sapper"
+#define DESCRIPTION  "Has 2 mines and slightly reduced gravity. Less visible while holding P90."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_P90)|(1<<CSW_FIVESEVEN)
 #define HEALTH       10
 #define INTELLIGENCE 0

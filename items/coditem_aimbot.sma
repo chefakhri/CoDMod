@@ -8,7 +8,7 @@
 #define AUTHOR "O'Zone"
 
 #define NAME        "Aimbot"
-#define DESCRIPTION "Po uzyciu itemu namierzona zostaje glowa najblizszego przeciwnika"
+#define DESCRIPTION "When used, locks onto the head of the nearest enemy"
 
 new itemLastUse[MAX_PLAYERS + 1], itemActive;
 
@@ -30,7 +30,7 @@ public cod_item_skill_used(id)
 	if (!get_bit(id, itemActive)) return;
 
 	if (itemLastUse[id] + 3.0 > get_gametime()) {
-		cod_show_hud(id, TYPE_HUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Aimbota mozesz uzyc raz na 3 sekundy!");
+		cod_show_hud(id, TYPE_HUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can use the Aimbot once every 3 seconds!");
 
 		return;
 	}
@@ -38,7 +38,7 @@ public cod_item_skill_used(id)
 	new target = get_nearest_player(id);
 
 	if (target) {
-		cod_show_hud(id, TYPE_HUD, 0, 255, 0, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Namierzono glowe przeciwnika!");
+		cod_show_hud(id, TYPE_HUD, 0, 255, 0, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Locked onto the enemy's head!");
 
 		new Float:headOrigin[3], Float:headAngles[3];
 
@@ -50,7 +50,7 @@ public cod_item_skill_used(id)
 
 		itemLastUse[id] = floatround(get_gametime());
 	} else {
-		cod_show_hud(id, TYPE_HUD, 255, 0, 0, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Wszyscy przeciwnicy sa zbyt daleko.");
+		cod_show_hud(id, TYPE_HUD, 255, 0, 0, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "All enemies are too far away.");
 	}
 }
 

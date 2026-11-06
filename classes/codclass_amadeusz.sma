@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Amadeusz"
-#define DESCRIPTION  "Dodatkowe 5 (+int) obrazenia z MP5. Posiada jedna rakiete."
-#define FRACTION     "Podstawowe"
+#define NAME         "Amadeus"
+#define DESCRIPTION  "Extra 5 (+int) damage with MP5. Has one rocket."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_MP5NAVY)|(1<<CSW_USP)
 #define HEALTH       10
 #define INTELLIGENCE 0

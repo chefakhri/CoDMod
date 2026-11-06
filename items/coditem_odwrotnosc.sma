@@ -5,8 +5,8 @@
 #define VERSION "1.1"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Odwrotnosc"
-#define DESCRIPTION "Po aktywacji przez %s sekund otrzymane obrazenia cie lecza."
+#define NAME        "Reversal"
+#define DESCRIPTION "When activated, for %s seconds damage taken heals you."
 #define RANDOM_MIN  3
 #define RANDOM_MAX  4
 
@@ -51,7 +51,7 @@ public cod_item_spawned(id, respawn)
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Odwrotnosci mozesz uzyc tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You can use Reversal only once per round!");
 
 		return;
 	}

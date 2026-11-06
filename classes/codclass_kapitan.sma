@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Kapitan"
-#define DESCRIPTION  "Jest odporny na 3 pociski w kazdej rundzie."
-#define FRACTION     "Podstawowe"
+#define NAME         "Captain"
+#define DESCRIPTION  "Is immune to 3 bullets every round."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_USP)
 #define HEALTH       20
 #define INTELLIGENCE 0

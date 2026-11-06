@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "MAC10 Ducha"
-#define DESCRIPTION "Dostajesz MAC10, z ktorym jestes niemal niewidzialny"
+#define NAME        "Ghost's MAC10"
+#define DESCRIPTION "You get a MAC10, with which you are almost invisible"
 
 public plugin_init()
 {

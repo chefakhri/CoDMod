@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Pierscien Zeusa"
-#define DESCRIPTION "Co runde masz %s pioruny"
+#define NAME        "Ring of Zeus"
+#define DESCRIPTION "You get %s lightning bolts every round"
 #define RANDOM_MIN  1
 #define RANDOM_MAX  3
 

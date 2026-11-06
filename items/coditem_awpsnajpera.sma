@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "AWP Snajpera"
-#define DESCRIPTION "Zadajesz %s (+int) procent obrazen z AWP"
+#define NAME        "Sniper's AWP"
+#define DESCRIPTION "You deal %s (+int) percent damage with AWP"
 #define RANDOM_MIN  150
 #define RANDOM_MAX  160
 #define UPGRADE_MIN -4

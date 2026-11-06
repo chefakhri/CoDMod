@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Policjant"
-#define DESCRIPTION  "Ma podwojny skok, 20 procent na zabicie z USP/Glocka, +20 obrazen z Deagle."
-#define FRACTION     "Podstawowe"
+#define NAME         "Policeman"
+#define DESCRIPTION  "Has a double jump, 20 percent chance to kill with USP/Glock, +20 damage with Deagle."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_USP)|(1<<CSW_GLOCK18)|(1<<CSW_DEAGLE)
 #define HEALTH       20
 #define INTELLIGENCE 0

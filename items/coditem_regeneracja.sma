@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Regeneracja"
-#define DESCRIPTION "Co 3 sekundy dostajesz %s HP"
+#define NAME        "Regeneration"
+#define DESCRIPTION "You get %s HP every 3 seconds"
 #define RANDOM_MIN  4
 #define RANDOM_MAX  6
 

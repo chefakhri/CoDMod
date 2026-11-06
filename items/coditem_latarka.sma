@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Latarka"
-#define DESCRIPTION "Masz latarke naswietlajaca wszystkich niewidzialnych graczy"
+#define NAME        "Flashlight"
+#define DESCRIPTION "You have a flashlight that reveals all invisible players"
 
 #define TASK_CHARGE  30293
 

@@ -7,7 +7,7 @@
 #define AUTHOR "O'Zone"
 
 #define NAME        "Support"
-#define DESCRIPTION "Osoby z twojej druzyny, znajdujace w poblizu, zadaja o %s procent wieksze obrazenia"
+#define DESCRIPTION "Nearby teammates deal %s percent more damage"
 #define RANDOM_MIN  30
 #define RANDOM_MAX  40
 #define UPGRADE_MIN -2

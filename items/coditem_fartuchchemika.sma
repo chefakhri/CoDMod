@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Fartuch Chemika"
-#define DESCRIPTION "Co runde dostajesz %s trucizny"
+#define NAME        "Chemist's Apron"
+#define DESCRIPTION "Every round you get %s poisons"
 #define RANDOM_MIN  1
 #define RANDOM_MAX  3
 

@@ -6,9 +6,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Grabiezca"
-#define DESCRIPTION  "Ma 25 procent szansy na kradziez itemu swojej ofiary. Pelny magazynek po zabiciu."
-#define FRACTION     "Podstawowe"
+#define NAME         "Plunderer"
+#define DESCRIPTION  "25 percent chance to steal the victim's item. Full magazine after a kill."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_FAMAS)|(1<<CSW_USP)
 #define HEALTH       10
 #define INTELLIGENCE 0
@@ -40,12 +40,12 @@ public show_question(id, victim)
 
 	num_to_str(victim, tempId, charsmax(tempId));
 
-	format(menuTitle, charsmax(menuTitle), "\yCzy chcesz ukrasc item: \r%s\y?", itemName);
+	format(menuTitle, charsmax(menuTitle), "\yDo you want to steal the item: \r%s\y?", itemName);
 
 	new menu = menu_create(menuTitle, "show_question_handle");
 
-	menu_additem(menu, "Tak", tempId);
-	menu_setprop(menu, MPROP_EXITNAME, "Nie");
+	menu_additem(menu, "Yes", tempId);
+	menu_setprop(menu, MPROP_EXITNAME, "No");
 
 	menu_display(id, menu);
 }
@@ -78,7 +78,7 @@ public show_question_handle(id, menu, item)
 
 	get_user_name(id, thiefName, charsmax(thiefName));
 
-	cod_print_chat(victim, "Twoj item zostal skradziony przez^x03 %s^x01.", thiefName);
+	cod_print_chat(victim, "Your item was stolen by^x03 %s^x01.", thiefName);
 
 	cod_set_user_item(victim);
 	cod_set_user_item(id, item, itemValue, true);

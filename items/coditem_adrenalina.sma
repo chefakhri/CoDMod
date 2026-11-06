@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Adrenalina"
-#define DESCRIPTION "Za kazdego fraga dostajesz +%s HP"
+#define NAME        "Adrenaline"
+#define DESCRIPTION "You get +%s HP for every frag"
 #define RANDOM_MIN  40
 #define RANDOM_MAX  60
 #define UPGRADE_MIN -3

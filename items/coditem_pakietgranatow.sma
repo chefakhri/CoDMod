@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Pakiet Granatow"
-#define DESCRIPTION "Dostajesz pelny zestaw granatow"
+#define NAME        "Grenade Pack"
+#define DESCRIPTION "You get a full set of grenades"
 
 public plugin_init()
 {

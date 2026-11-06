@@ -20,7 +20,7 @@ public plugin_init()
 
 	vault = nvault_open("cod_free_honor");
 
-	if (vault == INVALID_HANDLE) set_fail_state("[COD] Nie mozna otworzyc pliku cod_free_honor.vault");
+	if (vault == INVALID_HANDLE) set_fail_state("[COD] Unable to open file cod_free_honor.vault");
 }
 
 public receive_honor(id)
@@ -28,14 +28,14 @@ public receive_honor(id)
 	if (!get_bit(id, loaded)) return PLUGIN_HANDLED;
 
 	if (!get_bit(id, received)) {
-		cod_print_chat(id, "Otrzymales za darmo^x03 %i honoru^x01, milej gry!", cvarFreeHonor);
+		cod_print_chat(id, "You received^x03 %i honor^x01 for free, have fun!", cvarFreeHonor);
 
 		cod_add_user_honor(id, cvarFreeHonor);
 
 		set_bit(id, received);
 
 		save(id);
-	} else cod_print_chat(id, "Juz odebrales swoj^x03 darmowy honor^x01!");
+	} else cod_print_chat(id, "You have already claimed your^x03 free honor^x01!");
 
 	return PLUGIN_HANDLED;
 }

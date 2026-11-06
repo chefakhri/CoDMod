@@ -37,7 +37,7 @@ public plugin_precache()
 	get_localinfo("amxx_configsdir", file, charsmax(file));
 	format(file, charsmax(file), "%s/cod_skins.ini", file);
 
-	if (!file_exists(file)) set_fail_state("[CoD Skins] Brak pliku cod_skins.ini!");
+	if (!file_exists(file)) set_fail_state("[CoD Skins] Missing file cod_skins.ini!");
 
 	new skin[skinsInfo], lineData[256], tempValue[3][128], bool:error, fileOpen = fopen(file, "r");
 
@@ -64,7 +64,7 @@ public plugin_precache()
 			skin[SKIN_PRICE] = str_to_num(tempValue[2]);
 
 			if (!file_exists(skin[SKIN_MODEL])) {
-				cod_log_error(PLUGIN, "Plik %s nie istnieje!", skin[SKIN_MODEL]);
+				cod_log_error(PLUGIN, "File %s does not exist!", skin[SKIN_MODEL]);
 
 				error = true;
 			} else precache_model(skin[SKIN_MODEL]);
@@ -75,9 +75,9 @@ public plugin_precache()
 
 	fclose(fileOpen);
 
-	if (error) set_fail_state("[CoD Skins] Nie zaladowano wszystkich skinow. Sprawdz logi bledow!");
+	if (error) set_fail_state("[CoD Skins] Not all skins were loaded. Check the error logs!");
 
-	if (!ArraySize(skins)) set_fail_state("[CoD Skins] Nie zaladowano zadnego skina. Sprawdz plik konfiguracyjny cod_skins.ini!");
+	if (!ArraySize(skins)) set_fail_state("[CoD Skins] No skins were loaded. Check the cod_skins.ini config file!");
 
 	for (new i = 1; i <= MAX_PLAYERS; i++) playerSkins[i] = ArrayCreate();
 }
@@ -86,7 +86,7 @@ public plugin_cfg()
 {
 	sql_init();
 
-	log_amx("Zaladowano %i skinow dla %i broni.", ArraySize(skins), ArraySize(weapons));
+	log_amx("Loaded %i skins for %i weapons.", ArraySize(skins), ArraySize(weapons));
 }
 
 public plugin_end()
@@ -152,19 +152,19 @@ public skins_menu(id)
 	if (!cod_check_account(id)) return PLUGIN_HANDLED;
 
 	if (!get_bit(id, loaded)) {
-		cod_print_chat(id, "Trwa ladowanie twoich skinow...");
+		cod_print_chat(id, "Loading your skins...");
 
 		return PLUGIN_HANDLED;
 	}
 
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new menu = menu_create("\yMenu \rSkinow\w:", "skins_menu_handle");
+	new menu = menu_create("\ySkins \rMenu\w:", "skins_menu_handle");
 
-	menu_additem(menu, "\wUstaw \ySkin");
-	menu_additem(menu, "\wKup \ySkin");
+	menu_additem(menu, "\wSet \ySkin");
+	menu_additem(menu, "\wBuy \ySkin");
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -194,7 +194,7 @@ public choose_weapon_menu(id, type)
 {
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new menuData[32], tempType[2], menu = menu_create("\yWybierz \rBron\w:", "choose_weapon_menu_handle");
+	new menuData[32], tempType[2], menu = menu_create("\ySelect \rWeapon\w:", "choose_weapon_menu_handle");
 
 	num_to_str(type, tempType, charsmax(tempType));
 
@@ -204,9 +204,9 @@ public choose_weapon_menu(id, type)
 		menu_additem(menu, menuData, tempType);
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Wroc");
-	menu_setprop(menu, MPROP_NEXTNAME, "Dalej");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -243,11 +243,11 @@ public choose_weapon_menu_handle(id, menu, item)
 
 public set_weapon_skin(id, weapon[])
 {
-	new menuData[MAX_NAME], skin[skinsInfo], tempId[5], count, menu = menu_create("\yWybierz \rSkin\w:", "set_weapon_skin_handle");
+	new menuData[MAX_NAME], skin[skinsInfo], tempId[5], count, menu = menu_create("\ySelect \rSkin\w:", "set_weapon_skin_handle");
 
 	num_to_str(NONE, tempId, charsmax(tempId));
 
-	menu_additem(menu, "Domyslny", tempId);
+	menu_additem(menu, "Default", tempId);
 
 	playerData[id][TEMP] = get_weapon_id(weapon);
 
@@ -265,12 +265,12 @@ public set_weapon_skin(id, weapon[])
 		}
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Wroc");
-	menu_setprop(menu, MPROP_NEXTNAME, "Dalej");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	if (!count) {
-		cod_print_chat(id, "Nie posiadasz^x03 zadnych^x01 skinow tej broni.");
+		cod_print_chat(id, "You don't have^x03 any^x01 skins for this weapon.");
 
 		menu_destroy(menu);
 	} else menu_display(id, menu);
@@ -309,7 +309,7 @@ public set_weapon_skin_handle(id, menu, item)
 
 		set_active_skin(id, skin[SKIN_WEAPON], skin[SKIN_NAME]);
 
-		cod_print_chat(id, "Twoj nowy skin broni^x03 %s^x01 to^x03 %s^x01.", skin[SKIN_WEAPON], skin[SKIN_NAME]);
+		cod_print_chat(id, "Your new^x03 %s^x01 skin is^x03 %s^x01.", skin[SKIN_WEAPON], skin[SKIN_NAME]);
 	} else {
 		new weaponName[32];
 
@@ -321,7 +321,7 @@ public set_weapon_skin_handle(id, menu, item)
 
 		reset_skin(id);
 
-		cod_print_chat(id, "Przywrociles domyslny skin broni^x03 %s^x01.", weaponName);
+		cod_print_chat(id, "You restored the default^x03 %s^x01 skin.", weaponName);
 	}
 
 	change_skin(id, playerData[id][WEAPON]);
@@ -331,7 +331,7 @@ public set_weapon_skin_handle(id, menu, item)
 
 public buy_weapon_skin(id, weapon[])
 {
-	new menuData[96], skin[skinsInfo], tempId[5], count, menu = menu_create("\yWybierz \rSkin\w:", "buy_weapon_skin_handle");
+	new menuData[96], skin[skinsInfo], tempId[5], count, menu = menu_create("\ySelect \rSkin\w:", "buy_weapon_skin_handle");
 
 	for (new i = 0; i < ArraySize(skins); i++) {
 		ArrayGetArray(skins, i, skin);
@@ -341,7 +341,7 @@ public buy_weapon_skin(id, weapon[])
 
 			num_to_str(i, tempId, charsmax(tempId));
 
-			formatex(menuData, charsmax(menuData), "\y%s \w- \r%i Honoru", skin[SKIN_NAME], skin[SKIN_PRICE])
+			formatex(menuData, charsmax(menuData), "\y%s \w- \r%i Honor", skin[SKIN_NAME], skin[SKIN_PRICE])
 
 			menu_additem(menu, menuData, tempId);
 
@@ -349,12 +349,12 @@ public buy_weapon_skin(id, weapon[])
 		}
 	}
 
-	menu_setprop(menu, MPROP_BACKNAME, "Wroc");
-	menu_setprop(menu, MPROP_NEXTNAME, "Dalej");
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	if (!count) {
-		cod_print_chat(id, "Nie ma^x03 zadnych^x01 skinow tej broni mozliwych dla ciebie do kupienia.");
+		cod_print_chat(id, "There are^x03 no^x01 skins for this weapon available for you to buy.");
 
 		menu_destroy(menu);
 	} else menu_display(id, menu);
@@ -383,7 +383,7 @@ public buy_weapon_skin_handle(id, menu, item)
 	menu_destroy(menu);
 
 	if (has_skin(id, skinId)) {
-		cod_print_chat(id, "Juz posiadasz tego skina!");
+		cod_print_chat(id, "You already own this skin!");
 
 		return PLUGIN_HANDLED;
 	}
@@ -401,15 +401,15 @@ public buy_weapon_skin_confirm(id)
 
 	ArrayGetArray(skins, playerData[id][TEMP], skin);
 
-	formatex(menuData, charsmax(menuData), "\yPotwierdzenie \rzakupu^n\wCzy na pewno chcesz \ykupic\w tego skina?^nBron: \y%s\w^nNazwa: \y%s\w^nCena: \y%i Honoru", skin[SKIN_WEAPON], skin[SKIN_NAME], skin[SKIN_PRICE]);
+	formatex(menuData, charsmax(menuData), "\yPurchase \rConfirmation^n\wAre you sure you want to \ybuy\w this skin?^nWeapon: \y%s\w^nName: \y%s\w^nPrice: \y%i Honor", skin[SKIN_WEAPON], skin[SKIN_NAME], skin[SKIN_PRICE]);
 
 	new menu = menu_create(menuData, "buy_weapon_skin_confirm_handle");
 
-	menu_additem(menu, "\yWyprobuj");
-	menu_additem(menu, "\rKup^n");
-	menu_additem(menu, "Wroc");
+	menu_additem(menu, "\yTry It");
+	menu_additem(menu, "\rBuy^n");
+	menu_additem(menu, "Back");
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -431,7 +431,7 @@ public buy_weapon_skin_confirm_handle(id, menu, item)
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
 	if (has_skin(id, playerData[id][TEMP])) {
-		cod_print_chat(id, "Juz posiadasz tego skina!");
+		cod_print_chat(id, "You already own this skin!");
 
 		return PLUGIN_HANDLED;
 	}
@@ -455,7 +455,7 @@ public buy_weapon_skin_confirm_handle(id, menu, item)
 			return PLUGIN_HANDLED;
 		} case 1: {
 			if (cod_get_user_honor(id) < skin[SKIN_PRICE]) {
-				cod_print_chat(id, "Nie masz wystarczajacej ilosci^x03 honoru^x01.");
+				cod_print_chat(id, "You don't have enough^x03 honor^x01.");
 
 				return PLUGIN_HANDLED;
 			}
@@ -474,7 +474,7 @@ public buy_weapon_skin_confirm_handle(id, menu, item)
 
 			ArrayPushCell(playerSkins[id], playerData[id][TEMP]);
 
-			cod_print_chat(id, "Pomyslnie zakupiles skin^x03 %s^x01 do broni^x03 %s^x01.", skin[SKIN_NAME], skin[SKIN_WEAPON]);
+			cod_print_chat(id, "You successfully bought the^x03 %s^x01 skin for^x03 %s^x01.", skin[SKIN_NAME], skin[SKIN_WEAPON]);
 		} case 2: {
 			choose_weapon_menu(id, 1);
 		}
@@ -527,7 +527,7 @@ public show_countdown(id)
 		return;
 	}
 
-	client_print(id, print_center, "Skin zostanie zresetowany za %0.1fs", currentTime);
+	client_print(id, print_center, "Skin will be reset in %0.1fs", currentTime);
 }
 
 public reset_skin(id)

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Plecak Medyka"
-#define DESCRIPTION "Co runde dostajesz %s apteczki"
+#define NAME        "Medic's Backpack"
+#define DESCRIPTION "Every round you get %s medkits"
 #define RANDOM_MIN  1
 #define RANDOM_MAX  3
 

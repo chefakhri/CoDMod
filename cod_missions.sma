@@ -6,19 +6,19 @@
 #define VERSION "1.3.1"
 #define AUTHOR "O'Zone"
 
-new const commandMission[][] = { "misje", "say /quest", "say_team /quest", "say /misja", "say_team /misja", "say /misje", "say_team /misje", "say /questy", "say_team /questy" };
+new const commandMission[][] = { "misje", "say /quest", "say_team /quest", "say /misja", "say_team /misja", "say /misje", "say_team /misje", "say /missions", "say_team /missions", "say /mission", "say_team /mission", "say /questy", "say_team /questy" };
 new const commandProgress[][] = { "postep", "say /progress", "say_team /progress", "say /progres", "say_team /progres", "say /postep", "say_team /postep" };
-new const commandEnd[][] = { "przerwij", "say /koniec", "say_team /koniec", "say /zakoncz", "say_team /zakoncz", "zakoncz", "say_team /przerwij", "say /przerwij" };
+new const commandEnd[][] = { "przerwij", "say /koniec", "say_team /koniec", "say /zakoncz", "say_team /zakoncz", "zakoncz", "say_team /przerwij", "say /przerwij", "say /abandon", "say_team /abandon" };
 new const missionDescription[][] = {
-	"Brak misji %i",
-	"Musisz zabic jeszcze %i osob",
-	"Musisz zabic jeszcze %i osob headshotem",
-	"Musisz podlozyc bombe jeszcze %i razy",
-	"Musisz rozbroic bombe jeszcze %i razy",
-	"Musisz uratowac jeszcze %i hostow",
-	"Musisz zadac jeszcze %i obrazen",
-	"Musisz zabic klase %s jeszcze %i razy",
-	"Musisz znalezc item %s jeszcze %i razy"
+	"No mission %i",
+	"You still need to kill %i players",
+	"You still need to kill %i players with a headshot",
+	"You still need to plant the bomb %i more times",
+	"You still need to defuse the bomb %i more times",
+	"You still need to rescue %i more hostages",
+	"You still need to deal %i more damage",
+	"You still need to kill the %s class %i more times",
+	"You still need to find the %s item %i more times"
 };
 
 enum _:missionType { TYPE_NONE, TYPE_KILL, TYPE_HEADSHOT, TYPE_PLANT, TYPE_DEFUSE, TYPE_RESCUE, TYPE_DAMAGE, TYPE_CLASS, TYPE_ITEM };
@@ -41,7 +41,7 @@ public plugin_init()
 
 	missions = nvault_open("cod_missions");
 
-	if (missions == INVALID_HANDLE) set_fail_state("Nie mozna otworzyc pliku cod_missions.vault");
+	if (missions == INVALID_HANDLE) set_fail_state("Unable to open file cod_missions.vault");
 
 	codChapters = ArrayCreate(chapterInfo);
 	codMissions = ArrayCreate(missionInfo);
@@ -65,7 +65,7 @@ public plugin_cfg()
 	if (!file_exists(filePath)) {
 		new error[128];
 
-		formatex(error, charsmax(error), "[CoD Missions] Nie mozna znalezc pliku cod_missions.ini w lokalizacji %s.", filePath);
+		formatex(error, charsmax(error), "[CoD Missions] Unable to find file cod_missions.ini at location %s.", filePath);
 
 		set_fail_state(error);
 	}
@@ -110,8 +110,8 @@ public plugin_cfg()
 
 	fclose(file);
 
-	if (!ArraySize(codChapters)) set_fail_state("[CoD Missions] Nie zaladowano zadnego rozdzialu. Sprawdz plik konfiguracyjny cod_missions.ini!");
-	if (!ArraySize(codMissions)) set_fail_state("[CoD Missions] Nie zaladowano zadnej misji. Sprawdz plik konfiguracyjny cod_missions.ini!");
+	if (!ArraySize(codChapters)) set_fail_state("[CoD Missions] No chapters were loaded. Check the cod_missions.ini config file!");
+	if (!ArraySize(codMissions)) set_fail_state("[CoD Missions] No missions were loaded. Check the cod_missions.ini config file!");
 }
 
 public plugin_end()
@@ -151,16 +151,16 @@ public mission_menu(id)
 
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new menu = menu_create("\yMenu \rMisji\w:", "mission_menu_handle"), callback = menu_makecallback("mission_menu_callback");
+	new menu = menu_create("\yMissions \rMenu\w:", "mission_menu_handle"), callback = menu_makecallback("mission_menu_callback");
 
-	menu_additem(menu, "Wybierz \yMisje", _, _, callback);
-	menu_additem(menu, "Przerwij \yMisje", _, _, callback);
-	menu_additem(menu, "Postep \yMisji", _, _, callback);
+	menu_additem(menu, "Select \yMission", _, _, callback);
+	menu_additem(menu, "Abandon \yMission", _, _, callback);
+	menu_additem(menu, "Mission \yProgress", _, _, callback);
 
-	menu_addtext(menu, "^n\wPo wykonaniu \ymisji\w zostaniesz wynagrodzony \rdoswiadczeniem\w.", 0);
-	menu_addtext(menu, "\wMozesz \ywielokrotnie\w wykonywac ta sama misje.", 0);
+	menu_addtext(menu, "^n\wAfter completing a \ymission\w you will be rewarded with \rexperience\w.", 0);
+	menu_addtext(menu, "\wYou can complete the same mission \ymultiple times\w.", 0);
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 
@@ -205,22 +205,22 @@ public select_chapter(id)
 	if (!is_user_connected(id)) return PLUGIN_HANDLED;
 
 	if (playerData[id][PLAYER_TYPE]) {
-		cod_print_chat(id, "Najpierw wykonaj lub zrezygnuj z obecnej misji.");
+		cod_print_chat(id, "First complete or abandon your current mission.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	new menuData[128], codChapter[chapterInfo], menu = menu_create("\yWybierz \rRozdzial\w:", "select_mission"), callback = menu_makecallback("select_chapter_callback");
+	new menuData[128], codChapter[chapterInfo], menu = menu_create("\ySelect \rChapter\w:", "select_mission"), callback = menu_makecallback("select_chapter_callback");
 
 	for (new i = 0; i < ArraySize(codChapters); i++) {
 		ArrayGetArray(codChapters, i, codChapter);
 
-		formatex(menuData, charsmax(menuData), "Rozdzial \y%s \w(\r%i \wPoziom - \r%i \wPoziom)", codChapter[CHAPTER_NAME], codChapter[CHAPTER_START], codChapter[CHAPTER_END]);
+		formatex(menuData, charsmax(menuData), "Chapter \y%s \w(\rLevel %i \w- \rLevel %i\w)", codChapter[CHAPTER_NAME], codChapter[CHAPTER_START], codChapter[CHAPTER_END]);
 
 		menu_additem(menu, menuData, _, _, callback);
 	}
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu, 0);
 
@@ -256,21 +256,21 @@ public select_mission(id, menu, item)
 
 	menu_destroy(menu);
 
-	new menuData[128], missionId[6], codMission[missionInfo], menu = menu_create("\yWybierz \rMisje\w:", "select_mission_handle");
+	new menuData[128], missionId[6], codMission[missionInfo], menu = menu_create("\ySelect \rMission\w:", "select_mission_handle");
 
 	for (new i = 0; i < ArraySize(codMissions); i++) {
 		ArrayGetArray(codMissions, i, codMission);
 
 		if (playerData[id][PLAYER_CHAPTER] == codMission[MISSION_CHAPTER]) {
 			switch (codMission[MISSION_TYPE]) {
-				case TYPE_KILL: formatex(menuData, charsmax(menuData), "Zabij %i osob \y(Nagroda: %i Expa)", codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_HEADSHOT: formatex(menuData, charsmax(menuData), "Zabij %i osob z HS \y(Nagroda: %i Expa)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_PLANT: formatex(menuData, charsmax(menuData), "Podloz %i bomb \y(Nagroda: %i Expa)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_RESCUE: formatex(menuData, charsmax(menuData), "Uratuj %i razy hosty \y(Nagroda: %i Expa)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_DEFUSE: formatex(menuData, charsmax(menuData), "Rozbroj %i bomb \y(Nagroda: %i Expa)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_DAMAGE: formatex(menuData, charsmax(menuData), "Zadaj %i obrazen \y(Nagroda: %i Expa)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_CLASS: formatex(menuData, charsmax(menuData), "Zabij %i razy wybrana klase \y(Nagroda: %i Expa)", codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
-				case TYPE_ITEM: formatex(menuData, charsmax(menuData), "Znajdz %i razy wybrany item \y(Nagroda: %i Expa)", codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_KILL: formatex(menuData, charsmax(menuData), "Kill %i players \y(Reward: %i Exp)", codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_HEADSHOT: formatex(menuData, charsmax(menuData), "Kill %i players with HS \y(Reward: %i Exp)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_PLANT: formatex(menuData, charsmax(menuData), "Plant %i bombs \y(Reward: %i Exp)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_RESCUE: formatex(menuData, charsmax(menuData), "Rescue hostages %i times \y(Reward: %i Exp)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_DEFUSE: formatex(menuData, charsmax(menuData), "Defuse %i bombs \y(Reward: %i Exp)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_DAMAGE: formatex(menuData, charsmax(menuData), "Deal %i damage \y(Reward: %i Exp)",  codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_CLASS: formatex(menuData, charsmax(menuData), "Kill a chosen class %i times \y(Reward: %i Exp)", codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
+				case TYPE_ITEM: formatex(menuData, charsmax(menuData), "Find a chosen item %i times \y(Reward: %i Exp)", codMission[MISSION_AMOUNT], codMission[MISSION_REWARD]);
 				case TYPE_NONE: continue;
 			}
 
@@ -280,9 +280,9 @@ public select_mission(id, menu, item)
 		}
 	}
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -316,7 +316,7 @@ public select_mission_handle(id, menu, item)
 		case TYPE_CLASS: select_class(id);
 		case TYPE_ITEM: select_item(id);
 		default: {
-			cod_print_chat(id, "Rozpoczales wykonywac^x03 misje^x01. Powodzenia!");
+			cod_print_chat(id, "You have started a^x03 mission^x01. Good luck!");
 
 			save_mission(id);
 		}
@@ -331,7 +331,7 @@ public select_class(id)
 {
 	if (!is_user_connected(id)) return PLUGIN_HANDLED;
 
-	new menuData[128], className[MAX_NAME], classId[6], menu = menu_create("\yWybierz \rKlase \ydo \yMisji\w:", "select_handle");
+	new menuData[128], className[MAX_NAME], classId[6], menu = menu_create("\ySelect \rClass \yfor \yMission\w:", "select_handle");
 
 	for (new i = 1; i < cod_get_classes_num(); i++) {
 		cod_get_class_name(i, _, className, charsmax(className));
@@ -344,8 +344,8 @@ public select_class(id)
 	}
 
 	menu_setprop(menu, MPROP_EXIT, MEXIT_NEVER);
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -356,7 +356,7 @@ public select_item(id)
 {
 	if (!is_user_connected(id)) return PLUGIN_HANDLED;
 
-	new menuData[128], itemName[MAX_NAME], itemId[6], menu = menu_create("\yWybierz \rItem \ydo \yMisji\w:", "select_handle");
+	new menuData[128], itemName[MAX_NAME], itemId[6], menu = menu_create("\ySelect \rItem \yfor \yMission\w:", "select_handle");
 
 	for (new i = 1; i <= cod_get_items_num(); i++) {
 		cod_get_item_name(i, itemName, charsmax(itemName));
@@ -369,8 +369,8 @@ public select_item(id)
 	}
 
 	menu_setprop(menu, MPROP_EXIT, MEXIT_NEVER);
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -397,7 +397,7 @@ public select_handle(id, menu, item)
 
 	playerData[id][PLAYER_ADDITIONAL] = str_to_num(missionData);
 
-	cod_print_chat(id, "Rozpoczales wykonywac^x03 misje^x01. Powodzenia!");
+	cod_print_chat(id, "You have started a^x03 mission^x01. Good luck!");
 
 	save_mission(id);
 
@@ -440,14 +440,14 @@ public give_reward(id)
 
 	reset_mission(id, 0, 1);
 
-	cod_print_chat(id, "Gratulacje! Ukonczyles swoja misje - otrzymujesz w nagrode^x03 %i^x01 doswiadczenia.", reward);
+	cod_print_chat(id, "Congratulations! You completed your mission - you are rewarded with^x03 %i^x01 experience.", reward);
 
 	return PLUGIN_HANDLED;
 }
 
 public check_mission(id)
 {
-	if (!playerData[id][PLAYER_TYPE]) cod_print_chat(id, "Nie wykonujesz zadnej misji.");
+	if (!playerData[id][PLAYER_TYPE]) cod_print_chat(id, "You are not doing any mission.");
 	else {
 		new message[128], additional[MAX_NAME], codChapter[chapterInfo];
 
@@ -459,8 +459,8 @@ public check_mission(id)
 		if (additional[0]) formatex(message, charsmax(message), missionDescription[playerData[id][PLAYER_TYPE]], additional, (get_progress_need(id) - get_progress(id)));
 		else formatex(message, charsmax(message), missionDescription[playerData[id][PLAYER_TYPE]], (get_progress_need(id) - get_progress(id)));
 
-		cod_print_chat(id, "Rozdzial:^x03 %s^x01. Postep:^x03 %i/%i^x01.", codChapter[CHAPTER_NAME], get_progress(id), get_progress_need(id));
-		cod_print_chat(id, "Misja:^x03 %s^x01.", message);
+		cod_print_chat(id, "Chapter:^x03 %s^x01. Progress:^x03 %i/%i^x01.", codChapter[CHAPTER_NAME], get_progress(id), get_progress_need(id));
+		cod_print_chat(id, "Mission:^x03 %s^x01.", message);
 	}
 
 	return PLUGIN_HANDLED;
@@ -533,7 +533,7 @@ public reset_mission(id, data, silent)
 	playerData[id][PLAYER_PROGRESS] = 0;
 
 	if (!data) save_mission(id);
-	if (!silent) cod_print_chat(id, "Zrezygnowales z wykonywania wybranej wczesniej^x03 misji^x01.");
+	if (!silent) cod_print_chat(id, "You abandoned your previously selected^x03 mission^x01.");
 }
 
 stock get_mission_info(mission, info)

@@ -9,19 +9,19 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf8">
 	</head>
 	<body>
-		<center><br><font size="2" color="#E0A518"><b>VIP posiada :</b></font><br>
+		<center><br><font size="2" color="#E0A518"><b>VIP includes:</b></font><br>
 			<font size="1">
-			* 1 HE co rundę<br>
-			* 2 Flashe co rundę<br>
-			* 1 Smoke co rundę<br>
-			* O 50% więcej zdobywanego Honoru<br>
-			* O 25% więcej zdobywanego Expa<br>
-			* O 5% zwiększone zadawane obrażenia<br>
-			* Specjalny noz dodajacy po 4 punkty do kazdej ze statystyk<br>
-			* Dodatkowe życie za zabójstwo ( 15HP - z HeadShotem | 10HP - Normalne )<br>
-			* Dodatkowy exp za zabójstwo ( 15HP - z HeadShotem | 10HP - Normalne )<br>
-			* Prefix [VIP] w czacie<br>
-			* Status VIP w tabeli punktów<br>
-			* VIP widoczny na liście /vips<br>
+			* 1 HE every round<br>
+			* 2 Flashbangs every round<br>
+			* 1 Smoke every round<br>
+			* 50% more Honor earned<br>
+			* 25% more Exp earned<br>
+			* 5% more damage dealt<br>
+			* Special knife that adds 4 points to every stat<br>
+			* Extra health per kill ( 15HP - HeadShot | 10HP - Normal )<br>
+			* Extra exp per kill ( 15HP - HeadShot | 10HP - Normal )<br>
+			* [VIP] prefix in chat<br>
+			* VIP status on the scoreboard<br>
+			* Listed in /vips<br>
 		</font><center>
 </body>

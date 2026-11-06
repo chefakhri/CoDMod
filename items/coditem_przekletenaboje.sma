@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Przeklete Naboje"
-#define DESCRIPTION "Masz 1/%s szansy na wyrzucenie przeciwnika w powietrze przy trafieniu"
+#define NAME        "Cursed Bullets"
+#define DESCRIPTION "You have a 1/%s chance to launch the enemy into the air on hit"
 #define RANDOM_MIN  6
 #define RANDOM_MAX  9
 #define VALUE_MIN   3

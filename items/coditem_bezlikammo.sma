@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Bezlik Amunicji"
-#define DESCRIPTION "Twoja amunicja sie nie konczy"
+#define NAME        "Endless Ammo"
+#define DESCRIPTION "Your ammo never runs out"
 
 public plugin_init()
 {

@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Szybkostrzelnosc"
-#define DESCRIPTION "Masz o %s procent wieksza szybkostrzelnosc"
+#define NAME        "Rapid Fire"
+#define DESCRIPTION "You have %s percent faster fire rate"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  40
 #define UPGRADE_MIN -3

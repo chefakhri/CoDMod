@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Promien Slonca"
-#define DESCRIPTION "Masz 1/%s szansy na oslepienie przeciwnika przy trafieniu"
+#define NAME        "Sunbeam"
+#define DESCRIPTION "You have a 1/%s chance to blind the enemy on hit"
 #define RANDOM_MIN  5
 #define RANDOM_MAX  7
 #define VALUE_MIN 2

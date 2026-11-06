@@ -6,8 +6,8 @@
 #define AUTHOR "O'Zone"
 
 #define NAME         "Bomberman"
-#define DESCRIPTION  "Ma 50 procent grawitacji, 2 smoki i 2 dynamity, ktore moze podkladac i detonowac."
-#define FRACTION     "Podstawowe"
+#define DESCRIPTION  "Has 50 percent gravity, 2 smokes and 2 dynamites that he can plant and detonate."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_UMP45)|(1<<CSW_FIVESEVEN)|(1<<CSW_FLASHBANG)
 #define HEALTH       10
 #define INTELLIGENCE 0

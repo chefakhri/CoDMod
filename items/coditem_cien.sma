@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Cien"
-#define DESCRIPTION "Jestes calkowicie niewidzialny, ale masz tylko 1 HP"
+#define NAME        "Shadow"
+#define DESCRIPTION "You are completely invisible, but you only have 1 HP"
 
 #define TASK_HEALTH 98372
 
@@ -25,7 +25,7 @@ public cod_item_check(id)
 
 	cod_get_user_class_name(id, className, charsmax(className));
 
-	if (contain(className, "Komandos") != -1) {
+	if (contain(className, "Commando") != -1) {
 		return COD_STOP;
 	}
 

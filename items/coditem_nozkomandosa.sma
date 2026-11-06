@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Noz Komandosa"
-#define DESCRIPTION "Natychmiastowe zabicie z noza (PPM)."
+#define NAME        "Commando's Knife"
+#define DESCRIPTION "Instant kill with knife (RMB)."
 
 public plugin_init()
 {

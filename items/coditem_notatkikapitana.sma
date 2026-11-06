@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Notatki Kapitana"
-#define DESCRIPTION "Masz 1/%s szansy na odbicie pocisku po trafieniu w ciebie"
+#define NAME        "Captain's Notes"
+#define DESCRIPTION "You have a 1/%s chance to reflect a bullet that hits you"
 #define RANDOM_MIN  2
 #define RANDOM_MAX  3
 #define VALUE_MAX   5

@@ -78,7 +78,7 @@ public plugin_init()
 
 	iconsVault = nvault_open("cod_icons");
 
-	if (iconsVault == INVALID_HANDLE) set_fail_state("[COD] Nie mozna otworzyc pliku cod_icons.vault");
+	if (iconsVault == INVALID_HANDLE) set_fail_state("[COD] Unable to open file cod_icons.vault");
 
 	for (new i; i < sizeof(commandIcons); i++) register_clcmd(commandIcons[i], "change_icons");
 
@@ -311,21 +311,21 @@ public change_icons(id, sound)
 
 	if (!sound) client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new menuData[64], menu = menu_create("\yUstawienia \rIkon\w:", "change_icons_handle");
+	new menuData[64], menu = menu_create("\yIcon \rSettings\w:", "change_icons_handle");
 
-	formatex(menuData, charsmax(menuData), "\wBomb \ySite \w[\r%s\w]", get_bit(id, iconBombSites) ? "Wlaczona" : "Wylaczona");
+	formatex(menuData, charsmax(menuData), "\wBomb \ySite \w[\r%s\w]", get_bit(id, iconBombSites) ? "On" : "Off");
 	menu_additem(menu, menuData);
 
-	formatex(menuData, charsmax(menuData), "\wWyrzucona \yBomba \w[\r%s\w]", get_bit(id, iconDropped) ? "Wlaczona" : "Wylaczona");
+	formatex(menuData, charsmax(menuData), "\wDropped \yBomb \w[\r%s\w]", get_bit(id, iconDropped) ? "On" : "Off");
 	menu_additem(menu, menuData);
 
-	formatex(menuData, charsmax(menuData), "\wPodlozona \yBomba \w[\r%s\w]", get_bit(id, iconPlanted) ? "Wlaczona" : "Wylaczona");
+	formatex(menuData, charsmax(menuData), "\wPlanted \yBomb \w[\r%s\w]", get_bit(id, iconPlanted) ? "On" : "Off");
 	menu_additem(menu, menuData);
 
-	formatex(menuData, charsmax(menuData), "\wBonusowa \ySkrzynka \w[\r%s\w]", get_bit(id, iconBox) ? "Wlaczona" : "Wylaczona");
+	formatex(menuData, charsmax(menuData), "\wBonus \yBox \w[\r%s\w]", get_bit(id, iconBox) ? "On" : "Off");
 	menu_additem(menu, menuData);
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
 
 	menu_display(id, menu);
 

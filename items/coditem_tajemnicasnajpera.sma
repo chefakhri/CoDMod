@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Tajemnica Snajpera"
-#define DESCRIPTION "Masz 50 procent szansy na natychmiastowe zabicie z AWP i dostajesz +%s sily"
+#define NAME        "Sniper's Secret"
+#define DESCRIPTION "You have a 50 percent chance to instantly kill with AWP and get +%s strength"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  30
 #define UPGRADE_MIN -3

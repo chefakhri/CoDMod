@@ -27,7 +27,7 @@ public plugin_init()
 	for (new i; i < sizeof commandRoulette; i++) register_clcmd(commandRoulette[i], "roulette_menu");
 	for (new i; i < sizeof commandCoinFlip; i++) register_clcmd(commandCoinFlip[i], "coinflip_menu");
 
-	register_clcmd("ZMIEN_STAWKE", "change_bid");
+	register_clcmd("CHANGE_BET", "change_bid");
 }
 
 public client_putinserver(id)
@@ -48,15 +48,15 @@ public casino_menu(id, sound)
 
 	if (!sound) client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new menu = menu_create("\yGry w \rKasynie\w:", "casino_menu_handle");
+	new menu = menu_create("\yCasino \rGames\w:", "casino_menu_handle");
 
-	menu_additem(menu, "\wKostka \y(/kostka)");
-	menu_additem(menu, "\wRuletka \y(/ruletka)");
-	menu_additem(menu, "\wRzut Moneta \y(/moneta)");
+	menu_additem(menu, "\wDice \y(/dice)");
+	menu_additem(menu, "\wRoulette \y(/roulette)");
+	menu_additem(menu, "\wCoin Flip \y(/coin)");
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -115,29 +115,29 @@ public dice_menu(id, number)
 			client_cmd(id, "spk %s", codSounds[SOUND_APPLAUSE])
 		} else client_cmd(id, "spk %s", codSounds[SOUND_LAUGH]);
 
-		formatex(menuData, charsmax(menuData), "\yGra w \rKostke\w:^n\wWylosowano \y%i \w- \r%s %i Honoru!\w", number, win ? "Wygrales" : "Przegrales", amount);
+		formatex(menuData, charsmax(menuData), "\yDice \rGame\w:^n\wRolled \y%i \w- \r%s %i Honor!\w", number, win ? "You won" : "You lost", amount);
 
 		menu = menu_create(menuData, "dice_menu_handle");
-	} else menu = menu_create("\yGra w \rKostke\w:", "dice_menu_handle");
+	} else menu = menu_create("\yDice \rGame\w:", "dice_menu_handle");
 
-	menu_additem(menu, "\wGraj^n");
+	menu_additem(menu, "\wPlay^n");
 
-	formatex(menuData, charsmax(menuData), "\wTyp \yGry \r[%s]", playerData[id][DICE][GAME_TYPE] == DICE_NORMAL ? "CYFRA" : "LOW/HIGH");
+	formatex(menuData, charsmax(menuData), "\wGame \yType \r[%s]", playerData[id][DICE][GAME_TYPE] == DICE_NORMAL ? "NUMBER" : "LOW/HIGH");
 	menu_additem(menu, menuData);
 
 	new diceNumber[2];
 
 	num_to_str(playerData[id][DICE][GAME_CHOICE], diceNumber, charsmax(diceNumber));
 
-	formatex(menuData, charsmax(menuData), "\wTwoj \yTyp \r[%s]", playerData[id][DICE][GAME_TYPE] == DICE_NORMAL ? diceNumber : (playerData[id][DICE][GAME_CHOICE] == DICE_LOW ? "LOW" : "HIGH"));
+	formatex(menuData, charsmax(menuData), "\wYour \yPick \r[%s]", playerData[id][DICE][GAME_TYPE] == DICE_NORMAL ? diceNumber : (playerData[id][DICE][GAME_CHOICE] == DICE_LOW ? "LOW" : "HIGH"));
 	menu_additem(menu, menuData);
 
-	formatex(menuData, charsmax(menuData), "\wTwoja \yStawka \r[%i]", playerData[id][DICE][GAME_BID]);
+	formatex(menuData, charsmax(menuData), "\wYour \yBet \r[%i]", playerData[id][DICE][GAME_BID]);
 	menu_additem(menu, menuData);
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -163,7 +163,7 @@ public dice_menu_handle(id, menu, item)
 	switch (item) {
 		case 0: {
 			if (cod_get_user_honor(id) < playerData[id][DICE][GAME_BID]) {
-				cod_print_chat(id, "Nie masz wystarczajaco^x03 honoru^x01, aby grac na tej stawce!");
+				cod_print_chat(id, "You don't have enough^x03 honor^x01 to play with this bet!");
 
 				return PLUGIN_HANDLED;
 			}
@@ -184,11 +184,11 @@ public dice_menu_handle(id, menu, item)
 
 			dice_menu(id, 0);
 		} case 3: {
-			cod_print_chat(id, "Wpisz nowa^x04 stawke^x01.");
+			cod_print_chat(id, "Enter a new^x04 bet^x01.");
 
-			cod_show_hud(id, TYPE_HUD, 255, 128, 0, 0.24, 0.07, 0, 0.0, 3.5, 0.0, 0.0, "Wpisz nowa stawke.");
+			cod_show_hud(id, TYPE_HUD, 255, 128, 0, 0.24, 0.07, 0, 0.0, 3.5, 0.0, 0.0, "Enter a new bet.");
 
-			client_cmd(id, "messagemode ZMIEN_STAWKE");
+			client_cmd(id, "messagemode CHANGE_BET");
 		}
 	}
 
@@ -222,22 +222,22 @@ public roulette_menu(id, number)
 			client_cmd(id, "spk %s", codSounds[SOUND_APPLAUSE])
 		} else client_cmd(id, "spk %s", codSounds[SOUND_LAUGH]);
 
-		formatex(menuData, charsmax(menuData), "\yGra w \rRuletke\w:^n\wWylosowano \y%i (%s) \w- \r%s %i Honoru!\w", number, number == 0 ? "Zielone" : (number > 7 ? "Czerwone" : "Czarne"), win ? "Wygrales" : "Przegrales", amount);
+		formatex(menuData, charsmax(menuData), "\yRoulette \rGame\w:^n\wRolled \y%i (%s) \w- \r%s %i Honor!\w", number, number == 0 ? "Green" : (number > 7 ? "Red" : "Black"), win ? "You won" : "You lost", amount);
 
 		menu = menu_create(menuData, "roulette_menu_handle");
-	} else menu = menu_create("\yGra w \rRuletke\w:", "roulette_menu_handle");
+	} else menu = menu_create("\yRoulette \rGame\w:", "roulette_menu_handle");
 
-	menu_additem(menu, "\wGraj^n");
+	menu_additem(menu, "\wPlay^n");
 
-	formatex(menuData, charsmax(menuData), "\wTwoj \yTyp \r[%s]", playerData[id][ROULETTE][GAME_CHOICE] == ROULETTE_GREEN ? "ZIELONE" : (playerData[id][ROULETTE][GAME_CHOICE] == ROULETTE_BLACK ? "CZARNE" : "CZERWONE"));
+	formatex(menuData, charsmax(menuData), "\wYour \yPick \r[%s]", playerData[id][ROULETTE][GAME_CHOICE] == ROULETTE_GREEN ? "GREEN" : (playerData[id][ROULETTE][GAME_CHOICE] == ROULETTE_BLACK ? "BLACK" : "RED"));
 	menu_additem(menu, menuData);
 
-	formatex(menuData, charsmax(menuData), "\wTwoja \yStawka \r[%i]", playerData[id][ROULETTE][GAME_BID]);
+	formatex(menuData, charsmax(menuData), "\wYour \yBet \r[%i]", playerData[id][ROULETTE][GAME_BID]);
 	menu_additem(menu, menuData);
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -263,7 +263,7 @@ public roulette_menu_handle(id, menu, item)
 	switch (item) {
 		case 0:  {
 			if (cod_get_user_honor(id) < playerData[id][ROULETTE][GAME_BID]) {
-				cod_print_chat(id, "Nie masz wystarczajaco^x03 honoru^x01, aby grac na tej stawce!");
+				cod_print_chat(id, "You don't have enough^x03 honor^x01 to play with this bet!");
 
 				return PLUGIN_HANDLED;
 			}
@@ -276,11 +276,11 @@ public roulette_menu_handle(id, menu, item)
 
 			roulette_menu(id, 0);
 		} case 2: {
-			cod_print_chat(id, "Wpisz nowa^x04 stawke^x01.");
+			cod_print_chat(id, "Enter a new^x04 bet^x01.");
 
-			cod_show_hud(id, TYPE_HUD, 255, 128, 0, 0.24, 0.07, 0, 0.0, 3.5, 0.0, 0.0, "Wpisz nowa stawke.");
+			cod_show_hud(id, TYPE_HUD, 255, 128, 0, 0.24, 0.07, 0, 0.0, 3.5, 0.0, 0.0, "Enter a new bet.");
 
-			client_cmd(id, "messagemode ZMIEN_STAWKE");
+			client_cmd(id, "messagemode CHANGE_BET");
 		}
 	}
 
@@ -310,22 +310,22 @@ public coinflip_menu(id, coinFlip)
 			client_cmd(id, "spk %s", codSounds[SOUND_APPLAUSE])
 		} else client_cmd(id, "spk %s", codSounds[SOUND_LAUGH]);
 
-		formatex(menuData, charsmax(menuData), "\yGra w \rMonete\w:^n\wWylosowano \y%s \w- \r%s %i Honoru!\w", coinFlip ? "Orzel" : "Reszka", win ? "Wygrales" : "Przegrales", amount);
+		formatex(menuData, charsmax(menuData), "\yCoin \rFlip\w:^n\wResult \y%s \w- \r%s %i Honor!\w", coinFlip ? "Heads" : "Tails", win ? "You won" : "You lost", amount);
 
 		menu = menu_create(menuData, "coinflip_menu_handle");
-	} else menu = menu_create("\yGra w \rMonete\w:", "coinflip_menu_handle");
+	} else menu = menu_create("\yCoin \rFlip\w:", "coinflip_menu_handle");
 
-	menu_additem(menu, "\wGraj^n");
+	menu_additem(menu, "\wPlay^n");
 
-	formatex(menuData, charsmax(menuData), "\wTwoj \yTyp \r[%s]", playerData[id][COINFLIP][GAME_CHOICE] ? "Orzel" : "Reszka");
+	formatex(menuData, charsmax(menuData), "\wYour \yPick \r[%s]", playerData[id][COINFLIP][GAME_CHOICE] ? "Heads" : "Tails");
 	menu_additem(menu, menuData);
 
-	formatex(menuData, charsmax(menuData), "\wTwoja \yStawka \r[%i]", playerData[id][COINFLIP][GAME_BID]);
+	formatex(menuData, charsmax(menuData), "\wYour \yBet \r[%i]", playerData[id][COINFLIP][GAME_BID]);
 	menu_additem(menu, menuData);
 
-	menu_setprop(menu, MPROP_EXITNAME, "Wyjscie");
-	menu_setprop(menu, MPROP_BACKNAME, "Poprzednie");
-	menu_setprop(menu, MPROP_NEXTNAME, "Nastepne");
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+	menu_setprop(menu, MPROP_BACKNAME, "Back");
+	menu_setprop(menu, MPROP_NEXTNAME, "Next");
 
 	menu_display(id, menu);
 
@@ -351,7 +351,7 @@ public coinflip_menu_handle(id, menu, item)
 	switch (item) {
 		case 0: {
 			if (cod_get_user_honor(id) < playerData[id][COINFLIP][GAME_BID]) {
-				cod_print_chat(id, "Nie masz wystarczajaco^x03 honoru^x01, aby grac na tej stawce!");
+				cod_print_chat(id, "You don't have enough^x03 honor^x01 to play with this bet!");
 
 				return PLUGIN_HANDLED;
 			}
@@ -365,11 +365,11 @@ public coinflip_menu_handle(id, menu, item)
 
 			coinflip_menu(id, 0);
 		} case 2: {
-			cod_print_chat(id, "Wpisz nowa^x04 stawke^x01.");
+			cod_print_chat(id, "Enter a new^x04 bet^x01.");
 
-			cod_show_hud(id, TYPE_HUD, 255, 128, 0, 0.24, 0.07, 0, 0.0, 3.5, 0.0, 0.0, "Wpisz nowa stawke.");
+			cod_show_hud(id, TYPE_HUD, 255, 128, 0, 0.24, 0.07, 0, 0.0, 3.5, 0.0, 0.0, "Enter a new bet.");
 
-			client_cmd(id, "messagemode ZMIEN_STAWKE");
+			client_cmd(id, "messagemode CHANGE_BET");
 		}
 	}
 
@@ -390,13 +390,13 @@ public change_bid(id)
 	bid = str_to_num(bidData);
 
 	if (bid <= 0) {
-		cod_print_chat(id, "Nie mozesz ustawic stawki mniejszej niz^x03 1 honoru^x01!");
+		cod_print_chat(id, "You can't set a bet lower than^x03 1 honor^x01!");
 
 		return PLUGIN_HANDLED;
 	}
 
 	if (cod_get_user_honor(id) < bid) {
-		cod_print_chat(id, "Nie mozesz ustawic stawki wiekszej niz twoja ilosc^x03 honoru^x01!");
+		cod_print_chat(id, "You can't set a bet higher than your amount of^x03 honor^x01!");
 
 		return PLUGIN_HANDLED;
 	}

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Platynowe Naboje"
-#define DESCRIPTION "Zadajesz o %s wieksze obrazenia"
+#define NAME        "Platinum Bullets"
+#define DESCRIPTION "You deal %s extra damage"
 #define RANDOM_MIN  10
 #define RANDOM_MAX  20
 #define UPGRADE_MIN -2

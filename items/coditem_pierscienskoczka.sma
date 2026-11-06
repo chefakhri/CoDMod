@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Pierscien Skoczka"
-#define DESCRIPTION "Masz %s dodatkowe skoki w powietrzu"
+#define NAME        "Jumper's Ring"
+#define DESCRIPTION "You have %s extra jumps in the air"
 #define VALUE       2
 #define VALUE_MAX   4
 

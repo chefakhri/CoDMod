@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Tytanowe Pociski"
-#define DESCRIPTION "Zadajesz o %s (+int) wieksze obrazenia"
+#define NAME        "Titanium Bullets"
+#define DESCRIPTION "You deal %s (+int) extra damage"
 #define RANDOM_MIN  5
 #define RANDOM_MAX  7
 

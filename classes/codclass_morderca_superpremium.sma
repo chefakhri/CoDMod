@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Morderca"
-#define DESCRIPTION  "Ma 1/7 zabicie z AK47/M4A1, posiada 2 rakiety, niemal niewidoczny podczas kucania."
+#define NAME         "Murderer"
+#define DESCRIPTION  "1/7 chance to kill with AK47/M4A1, has 2 rockets, almost invisible while crouching."
 #define FRACTION     "SuperPremium"
 #define WEAPONS      (1<<CSW_AK47)|(1<<CSW_M4A1)|(1<<CSW_DEAGLE)
 #define HEALTH       30

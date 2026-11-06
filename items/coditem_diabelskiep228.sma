@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Diabelskie P228"
-#define DESCRIPTION "Masz 1/%s na natychmiastowe zabicie z p228 i +15 obrazen z niego"
+#define NAME        "Devil's P228"
+#define DESCRIPTION "You have a 1/%s chance to instantly kill with P228 and +15 damage with it"
 #define RANDOM_MIN  5
 #define RANDOM_MAX  7
 #define VALUE_MIN   3

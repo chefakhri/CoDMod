@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Ogranicznik Rozrzutu"
-#define DESCRIPTION "Masz o polowe zmniejszony rozrzut we wszystkich broniach"
+#define NAME        "Recoil Limiter"
+#define DESCRIPTION "Your recoil is halved with all weapons"
 
 public plugin_init()
 {

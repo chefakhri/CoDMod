@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Zmysl Zlodzieja"
-#define DESCRIPTION "20 procent szansy na kradziez %s honoru po trafieniu przeciwnika. Uzyj, aby zamienic honor na zycie."
+#define NAME        "Thief's Sense"
+#define DESCRIPTION "20 percent chance to steal %s honor on hit. Use to exchange honor for health."
 #define RANDOM_MIN  1
 #define RANDOM_MAX  3
 #define UPGRADE_MIN -1
@@ -45,7 +45,7 @@ public cod_item_skill_used(id)
 	if (cod_get_user_health(id) >= cod_get_user_max_health(id)) return;
 
 	if (!cod_get_user_honor(id)) {
-		cod_show_hud(id, TYPE_DHUD, 255, 0, 0, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Nie masz wystarczajaco honoru na wymiane go na zycie.");
+		cod_show_hud(id, TYPE_DHUD, 255, 0, 0, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You don't have enough honor to exchange it for health.");
 
 		return;
 	}

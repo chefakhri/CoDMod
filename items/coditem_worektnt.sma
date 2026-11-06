@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Worek TNT"
-#define DESCRIPTION "Co runde dostajesz %s dynamity"
+#define NAME        "Bag of TNT"
+#define DESCRIPTION "Every round you get %s dynamites"
 #define RANDOM_MIN  1
 #define RANDOM_MAX  3
 

@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Skoczne Szalenstwo"
-#define DESCRIPTION "Masz BunnyHopa, mniejsza widocznosc na nozu i 1/%s na zabicie z kosy"
+#define NAME        "Jumping Madness"
+#define DESCRIPTION "You have BunnyHop, lower visibility with knife and a 1/%s chance to kill with knife"
 #define RANDOM_MIN  3
 #define RANDOM_MAX  5
 #define VALUE_MIN   2
@@ -25,7 +25,7 @@ public cod_item_enabled(id, value)
 	itemValue[id] = value;
 
 	cod_set_user_bunnyhop(id, true, ITEM);
-	cod_set_user_render(id, 50, ITEM, 1<<CSW_KNIFE);
+	cod_set_user_render(id, 50, ITEM, RENDER_ALWAYS, 1<<CSW_KNIFE);
 }
 
 public cod_item_value(id)

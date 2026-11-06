@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Autodestrukcja"
-#define DESCRIPTION "Natychmiastowa smierc twoja i wrogow w twoim bliskim otoczeniu"
+#define NAME        "Self Destruct"
+#define DESCRIPTION "Instant death for you and the enemies close to you"
 
 public plugin_init()
 {

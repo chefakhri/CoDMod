@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Buty Szturmowca"
-#define DESCRIPTION "Dostajesz +%s sily oraz nie slychac twoich krokow"
+#define NAME        "Stormtrooper's Boots"
+#define DESCRIPTION "You get +%s strength and your footsteps are silent"
 #define RANDOM_MIN  20
 #define RANDOM_MAX  30
 #define UPGRADE_MIN -2

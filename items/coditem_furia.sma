@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Furia"
-#define DESCRIPTION "Po aktywacji przez %ss masz 1/3 szansy na natychmiastowe zabicie z kazdej broni."
+#define NAME        "Fury"
+#define DESCRIPTION "When activated, for %ss you have a 1/3 chance to instantly kill with any weapon."
 #define RANDOM_MIN  5
 #define RANDOM_MAX  6
 
@@ -51,7 +51,7 @@ public cod_item_spawned(id, respawn)
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Furii mozesz uzyc tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You can use Fury only once per round!");
 
 		return;
 	}

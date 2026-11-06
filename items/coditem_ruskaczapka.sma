@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Ruska Czapka"
-#define DESCRIPTION "Masz 1/%s na natychmiastowe zabicie z AK47. Dostajesz +25 zdrowia"
+#define NAME        "Russian Hat"
+#define DESCRIPTION "You have a 1/%s chance to instantly kill with AK47. You get +25 health"
 #define RANDOM_MIN  7
 #define RANDOM_MAX  11
 #define VALUE_MIN   3

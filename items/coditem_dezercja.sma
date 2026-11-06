@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Dezercja"
-#define DESCRIPTION "Masz 1/%s na odrodzenie na respie wroga, masz M4A1 lub AK47 w zaleznosci od druzyny i +10 obrazen z tej broni."
+#define NAME        "Desertion"
+#define DESCRIPTION "You have a 1/%s chance to respawn at the enemy spawn, you get M4A1 or AK47 depending on team and +10 damage with it."
 #define RANDOM_MIN  6
 #define RANDOM_MAX  7
 #define VALUE_MIN   2

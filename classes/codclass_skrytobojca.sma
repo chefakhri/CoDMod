@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Skrytobojca"
-#define DESCRIPTION  "Po uzyciu mocy klasy jest niemal niewidzialny przez 10s. Posiada podwojny skok."
-#define FRACTION     "Podstawowe"
+#define NAME         "Assassin"
+#define DESCRIPTION  "After using the class skill becomes almost invisible for 10s. Has a double jump."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_UMP45)|(1<<CSW_USP)
 #define HEALTH       0
 #define INTELLIGENCE 0
@@ -41,7 +41,7 @@ public cod_class_spawned(id, respawn)
 public cod_class_skill_used(id)
 {
 	if (get_bit(id, classUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Niewidzialnosc mozesz aktywowac tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can activate invisibility only once per round!");
 
 		return PLUGIN_CONTINUE;
 	}

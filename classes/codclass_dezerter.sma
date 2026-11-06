@@ -7,9 +7,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Dezerter"
-#define DESCRIPTION  "Ma 1 rakiete, ubranie wroga i 15 procent szansy na odrodzenie na respie wroga."
-#define FRACTION     "Podstawowe"
+#define NAME         "Deserter"
+#define DESCRIPTION  "Has 1 rocket, enemy uniform and a 15 percent chance to respawn at the enemy spawn."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_AK47)|(1<<CSW_USP)
 #define HEALTH       -10
 #define INTELLIGENCE 0

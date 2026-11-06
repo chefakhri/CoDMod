@@ -5,9 +5,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Szturmowiec"
-#define DESCRIPTION  "Zadaje o 3 (+int) zwiekszone obrazenia z M4A1. Ma 1 rakiete i nie slychac jego krokow."
-#define FRACTION     "Podstawowe"
+#define NAME         "Stormtrooper"
+#define DESCRIPTION  "Deals 3 (+int) extra damage with M4A1. Has 1 rocket and silent footsteps."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M4A1)|(1<<CSW_DEAGLE)
 #define HEALTH       0
 #define INTELLIGENCE 0

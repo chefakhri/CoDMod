@@ -6,8 +6,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Elektromagnes"
-#define DESCRIPTION "Co runde mozesz polozyc elektromagnes, ktory przyciaga bronie przeciwnikow"
+#define NAME        "Electromagnet"
+#define DESCRIPTION "Every round you can place an electromagnet that pulls enemy weapons"
 
 new const itemModel[] = "models/CodMod/magnet.mdl";
 
@@ -44,7 +44,7 @@ public cod_new_round()
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_HUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "Elektromagnesu mozesz uzyc tylko raz na rundee!");
+		cod_show_hud(id, TYPE_HUD, 0, 255, 210, -1.0, 0.35, 0, 0.0, 1.25, 0.0, 0.0, "You can use the Electromagnet only once per round!");
 
 		return PLUGIN_CONTINUE;
 	}

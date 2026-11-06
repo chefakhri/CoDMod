@@ -6,9 +6,9 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME         "Obronca"
-#define DESCRIPTION  "Widzi miny i wszystkich niewidzialnych."
-#define FRACTION     "Podstawowe"
+#define NAME         "Defender"
+#define DESCRIPTION  "Sees mines and all invisible players."
+#define FRACTION     "Basic"
 #define WEAPONS      (1<<CSW_M249)|(1<<CSW_MAC10)|(1<<CSW_P228)
 #define HEALTH       20
 #define INTELLIGENCE 0

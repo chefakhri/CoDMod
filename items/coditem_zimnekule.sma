@@ -5,8 +5,8 @@
 #define VERSION "1.1"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Zimne Kule"
-#define DESCRIPTION "Masz 1/%s szansy na zamrozenie przeciwnika na 3 sekundy przy trafieniu"
+#define NAME        "Cold Bullets"
+#define DESCRIPTION "You have a 1/%s chance to freeze the enemy for 3 seconds on hit"
 #define RANDOM_MIN  5
 #define RANDOM_MAX  7
 #define VALUE_MIN   2

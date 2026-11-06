@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Porazajace Naboje"
-#define DESCRIPTION "Masz 1/%s szansy na zatrzesienie ekranem przeciwnika przy trafieniu"
+#define NAME        "Shocking Bullets"
+#define DESCRIPTION "You have a 1/%s chance to shake the enemy's screen on hit"
 #define RANDOM_MIN  5
 #define RANDOM_MAX  7
 #define VALUE_MIN   2

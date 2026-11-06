@@ -5,8 +5,8 @@
 #define VERSION "1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Mistrzowski Scout"
-#define DESCRIPTION "Natychmiastowe zabicie ze Scouta"
+#define NAME        "Master Scout"
+#define DESCRIPTION "Instant kill with Scout"
 
 public plugin_init()
 {

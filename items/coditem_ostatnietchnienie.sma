@@ -5,8 +5,8 @@
 #define VERSION "1.1.0"
 #define AUTHOR "O'Zone"
 
-#define NAME        "Ostatnie Tchnienie"
-#define DESCRIPTION "Gdy masz zginac stajesz sie niesmiertelny na %s sekund, potem umierasz"
+#define NAME        "Last Breath"
+#define DESCRIPTION "When you are about to die you become immortal for %s seconds, then you die"
 #define RANDOM_MIN  2
 #define RANDOM_MAX  3
 #define VALUE_MAX   5

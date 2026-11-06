@@ -8,8 +8,8 @@
 
 #define TASK_ITEM 90342
 
-#define NAME        "Duch Kaprala"
-#define DESCRIPTION "Po aktywacji przez %ss mozesz przechodzic przez sciany"
+#define NAME        "Corporal's Ghost"
+#define DESCRIPTION "When activated, for %ss you can walk through walls"
 #define RANDOM_MIN  7
 #define RANDOM_MAX  8
 #define UPGRADE_MIN -2
@@ -53,7 +53,7 @@ public cod_item_spawned(id, respawn)
 public cod_item_skill_used(id)
 {
 	if (get_bit(id, itemUsed)) {
-		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "Ducha Kaprala mozesz uzyc tylko raz na runde!");
+		cod_show_hud(id, TYPE_DHUD, 0, 255, 210, -1.0, 0.45, 0, 0.0, 1.25, 0.0, 0.0, "You can use Corporal's Ghost only once per round!");
 
 		return;
 	}
