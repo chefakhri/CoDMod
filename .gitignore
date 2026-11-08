@@ -59,3 +59,5 @@ cod.txt
 include
 source
 !resources/addons/amxmodx/scripting/include
+docker/.env
+docker/data/

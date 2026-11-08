@@ -180,23 +180,51 @@ mp_forcecamera 1
 mp_forcechasecam 1
 ```
 
-## 9. Add yourself as admin
+## 9. Admins
 
-Add a line to `addons/amxmodx/configs/users.ini`:
+Admins are listed in `addons/amxmodx/configs/users.ini`, **one line per admin**. Each one has
+their own name, password and rights:
 ```
-"YourName" "YourPassword" "abcdefghijklmnopqrstu" "a"
+; "name"       "password"     "access flags"            "account flags"
+"YourName"     "OwnerPass"    "abcdefghijklmnopqrstu"   "a"
+"FriendOne"    "FriendPass1"  "bcdefgijmu"              "a"
+"FriendTwo"    "FriendPass2"  "cdeiju"                  "a"
+"VipFriend"    "VipPass"      "t"                       "a"
 ```
-- `abcdefghijklmnopqrstu`: all admin rights except "user" flags.
-- `a`: the player is kicked if the name matches but the password is wrong, which stops impersonation.
+Account flag `a` means: log in by **name + password**. Anyone who uses that name without the
+right password is kicked, so nobody can impersonate an admin. Keep `a` on every line, and don't
+use SteamID or IP logins: on a LAN server (`sv_lan 1`) everyone has the SteamID `STEAM_ID_LAN`,
+and behind a proxy everyone also has the same IP.
 
-In your **game** console (or `cstrike/userconfig.cfg` on your PC):
+Useful access flags:
+
+| Flag | Allows | Flag | Allows |
+|---|---|---|---|
+| `a` | immunity (can't be kicked/banned) | `h` | `amx_cfg` |
+| `b` | reserved slot | `i` | `amx_chat` and admin chat |
+| `c` | `amx_kick` | `j` | votes (`amx_vote`, `amx_votemap`) |
+| `d` | `amx_ban` / `amx_unban` | `l` | `amx_rcon` (any server command) |
+| `e` | `amx_slay` / `amx_slap` | `m`–`s` | custom levels (unused by the mod except below) |
+| `f` | `amx_map` (change map) | `t` | **CoD VIP** (bonus exp and honor, VIP knife; `/vip` in game) |
+| `g` | `amx_cvar`, and the **CoD admin menu** (`/ca`) | `u` | `amxmodmenu` |
+
+`abcdefghijklmnopqrstu` = everything, for the owner. The examples above: `bcdefgijmu` is a trusted
+admin without immunity or rcon, `cdeiju` is a moderator (kick/ban/slap/chat/votes, no CoD admin
+menu), `t` is VIP only.
+
+Changes take effect after `amx_reloadadmins` or a map change.
+
+Each admin logs in by setting their password on their own PC (see [Player setup](#14-player-setup-client-config)):
 ```
-setinfo _pw YourPassword
+setinfo _pw FriendPass1
 ```
 
 In game:
-- `say /ca` or `/codadmin`: COD admin menu (give items, set levels/exp, add honor).
-- `amxmodmenu` in the console: kick, ban, change map, etc.
+- `say /ca` or `/codadmin`: CoD admin menu (give items, set levels/exp, add honor). Needs flag `g`.
+- `amxmodmenu` in the console: kick, ban, change map, etc. Needs flag `u`.
+
+`setinfo` values are sent to every server you join, so use a password here that you don't use
+anywhere else.
 
 ## 10. Bots (optional, YaPB)
 
@@ -227,12 +255,17 @@ yb_password "BotMenuPassword" // lets you open the bot menu in game
 The mod gives every bot a random (non-premium) class and assigns its stat points.
 Bots are never saved to the database or shown in the Top15.
 
+The bot menu is separate from AMX Mod X admins: there is **one shared password**
+(`yb_password`), and everyone who knows it can open the menu (add/kick bots, change difficulty,
+...). Give it only to people you'd trust with that. Admins with flag `l` can also control bots
+without it, with `amx_rcon yb <command>`.
+
 To use the bot menu in game:
 ```
 setinfo _ybpw BotMenuPassword
 bind "=" "yb menu"
 ```
-Then press `=` while alive.
+Then press `=`.
 
 ## 11. Start the server
 
@@ -282,6 +315,114 @@ cl_sidespeed 800
 cl_backspeed 800
 ```
 Recent CS 1.6 clients block servers from changing these, so players have to set them themselves.
+
+## 14. Player setup (client config)
+
+Every player can put their settings in one file on their own PC, so they never have to type them
+again. Create (or edit) `Counter-Strike/cstrike/userconfig.cfg`, which the game runs at every
+start. If your client doesn't run it (some older non-Steam builds), name the file `autoexec.cfg`
+instead. Don't edit `config.cfg`: the game overwrites it.
+
+```
+// ---- CoD Mod: passwords (delete the lines you don't need) ----
+setinfo _codpass "MyAccountPassword"   // your CoD account (/account): logs you in automatically
+setinfo _pw      "MyAdminPassword"     // only for admins listed in users.ini
+setinfo _ybpw    "BotMenuPassword"     // only if you were given the bot menu password
+
+// ---- CoD Mod: keys ----
+// E (class skill) and F (item) work without binds; these are extras.
+bind "v"   "menu"          // CoD main menu
+bind "z"   "+rocket"
+bind "x"   "+mine"
+bind "c"   "+dynamite"
+bind "g"   "+medkit"
+bind "h"   "+poison"
+bind "j"   "+thunder"
+bind "k"   "+teleport"
+bind "="   "yb menu"       // bot menu (needs _ybpw)
+bind "F10" "amxmodmenu"    // admin menu (needs _pw)
+bind "F11" "say /ca"       // CoD admin menu (needs _pw and flag g)
+
+// ---- CoD Mod: movement above 400 speed ----
+cl_forwardspeed 800
+cl_sidespeed 800
+cl_backspeed 800
+
+// ---- Connect quickly: type "cod" in the console ----
+alias cod "connect your.server.address:27015"
+```
+- Pick other keys if these clash with your own binds (for example `c` is often radio).
+- The CoD account password is the one you chose in the account menu when you first joined.
+  Your name is your login, so always play with the same name.
+- To check a value: type `setinfo` in the console with no arguments.
+
+All the in-game chat commands are listed in step 13. `/binds` shows the key list in game.
+
+## Docker
+
+`docker/` contains a Dockerfile that builds steps 1–7 and 10 into one image (the plugins are
+compiled during the build), and a compose file that also runs MariaDB.
+
+```bash
+cp docker/.env.example docker/.env     # set RCON_PASSWORD, DB_PASS, ADMIN_NAME/ADMIN_PASSWORD, ...
+docker compose -f docker/compose.yaml up -d --build
+```
+
+- Every setting from steps 8–11 comes from `docker/.env` and is written again at each start.
+  Change `.env`, then `docker compose -f docker/compose.yaml up -d` to apply it.
+- After a `git pull` (new plugins or resources), add `--build`.
+- Server console: `docker attach cs16-codmod` (detach with `Ctrl+P`, `Ctrl+Q`; `Ctrl+C` stops the server).
+  Logs: `docker logs -f cs16-codmod`, plus `docker/data/logs/`.
+- Extra files (maps, `mapcycle.txt`, your own `plugins-cod.ini`, `server-extra.cfg`, ...): put
+  them in `docker/data/overlay/`, using the same layout as `cstrike/`. They are copied over the
+  game folder at each start. A `server-extra.cfg` there is run after `server.cfg`.
+- Admins: `ADMIN_NAME`/`ADMIN_PASSWORD` in `.env` add one admin with all rights. For more
+  admins, put your own `users.ini` (step 9) in `docker/data/overlay/addons/amxmodx/configs/`.
+  It replaces the default file, and the `.env` admin is still added to it. Apply with a container
+  restart, or `amx_reloadadmins` after editing the file inside the container.
+- The bot menu password is `YAPB_PASSWORD`, shared by everyone who uses the bot menu (step 10).
+- The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
+  `restart: unless-stopped` policy starts it again, so the `hlds_run`/`-pidfile` issue from step 11 doesn't apply here.
+- Only `27015/udp` needs to be published: GoldSrc uses UDP for both the game and rcon.
+
+### FastDL (fast downloads of models, sounds and maps)
+
+Without it, players download the mod's custom files (about 200 MB) from the game server itself,
+which is very slow. The compose file runs a small nginx container (`fastdl`, port `27080/tcp`)
+for this:
+
+- At every start, the game server copies the files players may need (maps, models, sounds,
+  sprites, `.wad` and overview files, including anything from the overlay) into a shared
+  volume. nginx serves that volume read-only. Only those file types are served, and folder
+  listing is off, so configs, plugins and passwords are never reachable.
+- Set `SV_DOWNLOADURL` in `.env` to the public address with a trailing slash, for example
+  `http://fastdl.example.com/`, then `docker compose ... up -d`.
+- Use **plain HTTP**. Many CS 1.6 clients can't download over HTTPS, so if a proxy is in front
+  (for example a Zoraxy HTTP rule pointing to `<server>:27080`), turn off its redirect to HTTPS
+  for this host.
+- If the URL can't be reached, clients fall back to downloading from the game server.
+- Check it: `curl -I http://fastdl.example.com/models/CoDMod/bazooka.mdl` should return `200`.
+
+### Behind a reverse proxy / tunnel (sv_lan 1 with non-Steam players)
+
+With `sv_lan 1` the engine only accepts players from private addresses (10.x, 172.16–31.x,
+192.168.x). Public players can still join if a **userspace** UDP proxy in front of the server
+(for example a Zoraxy stream proxy on a VPS, connected to this machine over WireGuard) forwards
+the traffic. The proxy opens its own connection to the server, so every player seems to come
+from the proxy's tunnel address, which is private.
+
+This does **not** work with a plain iptables DNAT port forward, because that keeps the player's
+public IP. Add a MASQUERADE/SNAT rule for that traffic, or use a userspace proxy.
+
+Trade-offs of this setup:
+- Every internet player has the proxy's IP, and in LAN mode everyone's SteamID is `STEAM_ID_LAN`.
+  The mod saves progress by name and protects names with `/account` passwords, so saving still
+  works, but IP or SteamID bans would hit everyone. Ban by name instead.
+- The server is not listed in the public server browser. Players connect with
+  `connect <public-address>:27015` in the console, or add it to their favourites.
+
+The alternative is `sv_lan 0` with ReHLDS + ReUnion, which accepts both Steam and non-Steam
+clients on an internet server. This image doesn't include them.
 
 ## Troubleshooting
 
