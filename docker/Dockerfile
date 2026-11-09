@@ -80,11 +80,14 @@ RUN cp -r /tmp/codmod/resources/. "$CSTRIKE/" \
 RUN mkdir -p /home/steam/defaults \
  && cp "$CSTRIKE/server.cfg" "$CSTRIKE/addons/amxmodx/configs/cod_mod.cfg" \
        "$CSTRIKE/addons/amxmodx/configs/users.ini" "$CSTRIKE/addons/yapb/conf/yapb.cfg" \
+       "$CSTRIKE/addons/amxmodx/configs/plugins-cod.ini" \
        /home/steam/defaults/ \
  && mkdir -p "$CSTRIKE/addons/amxmodx/data/vault" "$CSTRIKE/addons/amxmodx/logs" "$CSTRIKE/logs"
 
 COPY --chown=steam:steam --chmod=755 docker/entrypoint.sh /home/steam/entrypoint.sh
 
 WORKDIR /home/steam/hlds
+# The entrypoint starts as root to fix the owner of mounted folders, then drops to "steam"
+USER root
 EXPOSE 27015/udp
 ENTRYPOINT ["/home/steam/entrypoint.sh"]

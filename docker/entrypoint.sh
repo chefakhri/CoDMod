@@ -3,6 +3,19 @@
 # Crashes and "quit" end the container; the compose restart policy brings it back.
 set -euo pipefail
 
+# The container starts as root only to prepare the mounted folders: Docker creates missing
+# bind-mount folders (data/logs/...) as root, and the server can't write logs there. Fix the
+# owner, then run the rest of this script as the unprivileged "steam" user.
+if [ "$(id -u)" = 0 ]; then
+  for d in "$CSTRIKE/addons/amxmodx/logs" "$CSTRIKE/logs" \
+           "$CSTRIKE/addons/amxmodx/data/vault" "$CSTRIKE/addons/yapb/data" /fastdl; do
+    mkdir -p "$d"
+    [ "$(stat -c %u "$d")" = 1000 ] || chown -R steam:steam "$d"
+  done
+  export HOME=/home/steam USER=steam
+  exec setpriv --reuid=steam --regid=steam --init-groups "$0" "$@"
+fi
+
 CFG="$CSTRIKE/addons/amxmodx/configs"
 DEF=/home/steam/defaults
 
@@ -24,6 +37,7 @@ DEF=/home/steam/defaults
 : "${YAPB_QUOTA:=6}"
 : "${YAPB_DIFFICULTY:=2}"
 : "${YAPB_PASSWORD:=}"
+: "${COD_ITEMS:=default}"
 : "${EXTRA_ARGS:=}"
 
 # Escape a value for use inside a "quoted" cfg string
@@ -34,6 +48,7 @@ cp "$DEF/server.cfg"  "$CSTRIKE/server.cfg"
 cp "$DEF/cod_mod.cfg" "$CFG/cod_mod.cfg"
 cp "$DEF/users.ini"   "$CFG/users.ini"
 cp "$DEF/yapb.cfg"    "$CSTRIKE/addons/yapb/conf/yapb.cfg"
+cp "$DEF/plugins-cod.ini" "$CFG/plugins-cod.ini"
 
 # 2. Overlay: anything mounted at /overlay is copied over cstrike/
 #    (extra maps, mapcycle.txt, your own plugins-cod.ini, ...)
@@ -42,7 +57,12 @@ if [ -d /overlay ] && [ -n "$(ls -A /overlay 2>/dev/null)" ]; then
   cp -r /overlay/. "$CSTRIKE/"
 fi
 
-# 3. Database login for the mod
+# 3. Items: "default" keeps plugins-cod.ini as it is, "all" enables every item plugin
+if [ "$COD_ITEMS" = all ]; then
+  sed -i 's/^;[[:space:]]*\(coditem_\)/\1/' "$CFG/plugins-cod.ini"
+fi
+
+# 4. Database login for the mod
 sed -i \
   -e "s|^cod_sql_host .*|cod_sql_host \"$(q "$DB_HOST")\"|" \
   -e "s|^cod_sql_user .*|cod_sql_user \"$(q "$DB_USER")\"|" \
@@ -50,7 +70,7 @@ sed -i \
   -e "s|^cod_sql_db .*|cod_sql_db \"$(q "$DB_NAME")\"|" \
   "$CFG/cod_mod.cfg"
 
-# 4. Server settings (server.cfg runs at every map change, so these stick)
+# 5. Server settings (server.cfg runs at every map change, so these stick)
 cat >> "$CSTRIKE/server.cfg" <<EOF
 
 // ---- added by docker/entrypoint.sh ----
@@ -73,12 +93,12 @@ if [ -f "$CSTRIKE/server-extra.cfg" ]; then
   echo 'exec server-extra.cfg' >> "$CSTRIKE/server.cfg"
 fi
 
-# 5. Admin
+# 6. Admin
 if [ -n "$ADMIN_NAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
   echo "\"$(q "$ADMIN_NAME")\" \"$(q "$ADMIN_PASSWORD")\" \"abcdefghijklmnopqrstu\" \"a\"" >> "$CFG/users.ini"
 fi
 
-# 6. Bots
+# 7. Bots
 if [ "$YAPB_ENABLED" = 1 ]; then
   grep -q 'yapb.so' "$CSTRIKE/addons/metamod/plugins.ini" \
     || printf 'linux addons/yapb/bin/yapb.so\n' >> "$CSTRIKE/addons/metamod/plugins.ini"
@@ -97,7 +117,7 @@ else
   sed -i '/yapb.so/d' "$CSTRIKE/addons/metamod/plugins.ini"
 fi
 
-# 7. FastDL: copy the files clients may download into /fastdl (served by the fastdl container).
+# 8. FastDL: copy the files clients may download into /fastdl (served by the fastdl container).
 #    Only game content types from content folders: no configs, plugins or passwords.
 if [ -d /fastdl ] && [ -w /fastdl ]; then
   echo "[entrypoint] syncing download files to /fastdl"
@@ -114,7 +134,7 @@ if [ -d /fastdl ] && [ -w /fastdl ]; then
   done
 fi
 
-# 8. Wait for the database, so the first map doesn't start without it
+# 9. Wait for the database, so the first map doesn't start without it
 host="${DB_HOST%%:*}"; dbport=3306; [[ "$DB_HOST" == *:* ]] && dbport="${DB_HOST##*:}"
 for i in $(seq 1 60); do
   (exec 3<>"/dev/tcp/$host/$dbport") 2>/dev/null && break

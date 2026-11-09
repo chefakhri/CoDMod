@@ -162,7 +162,8 @@ Every other cvar in that file has a short description. Defaults in this branch:
 - `cod_bot_level "0"`: bots copy the average level of the human players.
 
 **`addons/amxmodx/configs/plugins-cod.ini`**: turn plugins on or off. A line starting with
-`;` is disabled. In this branch all classes, the admin menu and the Electromagnet item are on.
+`;` is disabled. In this branch all classes, the admin menu and 10 balanced items are on
+(see [step 15](#15-items-perks-enabling-and-disabling)).
 Keep a newline at the end of the file: if you append a line to a file without one,
 the two entries merge and both fail to load.
 
@@ -357,6 +358,160 @@ alias cod "connect your.server.address:27015"
 - To check a value: type `setinfo` in the console with no arguments.
 
 All the in-game chat commands are listed in step 13. `/binds` shows the key list in game.
+
+## 15. Items (perks): enabling and disabling
+
+Every item is its own plugin in `items/`. All 100 are compiled (step 7), but an item only exists
+in the game when its plugin is enabled in `addons/amxmodx/configs/plugins-cod.ini`. A disabled
+item can't drop, can't be bought or won, and doesn't appear in the admin menu's "give item" list.
+
+How players get items:
+- A player who kills someone **while holding no item** gets a random item.
+- The shop (`/shop`) and the mystery box can also give a random item.
+- `/items` lists every enabled item, `/item` describes yours, `/drop` throws yours away.
+
+The random pick is from the enabled items only, so the list you enable **is** the game's item pool.
+
+### Enabling or disabling an item
+
+In `plugins-cod.ini`, a line starting with `;` is disabled:
+```
+coditem_regeneracja.amxx       <- enabled
+;coditem_aimbot.amxx           <- disabled
+```
+Remove or add the `;`, then change map (`amx_map de_dust2`) or restart the server.
+Keep a newline at the end of the file (see step 8).
+
+Enable every item at once:
+```bash
+sed -i 's/^;\(coditem_\)/\1/' addons/amxmodx/configs/plugins-cod.ini
+```
+Classes (`codclass_*`) work the same way. All of them are enabled by default.
+
+With Docker, set `COD_ITEMS=all` in `.env` to enable every item without editing the file, or
+`COD_ITEMS=default` to use the list in `plugins-cod.ini`. To choose your own list, edit
+`resources/addons/amxmodx/configs/plugins-cod.ini` and rebuild (`up -d --build`), or put your
+own copy in `docker/data/overlay/addons/amxmodx/configs/` (that copy then replaces the file
+from the repository, including future changes to it).
+
+### The default set
+
+This branch enables 10 items that keep fights fair: no instant kills, no invisibility, no
+walking through walls, no respawns and no large damage multipliers. They cover healing, utility,
+defence and progression, and Hawk Eye gives everyone a counter to the invisible classes:
+
+Adrenaline, Boots of Hephaestus, Dark Glasses, Electromagnet, First Aid Kit, Hawk Eye,
+Recoil Limiter, Regeneration, Ring of Experience, Titanium Bullets.
+
+### All items
+
+**on** = enabled by default. **strong** = can kill instantly, makes the player invisible or
+immortal, respawns them, or gives a large boost. Fun on a server with friends, but they can
+decide fights on their own; enable them deliberately. Most values are rolled at random within
+the range shown when the item is received, and some items can be upgraded in game.
+
+| Item | Plugin | Effect | Notes |
+|---|---|---|---|
+| Adrenaline | `coditem_adrenalina` | You get +40–60 HP for every frag | **on** |
+| Agent 007 | `coditem_agent007` | You have a 1/4–6 chance to instantly kill with a silenced USP | strong |
+| Aimbot | `coditem_aimbot` | When used, locks onto the head of the nearest enemy | strong |
+| Alien | `coditem_obcy` | Killing an enemy makes them explode, dealing 100–150 (+int) damage | strong |
+| Amulet of Agility | `coditem_amuletzwinnosci` | You get +25–50 condition |  |
+| Anti Item | `coditem_antyitem` | When used, you can destroy any player's item along with your own |  |
+| Archangel's Wings | `coditem_skrzydlaarchaniola` | You have lower gravity. Using the item mid-jump slams you to the ground, causing an earthquake |  |
+| Bag of TNT | `coditem_worektnt` | Every round you get 1–3 dynamites |  |
+| Bloody Bullets | `coditem_krwawenaboje` | The lower your health, the more damage you deal (-1% health = +1% damage) |  |
+| Book of Experience | `coditem_ksiegadoswiadczenia` | You get an extra +80–100 exp for every frag |  |
+| Boots of Hephaestus | `coditem_butyhefajstosa` | You take no fall damage. You get +20–25 condition | **on** |
+| Brotherhood | `coditem_braterstwo` | When near a teammate you deal 35–50 percent more damage |  |
+| Camouflage | `coditem_kamuflarz` | Your visibility drops to 25–35 percent |  |
+| Camper's Jacket | `coditem_kurtkakampera` | You are invisible while standing still until you take damage. | strong |
+| Captain's Notes | `coditem_notatkikapitana` | You have a 1/2–3 chance to reflect a bullet that hits you | strong |
+| Chemist's Apron | `coditem_fartuchchemika` | Every round you get 1–3 poisons |  |
+| Cold Bullets | `coditem_zimnekule` | You have a 1/5–7 chance to freeze the enemy for 3 seconds on hit |  |
+| Commando's Knife | `coditem_nozkomandosa` | Instant kill with knife (RMB). | strong |
+| Commando's Secret | `coditem_tajemnicakomandosa` | You get +25–40 condition and +25 health |  |
+| Concrete Body | `coditem_betonowecialo` | When activated, for 10–15s you only take damage from headshots | strong |
+| Corporal's Ghost | `coditem_duchkaprala` | When activated, for 7–8s you can walk through walls | strong |
+| Croucher | `coditem_kucacz` | You are practically invisible while crouching | strong |
+| Cursed Bullets | `coditem_przekletenaboje` | You have a 1/6–9 chance to launch the enemy into the air on hit |  |
+| Dark Glasses | `coditem_ciemneokulary` | Flashbangs don't affect you. You get 2 flashes | **on** |
+| Deadly AUG | `coditem_smiercionosnyaug` | You have a 1/6–8 chance to instantly kill with AUG | strong |
+| Deadly MP5 | `coditem_zabojczemp5` | You get an MP5 that deals +7–12 damage and a 1/2 chance to refill the magazine after a kill |  |
+| Deathly Silence | `coditem_grobowacisza` | When you die you explode, dealing 150–175 (+int) damage to nearby enemies | strong |
+| Desertion | `coditem_dezercja` | You have a 1/6–7 chance to respawn at the enemy spawn, you get M4A1 or AK47 depending on team and +10 damage with it. | strong |
+| Devil's P228 | `coditem_diabelskiep228` | You have a 1/5–7 chance to instantly kill with P228 and +15 damage with it | strong |
+| Divine P90 | `coditem_boskiep90` | You get a P90 with unlimited ammo and no recoil | strong |
+| Dose of LSD | `coditem_dawkalsd` | You get +15–25 to every stat | strong |
+| Dynamite Generator | `coditem_generatordynamitow` | You get a dynamite every 10–15 seconds. |  |
+| Electromagnet | `coditem_elektromagnes` | Every round you can place an electromagnet that pulls enemy weapons | **on** |
+| Endless Ammo | `coditem_bezlikammo` | Your ammo never runs out | strong |
+| Epic Deagle | `coditem_epickideagle` | You get a Deagle with a 1/6 chance to instantly kill and +20–35 damage | strong |
+| Extended Kit | `coditem_zestawpowiekszony` | You get 3–5 grenades of each type |  |
+| First Aid Kit | `coditem_apteczka` | You can fully heal yourself once per round | **on** |
+| Flashlight | `coditem_latarka` | You have a flashlight that reveals all invisible players |  |
+| Fury | `coditem_furia` | When activated, for 5–6s you have a 1/3 chance to instantly kill with any weapon. | strong |
+| General's Secret | `coditem_tajemnicagenerala` | Instant kill with HE | strong |
+| Ghost's MAC10 | `coditem_mac10ducha` | You get a MAC10, with which you are almost invisible | strong |
+| Good Cow | `coditem_dobrakrowka` | You get a set of grenades and the Cow (M249), dealing 6–10 extra damage with it |  |
+| Grenade Pack | `coditem_pakietgranatow` | You get a full set of grenades |  |
+| Hawk Eye | `coditem_sokoleoko` | You see all invisible players | **on** |
+| Headhunter Bullets | `coditem_nabojelowcyglow` | You deal 50–75 percent more damage on headshots |  |
+| Headless | `coditem_bezglowie` | When activated, for 25–30s you are immune to headshots |  |
+| Health Meter | `coditem_licznikzycia` | After damaging an enemy you can see their remaining HP |  |
+| Invisibility Cloak | `coditem_pelerynaniewidka` | When used you are invisible until you deal or take damage | strong |
+| Jedi Sword | `coditem_mieczjedi` | 1/2 chance to instantly kill with knife and 1/4–5 chance to reflect a bullet with knife | strong |
+| Jumper's Ring | `coditem_pierscienskoczka` | You have X extra jumps in the air |  |
+| Jumping Madness | `coditem_skoczneszalenstwo` | You have BunnyHop, lower visibility with knife and a 1/3–5 chance to kill with knife |  |
+| Last Breath | `coditem_ostatnietchnienie` | When you are about to die you become immortal for 2–3 seconds, then you die | strong |
+| Master AWP | `coditem_mistrzowskieawp` | Instant kill with AWP | strong |
+| Master Scout | `coditem_mistrzowskiscout` | Instant kill with Scout | strong |
+| Medic's Backpack | `coditem_plecakmedyka` | Every round you get 1–3 medkits |  |
+| Medic's Knife | `coditem_nozmedyka` | With knife you regenerate 2–3 HP per second |  |
+| Mine Generator | `coditem_generatormin` | You get a mine every 10–15 seconds. |  |
+| Morphine | `coditem_morfina` | You have a 1/3–5 chance to respawn after death | strong |
+| Nano Vest | `coditem_nanokamizelka` | You are immune to rockets, mines, dynamite, lightning and other damaging bonuses. | strong |
+| Ninja Suit | `coditem_strojninjy` | You are invisible while standing still with a knife | strong |
+| Nomex Armor | `coditem_pancerznomexowy` | You have a 1/5–7 chance to reflect a bullet that hits you | strong |
+| O'Zone's Intellect | `coditem_intelektozone` | You have a 1/3–5 chance to redirect your bullet to the head on hit | strong |
+| Platinum Bullets | `coditem_platynowenaboje` | You deal 10–20 extra damage |  |
+| Plunderer's Gloves | `coditem_rekawiczkigrabiezcy` | You get 20–35 HP and a full magazine after a kill |  |
+| Rabbit's Foot | `coditem_kroliczalapka` | You have automatic BunnyHop - hold space |  |
+| Radar | `coditem_radar` | You see enemies on the radar |  |
+| Rapid Fire | `coditem_szybkostrzelnosc` | You have 20–40 percent faster fire rate |  |
+| Recoil Eliminator | `coditem_eliminatorrozrzutu` | You have no recoil with any weapon |  |
+| Recoil Limiter | `coditem_ogranicznikrozrzutu` | Your recoil is halved with all weapons | **on** |
+| Regeneration | `coditem_regeneracja` | You get 4–6 HP every 3 seconds | **on** |
+| Reversal | `coditem_odwrotnosc` | When activated, for 3–4 seconds damage taken heals you. |  |
+| Ring of Experience | `coditem_piersciendoswiadczenia` | You get an extra +30–50 exp for every frag | **on** |
+| Ring of Zeus | `coditem_pierscienzeusa` | You get 1–3 lightning bolts every round |  |
+| Rocket Generator | `coditem_generatorrakiet` | You get a rocket every 10–15 seconds. |  |
+| Russian Hat | `coditem_ruskaczapka` | You have a 1/7–11 chance to instantly kill with AK47. You get +25 health | strong |
+| Russian Roulette | `coditem_rosyjskaruletka` | When hitting an enemy with Deagle: 5/6 chance to instantly kill and 1/6 chance of suicide. | strong |
+| Self Destruct | `coditem_autodestrukcja` | Instant death for you and the enemies close to you | strong |
+| Shadow | `coditem_cien` | You are completely invisible, but you only have 1 HP | strong |
+| Shocking Bullets | `coditem_porazajacenaboje` | You have a 1/5–7 chance to shake the enemy's screen on hit |  |
+| Slowing Bullets | `coditem_pociskispowalniajace` | You have a 1/5–7 chance to slow the enemy for 3 seconds on hit |  |
+| Sniper's AWP | `coditem_awpsnajpera` | You deal 150–160 (+int) percent damage with AWP |  |
+| Sniper's Secret | `coditem_tajemnicasnajpera` | You have a 50 percent chance to instantly kill with AWP and get +20–30 strength | strong |
+| Space Slippers | `coditem_kosmiczneklapki` | You get +25–35 condition and 50 percent lower gravity |  |
+| Speedhack | `coditem_speedhack` | You get 75–100 condition | strong |
+| Spy's Handbook | `coditem_podrecznikszpiega` | You have a 1/3–6 chance to instantly kill with HE | strong |
+| Stalker's Secret | `coditem_tajemnicamysliwego` | You have a 50 percent chance to instantly kill with Scout and get +20–30 condition | strong |
+| Stormtrooper's Boots | `coditem_butyszturmowca` | You get +20–30 strength and your footsteps are silent |  |
+| Strong AK47 | `coditem_mocneak47` | You get an AK47 that deals 8–13 extra damage |  |
+| Sunbeam | `coditem_promienslonca` | You have a 1/5–7 chance to blind the enemy on hit |  |
+| Support | `coditem_support` | Nearby teammates deal 30–40 percent more damage |  |
+| Support Equipment | `coditem_wyposazeniewsparcia` | Every round you get 1–3 rockets |  |
+| Terrorist's Armband | `coditem_opaskaterrorysty` | You deal 6–8 more damage. You have a 50 percent chance to instantly kill with HE | strong |
+| Thief's Sense | `coditem_zmyslzlodzieja` | 20 percent chance to steal 1–3 honor on hit. Use to exchange honor for health. |  |
+| Titanium Bullets | `coditem_tytanowepociski` | You deal 5–7 (+int) extra damage | **on** |
+| Triple Power | `coditem_potrojnamoc` | When used, for 3–5 seconds you deal triple damage | strong |
+| Unexpected Blow | `coditem_niespodziewanycios` | On hit you have a 1/5–7 chance to teleport behind the player |  |
+| Upgraded M4A1 | `coditem_ulepszonem4a1` | You get an M4A1 that deals 8–13 extra damage |  |
+| Veteran's AWP | `coditem_awpweterana` | You have a 50 percent chance to instantly kill with AWP and 30 percent visibility with it. You get +20–25 health | strong |
+| Veteran's Galil | `coditem_galilweterana` | You have a 1/6–8 chance to instantly kill with Galil | strong |
+| Wolf in Sheep's Clothing | `coditem_farbowanylis` | You have a 1/3–4 chance to respawn at the enemy spawn. You wear the enemy uniform. | strong |
 
 ## Docker
 
