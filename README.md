@@ -1,7 +1,18 @@
 # CoD Mod
 
-> **English version.** This branch translates the mod to English and adds bot (YaPB) support.
-> See [DEPLOY.md](DEPLOY.md) for a step-by-step Linux server setup.
+> **Maintained fork.** This is a fork of [TheDoctor0/CoDMod](https://github.com/TheDoctor0/CoDMod)
+> by O'Zone (Dawid Janik), maintained by [chefakhri](https://github.com/chefakhri) since 2026.
+> All credit for the original mod goes to its author; it is used under the [MIT License](LICENSE).
+>
+> Changes in this fork:
+> - The whole mod translated to English
+> - Bot support (YaPB): bots get classes, levels and items
+> - Gameplay fixes, and 10 balanced items enabled by default
+> - Optional second item slot per player, switchable in game (`/ca`)
+> - Docker deployment with MariaDB and FastDL
+>
+> See [DEPLOY.md](DEPLOY.md) for a step-by-step Linux and Docker server setup.
+> The release pack and online documentation linked below belong to the original project.
 
 Call of Duty Mod for Counter-Strike 1.6 (AMXX 1.8.3 / 1.9 / 1.10).
 
