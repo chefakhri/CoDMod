@@ -15,6 +15,8 @@ enum _:itemInfo { MARKET_ID, MARKET_ITEM, MARKET_VALUE, MARKET_DURABILITY, MARKE
 
 new playerName[MAX_PLAYERS + 1][MAX_NAME], Array:marketItems, bool:mapEnd, items, cvarMaxItems;
 
+new sellSlot[MAX_PLAYERS + 1];
+
 public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR);
@@ -85,7 +87,7 @@ public market_menu_handle(id, menu, item)
 public market_menu_callback(id, menu, item)
 {
 	switch (item) {
-		case 0: if (!cod_get_user_class(id) || !cod_get_user_item(id) || (cvarMaxItems && get_items_amount(id) >= cvarMaxItems)) return ITEM_DISABLED;
+		case 0: if (!cod_get_user_class(id) || !cod_get_user_items_count(id) || (cvarMaxItems && get_items_amount(id) >= cvarMaxItems)) return ITEM_DISABLED;
 		case 1: if (!ArraySize(marketItems)) return ITEM_DISABLED;
 		case 2: if (!get_items_amount(id)) return ITEM_DISABLED;
 	}
@@ -99,7 +101,7 @@ public sell_item(id, sound)
 
 	if (!sound) client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	if (!cod_get_user_item(id)) {
+	if (!cod_get_user_items_count(id)) {
 		cod_print_chat(id, "You don't have any item!");
 
 		return PLUGIN_HANDLED;
@@ -111,13 +113,52 @@ public sell_item(id, sound)
 		return PLUGIN_HANDLED;
 	}
 
+	if (cod_get_user_items_count(id) == 2) {
+		// Two items: ask which one to sell
+		new itemName[MAX_NAME], menuData[MAX_NAME + 16], menu = menu_create("\ySell which \ritem\w?", "sell_slot_handle");
+
+		for (new slot = 1; slot <= 2; slot++) {
+			cod_get_item_name(cod_get_user_slot_item(id, slot), itemName, charsmax(itemName));
+
+			formatex(menuData, charsmax(menuData), "%s \d[slot %i]", itemName, slot);
+
+			menu_additem(menu, menuData);
+		}
+
+		menu_setprop(menu, MPROP_EXITNAME, "Exit");
+
+		menu_display(id, menu);
+
+		return PLUGIN_HANDLED;
+	}
+
+	sellSlot[id] = cod_get_user_slot_item(id, 1) ? 1 : 2;
+
+	ask_item_price(id);
+
+	return PLUGIN_HANDLED;
+}
+
+public sell_slot_handle(id, menu, item)
+{
+	menu_destroy(menu);
+
+	if (!is_user_connected(id) || !cod_check_account(id) || mapEnd || item == MENU_EXIT) return PLUGIN_HANDLED;
+
+	sellSlot[id] = item + 1;
+
+	ask_item_price(id);
+
+	return PLUGIN_HANDLED;
+}
+
+ask_item_price(id)
+{
 	client_cmd(id, "messagemode ITEM_PRICE");
 
 	cod_print_chat(id, "Enter the^x03 price (honor)^x01 you want to sell the item for.");
 
 	client_print(id, print_center, "Enter the price (honor) you want to sell the item for.");
-
-	return PLUGIN_HANDLED;
 }
 
 public set_item_price(id)
@@ -126,7 +167,9 @@ public set_item_price(id)
 
 	client_cmd(id, "spk %s", codSounds[SOUND_EXIT]);
 
-	if (!cod_get_user_item(id)) {
+	if (sellSlot[id] != 1 && sellSlot[id] != 2) sellSlot[id] = 1;
+
+	if (!cod_get_user_slot_item(id, sellSlot[id])) {
 		cod_print_chat(id, "You don't have any item!");
 
 		return PLUGIN_HANDLED;
@@ -154,16 +197,16 @@ public set_item_price(id)
 	new marketItem[itemInfo];
 
 	marketItem[MARKET_ID] = items++;
-	marketItem[MARKET_ITEM] = cod_get_user_item(id, marketItem[MARKET_VALUE]);
-	marketItem[MARKET_DURABILITY] = cod_get_item_durability(id);
+	marketItem[MARKET_ITEM] = cod_get_user_slot_item(id, sellSlot[id], marketItem[MARKET_VALUE]);
+	marketItem[MARKET_DURABILITY] = cod_get_slot_item_durability(id, sellSlot[id]);
 	marketItem[MARKET_OWNER] = id;
 	marketItem[MARKET_PRICE] = price;
 
-	cod_get_item_name(cod_get_user_item(id), marketItem[MARKET_NAME], charsmax(marketItem[MARKET_NAME]));
+	cod_get_item_name(marketItem[MARKET_ITEM], marketItem[MARKET_NAME], charsmax(marketItem[MARKET_NAME]));
 
 	ArrayPushArray(marketItems, marketItem);
 
-	cod_set_user_item(id);
+	cod_set_user_slot_item(id, sellSlot[id]);
 
 	cod_print_chat(0, "^x03%s^x01 listed^x03 %s^x01 on the market for^x03 %i^x01 Honor.", playerName[id], marketItem[MARKET_NAME], marketItem[MARKET_PRICE]);
 
@@ -311,7 +354,7 @@ public buy_question_handle(id, menu, item)
 	ArrayDeleteItem(marketItems, item);
 
 	cod_set_user_item(id, marketItem[MARKET_ITEM], marketItem[MARKET_VALUE]);
-	cod_set_item_durability(id, marketItem[MARKET_DURABILITY]);
+	cod_set_slot_item_durability(id, cod_get_item_target_slot(marketItem[MARKET_ITEM]), marketItem[MARKET_DURABILITY]);
 
 	cod_print_chat(id, "The item^x03 %s^x01 has been successfully purchased.", marketItem[MARKET_NAME]);
 	cod_print_chat(marketItem[MARKET_OWNER], "Your item^x03 %s^x01 was bought by^x03 %s^x01.", marketItem[MARKET_NAME], playerName[id]);
@@ -441,7 +484,7 @@ public withdraw_question_handle(id, menu, item)
 	ArrayGetArray(marketItems, item, marketItem);
 
 	cod_set_user_item(id, marketItem[MARKET_ITEM], marketItem[MARKET_VALUE]);
-	cod_set_item_durability(id, marketItem[MARKET_DURABILITY]);
+	cod_set_slot_item_durability(id, cod_get_item_target_slot(marketItem[MARKET_ITEM]), marketItem[MARKET_DURABILITY]);
 
 	ArrayDeleteItem(marketItems, item);
 

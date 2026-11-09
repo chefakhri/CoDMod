@@ -638,6 +638,144 @@ native cod_set_item_durability(id, amount);
 native cod_max_item_durability();
 
 /**
+ * Item slots
+ *
+ * Players hold 1 item (default) or 2, set by admins in /ca or with the cod_item_slots cvar.
+ * Slot 1 is the original single item slot: the natives above (cod_get_user_item,
+ * cod_get_item_durability, cod_upgrade_user_item, ...) keep working on it.
+ * cod_set_user_item puts an item into the slot it belongs to (see cod_get_item_target_slot);
+ * with RANDOM it fills a free slot, or replaces one of the items at random if both are full.
+ * With 2 slots every item has a fixed slot (configs/cod_item_slots.ini).
+ */
+
+/**
+ * Returns how many item slots players have right now.
+ *
+ * @return          1 or 2
+ */
+native cod_get_item_slots();
+
+/**
+ * Sets how many item slots players have (saved across map changes and restarts).
+ *
+ * @note Going to 2 moves slot-2 items held in the single slot to slot 2.
+ * @note Going to 1 removes slot-2 items, or keeps them in the single slot if it is empty.
+ *
+ * @param slots     1 or 2
+ *
+ * @noreturn
+ */
+native cod_set_item_slots(slots);
+
+/**
+ * Returns the slot an item is assigned to when 2 slots are enabled.
+ *
+ * @param item      Item index
+ *
+ * @return          1 or 2 (0 for an invalid item)
+ */
+native cod_get_item_slot(item);
+
+/**
+ * Returns the slot an item goes into right now (always 1 when there is a single slot).
+ *
+ * @param item      Item index
+ *
+ * @return          1 or 2 (0 for an invalid item)
+ */
+native cod_get_item_target_slot(item);
+
+/**
+ * Returns the item in a player's slot and its value.
+ *
+ * @note NONE (-1) will be assigned to value if item has no available value.
+ *
+ * @param id        Player index
+ * @param slot      1 or 2
+ * @param value     Variable to item value
+ *
+ * @return          Item index (0 if the slot is empty)
+ */
+native cod_get_user_slot_item(id, slot, &value = 0);
+
+/**
+ * Sets the item in a player's slot.
+ *
+ * @note Item index 0 removes the item from that slot.
+ * @note Item index RANDOM (-3) gives a random item that belongs to that slot.
+ * @note COD_STOP (4) is returned if the item belongs to the other slot or cannot be set.
+ *
+ * @param id        Player index
+ * @param slot      1 or 2
+ * @param item      Item index
+ * @param value     Item value (RANDOM for a random value)
+ * @param force     Disable restrictions
+ *
+ * @noreturn
+ */
+native cod_set_user_slot_item(id, slot, item = 0, value = RANDOM, force = false);
+
+/**
+ * Returns the first empty slot the player can still fill.
+ *
+ * @param id        Player index
+ *
+ * @return          1 or 2, or 0 if all available slots are full
+ */
+native cod_get_user_free_slot(id);
+
+/**
+ * Returns how many items a player holds.
+ *
+ * @param id        Player index
+ *
+ * @return          0, 1 or 2
+ */
+native cod_get_user_items_count(id);
+
+/**
+ * Checks whether a player holds an item, in either slot.
+ *
+ * @param id        Player index
+ * @param item      Item index
+ *
+ * @return          Slot holding the item (1 or 2), or 0
+ */
+native cod_user_has_item(id, item);
+
+/**
+ * Returns the durability of the item in a player's slot.
+ *
+ * @param id        Player index
+ * @param slot      1 or 2
+ *
+ * @return          Durability
+ */
+native cod_get_slot_item_durability(id, slot);
+
+/**
+ * Sets the durability of the item in a player's slot (0 destroys the item).
+ *
+ * @param id        Player index
+ * @param slot      1 or 2
+ * @param amount    Durability
+ *
+ * @noreturn
+ */
+native cod_set_slot_item_durability(id, slot, amount);
+
+/**
+ * Upgrades the item in a player's slot.
+ *
+ * @param id        Player index
+ * @param slot      1 or 2
+ * @param check     If true will only check if item can be upgraded
+ *
+ * @return          Returns 1 if item was upgraded / is upgradable, 0 otherwise
+ */
+native cod_upgrade_user_slot_item(id, slot, check = false);
+
+/**
  * Returns player maximum health points.
  *
  * @return          Max health points

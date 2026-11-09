@@ -27,18 +27,41 @@ public cod_class_kill(killer, victim, hitPlace)
 {
 	cod_refill_ammo(killer);
 
-	if (cod_get_user_item(victim) && cod_get_user_item(killer) != cod_get_user_item(victim) && cod_percent_chance(25)) {
-		show_question(killer, victim);
+	new slot = pick_steal_slot(killer, victim);
+
+	if (slot && cod_percent_chance(25)) {
+		show_question(killer, victim, slot);
 	}
 }
 
-public show_question(id, victim)
+// Which of the victim's items to steal: one the killer doesn't have yet, preferring one that fits
+// a free slot of the killer; if none fits, one at random (it replaces the killer's item in that slot)
+pick_steal_slot(killer, victim)
 {
-	new menuTitle[64], itemName[64], tempId[4];
+	new candidates[2], count, freeCandidates[2], freeCount, item;
 
-	cod_get_item_name(cod_get_user_item(victim), itemName, charsmax(itemName));
+	for (new slot = 1; slot <= 2; slot++) {
+		item = cod_get_user_slot_item(victim, slot);
 
-	num_to_str(victim, tempId, charsmax(tempId));
+		if (!item || cod_user_has_item(killer, item)) continue;
+
+		candidates[count++] = slot;
+
+		if (!cod_get_user_slot_item(killer, cod_get_item_target_slot(item))) freeCandidates[freeCount++] = slot;
+	}
+
+	if (freeCount) return freeCandidates[random(freeCount)];
+
+	return count ? candidates[random(count)] : 0;
+}
+
+public show_question(id, victim, slot)
+{
+	new menuTitle[64], itemName[64], tempId[8];
+
+	cod_get_item_name(cod_get_user_slot_item(victim, slot), itemName, charsmax(itemName));
+
+	formatex(tempId, charsmax(tempId), "%i#%i", victim, slot);
 
 	format(menuTitle, charsmax(menuTitle), "\yDo you want to steal the item: \r%s\y?", itemName);
 
@@ -62,17 +85,22 @@ public show_question_handle(id, menu, item)
 
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new itemData[4], victim, itemAccess, menuCallback;
+	new itemData[8], victimData[4], slotData[4], victim, slot, itemAccess, menuCallback;
 
 	menu_item_getinfo(menu, item, itemAccess, itemData, charsmax(itemData), _, _, menuCallback);
 
-	victim = str_to_num(itemData);
+	strtok(itemData, victimData, charsmax(victimData), slotData, charsmax(slotData), '#');
 
-	new itemValue, item = cod_get_user_item(victim, itemValue);
+	victim = str_to_num(victimData);
+	slot = str_to_num(slotData);
 
 	menu_destroy(menu);
 
-	if (!cod_get_user_item(victim) || cod_get_user_item(id) == cod_get_user_item(victim)) return;
+	if (!is_user_connected(victim) || (slot != 1 && slot != 2)) return;
+
+	new itemValue, item = cod_get_user_slot_item(victim, slot, itemValue);
+
+	if (!item || cod_user_has_item(id, item)) return;
 
 	new thiefName[32];
 
@@ -80,6 +108,6 @@ public show_question_handle(id, menu, item)
 
 	cod_print_chat(victim, "Your item was stolen by^x03 %s^x01.", thiefName);
 
-	cod_set_user_item(victim);
+	cod_set_user_slot_item(victim, slot);
 	cod_set_user_item(id, item, itemValue, true);
 }

@@ -49,6 +49,9 @@ public cod_item_upgrade(id)
 	cod_add_user_bonus_health(id, itemValue[id]);
 }
 
+public cod_item_value(id)
+	return itemValue[id];
+
 public cod_item_damage_attacker(attacker, victim, weapon, &Float:damage, damageBits, hitPlace)
 {
 	if (weapon == CSW_AWP && damageBits & DMG_BULLET && cod_percent_chance(50)) {

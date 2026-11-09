@@ -52,7 +52,7 @@ public process_trace(id, trace)
 
 	static ent; ent = get_tr2(trace, TR_pHit);
 
-	if (!is_user_alive(ent) || cod_get_user_item(ent) == cod_get_item_id("Headless")) return FMRES_IGNORED;
+	if (!is_user_alive(ent) || cod_user_has_item(ent, cod_get_item_id("Headless"))) return FMRES_IGNORED;
 
 	new Float:origin[3], Float:angles[3];
 

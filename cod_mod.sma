@@ -7,6 +7,7 @@
 #include <xs>
 #include <csx>
 #include <sqlx>
+#include <nvault>
 #include <cod>
 
 #define PLUGIN "CoD Mod"
@@ -94,7 +95,7 @@ enum _:forwards { CLASS_CHANGED, ITEM_CHANGED, RENDER_CHANGED, GRAVITY_CHANGED, 
 	RESET_ALL_DATA, FLAGS_CHANGED };
 
 enum _:itemInfo { ITEM_NAME[MAX_NAME], ITEM_DESC[MAX_DESC], ITEM_PLUGIN, ITEM_RANDOM_MIN, ITEM_RANDOM_MAX, ITEM_FLAG, ITEM_GIVE, ITEM_DROP,
-	ITEM_SPAWNED, ITEM_KILL, ITEM_KILLED, ITEM_SKILL_USED, ITEM_UPGRADE, ITEM_VALUE, ITEM_CHECK, ITEM_DAMAGE_ATTACKER, ITEM_DAMAGE_VICTIM };
+	ITEM_SPAWNED, ITEM_KILL, ITEM_KILLED, ITEM_SKILL_USED, ITEM_UPGRADE, ITEM_VALUE, ITEM_CHECK, ITEM_DAMAGE_ATTACKER, ITEM_DAMAGE_VICTIM, ITEM_SLOT };
 
 enum _:classInfo { CLASS_NAME[MAX_NAME], CLASS_DESC[MAX_DESC], CLASS_FRACTION[MAX_NAME], CLASS_HEAL, CLASS_INT, CLASS_STR,
 	CLASS_COND, CLASS_STAM, CLASS_WEAPONS, CLASS_PROMOTION, CLASS_DEGREE, CLASS_LEVEL, CLASS_FLAG, CLASS_PLUGIN, CLASS_ENABLED,
@@ -106,7 +107,7 @@ enum _:renderInfo { RENDER_TYPE, RENDER_VALUE, RENDER_STATUS, RENDER_WEAPON };
 
 enum _:playerInfo { PLAYER_CLASS, PLAYER_NEW_CLASS, PLAYER_PROMOTION_ID, PLAYER_PROMOTION, PLAYER_LEVEL, PLAYER_GAINED_LEVEL, PLAYER_EXP, PLAYER_GAINED_EXP, PLAYER_HEAL, PLAYER_INT, PLAYER_STAM,
 	PLAYER_STR, PLAYER_COND, PLAYER_POINTS, PLAYER_POINTS_SPEED, PLAYER_EXTRA_HEAL, PLAYER_EXTRA_INT, PLAYER_EXTRA_STAM, PLAYER_EXTRA_STR, PLAYER_EXTRA_COND, PLAYER_EXTRA_WEAPONS, PLAYER_WEAPON,
-	PLAYER_WEAPONS, PLAYER_STATUS, PLAYER_ITEM, PLAYER_ITEM_DURA, PLAYER_DYNAMITE, PLAYER_LEFT_JUMPS, PLAYER_SPAWNED, PLAYER_DAMAGE_TAKEN, PLAYER_DAMAGE_GIVEN, PLAYER_RENDER, PLAYER_KS,
+	PLAYER_WEAPONS, PLAYER_STATUS, PLAYER_ITEM, PLAYER_ITEM_DURA, PLAYER_ITEM2, PLAYER_ITEM_DURA2, PLAYER_DYNAMITE, PLAYER_LEFT_JUMPS, PLAYER_SPAWNED, PLAYER_DAMAGE_TAKEN, PLAYER_DAMAGE_GIVEN, PLAYER_RENDER, PLAYER_KS,
 	PLAYER_TIME_KS, PLAYER_ALIVE, PLAYER_FLAGS, Float:PLAYER_LAST_ROCKET, Float:PLAYER_LAST_MINE, Float:PLAYER_LAST_DYNAMITE, Float:PLAYER_LAST_MEDKIT, Float:PLAYER_LAST_POISON, Float:PLAYER_LAST_THUNDER,
 	Float:PLAYER_LAST_TELEPORT, PLAYER_HUD_RED, PLAYER_HUD_GREEN, PLAYER_HUD_BLUE, PLAYER_HUD_POSX, PLAYER_HUD_POSY, SKILL_USE, PLAYER_ROCKETS[ALL + 1], PLAYER_MINES[ALL + 1], PLAYER_DYNAMITES[ALL + 1],
 	PLAYER_MEDKITS[ALL + 1], PLAYER_POISONS[ALL + 1], PLAYER_THUNDERS[ALL + 1], PLAYER_TELEPORTS[ALL + 1], PLAYER_JUMPS[ALL + 1], PLAYER_BUNNYHOP[ALL + 1], PLAYER_FOOTSTEPS[ALL + 1], PLAYER_MODEL[ALL + 1],
@@ -127,6 +128,29 @@ new Handle:sql, Handle:connection, bool:sqlConnected, bool:skillsBlocked, bool:n
 // Bot support: bots get a random class, a level matched to the humans, and auto-assigned stat points.
 // Bot data is kept in memory only and never written to the database.
 new botPlayer, cvarBotLevel;
+
+// Item slots: players can hold 1 item (default) or 2, toggled by admins (/ca) or the cod_item_slots cvar.
+// With 2 slots every item has a fixed slot (configs/cod_item_slots.ini), chosen so that items that
+// change the same player state (render, gravity, weapons, ...) can never be held together.
+#define SLOT_ITEM(%1,%2) codPlayer[%1][(%2) == 2 ? PLAYER_ITEM2 : PLAYER_ITEM]
+#define SLOT_DURA(%1,%2) codPlayer[%1][(%2) == 2 ? PLAYER_ITEM_DURA2 : PLAYER_ITEM_DURA]
+
+new itemSlots = 1, bool:itemSlotsLoaded, settingsVault = INVALID_HANDLE;
+
+// Groups of items that write the same per-item player state. A group must sit in one slot.
+new const itemClashGroups[][] = {
+	"coditem_awpweterana coditem_cien coditem_kamuflarz coditem_kucacz coditem_kurtkakampera coditem_mac10ducha coditem_pelerynaniewidka coditem_skoczneszalenstwo coditem_strojninjy",
+	"coditem_kroliczalapka coditem_skoczneszalenstwo",
+	"coditem_kosmiczneklapki coditem_skrzydlaarchaniola",
+	"coditem_pociskispowalniajace coditem_zimnekule",
+	"coditem_boskiep90 coditem_eliminatorrozrzutu",
+	"coditem_bezlikammo coditem_boskiep90",
+	"coditem_generatorrakiet coditem_wyposazeniewsparcia",
+	"coditem_generatordynamitow coditem_worektnt",
+	"coditem_dezercja coditem_farbowanylis",
+	"coditem_dobrakrowka coditem_mocneak47 coditem_ruskaczapka coditem_boskiep90 coditem_awpsnajpera coditem_awpweterana coditem_mistrzowskieawp coditem_tajemnicasnajpera coditem_mistrzowskiscout coditem_tajemnicamysliwego coditem_ulepszonem4a1 coditem_smiercionosnyaug coditem_mac10ducha coditem_galilweterana coditem_zabojczemp5",
+	"coditem_epickideagle coditem_rosyjskaruletka coditem_agent007 coditem_diabelskiep228"
+};
 
 forward amxbans_admin_connect(id);
 forward client_admin(id, flags);
@@ -169,6 +193,8 @@ public plugin_init()
 	bind_pcvar_num(create_cvar("cod_max_damage_durability", "30"), cvarMaxDamageDurability);
 	bind_pcvar_num(create_cvar("cod_block_skills_time", "5"), cvarBlockSkillsTime);
 
+	hook_cvar_change(create_cvar("cod_item_slots", "1", _, "Item slots per player (1 or 2)", true, 1.0, true, 2.0), "item_slots_changed");
+
 	register_cvar("cod_version", VERSION, FCVAR_SERVER);
 
 	for (new i; i < sizeof commandClass; i++) register_clcmd(commandClass[i], "select_faction");
@@ -196,6 +222,9 @@ public plugin_init()
 	register_clcmd("+teleport", "bind_use_teleport");
 	register_clcmd("+class", "use_class");
 	register_clcmd("+item", "use_item");
+	register_clcmd("+item2", "use_item2");
+	register_clcmd("say /item2", "use_item2");
+	register_clcmd("say_team /item2", "use_item2");
 
 	// Chat shortcuts so players don't need to bind keys
 	register_clcmd("say /rocket", "bind_use_rocket");
@@ -340,6 +369,19 @@ public plugin_natives()
 	register_native("cod_set_item_durability", "_cod_set_item_durability", 1);
 	register_native("cod_max_item_durability", "_cod_max_item_durability", 1);
 
+	register_native("cod_get_item_slots", "_cod_get_item_slots", 1);
+	register_native("cod_set_item_slots", "_cod_set_item_slots", 1);
+	register_native("cod_get_item_slot", "_cod_get_item_slot", 1);
+	register_native("cod_get_item_target_slot", "_cod_get_item_target_slot", 1);
+	register_native("cod_get_user_slot_item", "_cod_get_user_slot_item", 1);
+	register_native("cod_set_user_slot_item", "_cod_set_user_slot_item", 1);
+	register_native("cod_get_user_free_slot", "_cod_get_user_free_slot", 1);
+	register_native("cod_get_user_items_count", "_cod_get_user_items_count", 1);
+	register_native("cod_user_has_item", "_cod_user_has_item", 1);
+	register_native("cod_get_slot_item_durability", "_cod_get_slot_item_durability", 1);
+	register_native("cod_set_slot_item_durability", "_cod_set_slot_item_durability", 1);
+	register_native("cod_upgrade_user_slot_item", "_cod_upgrade_user_slot_item", 1);
+
 	register_native("cod_get_user_max_health", "_cod_get_user_max_health", 1);
 	register_native("cod_get_user_health", "_cod_get_user_health", 1);
 	register_native("cod_set_user_health", "_cod_set_user_health", 1);
@@ -480,6 +522,9 @@ public plugin_cfg()
 	server_cmd("exec %s/cod_mod.cfg", configPath);
 	server_exec();
 
+	load_item_slots_config(configPath);
+	load_item_slots_setting();
+
 	server_cmd("sv_maxspeed 800");
 
 	if (get_level_exp(cvarLevelLimit - 1) < 0) set_fail_state("Maximum possible experience value exceeded for the max level. Lower the value of cvar cod_level_ratio or cod_max_level.");
@@ -493,6 +538,7 @@ public plugin_cfg()
 
 	log_amx("Call of Duty Mod by O'Zone (v%s).", VERSION);
 	log_amx("Loaded %i classes and %i items.", ArraySize(codClasses) - 1, ArraySize(codItems) - 1);
+	log_amx("Item slots per player: %i.", itemSlots);
 }
 
 public plugin_end()
@@ -583,6 +629,7 @@ public client_disconnected(id)
 	if (!mapEnd) {
 		if (codPlayer[id][PLAYER_CLASS]) execute_forward_ignore_one_param(get_class_info(codPlayer[id][PLAYER_CLASS], CLASS_DISABLED), id);
 		if (codPlayer[id][PLAYER_ITEM]) execute_forward_ignore_one_param(get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_DROP), id);
+		if (codPlayer[id][PLAYER_ITEM2]) execute_forward_ignore_one_param(get_item_info(codPlayer[id][PLAYER_ITEM2], ITEM_DROP), id);
 	}
 }
 
@@ -1094,7 +1141,9 @@ public display_promotions_description(id, class, promotion)
 
 public display_item_description(id)
 {
-	show_item_description(id, codPlayer[id][PLAYER_ITEM], 0);
+	show_item_description(id, codPlayer[id][PLAYER_ITEM], 0, 1);
+
+	if (itemSlots == 2) show_item_description(id, codPlayer[id][PLAYER_ITEM2], 0, 2);
 
 	return PLUGIN_HANDLED;
 }
@@ -1105,12 +1154,15 @@ public display_items_description(id, page, sound)
 
 	if (sound) client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
-	new itemName[MAX_NAME], menu = menu_create("\ySelect \rItem\w:", "display_items_description_handle");
+	new itemName[MAX_NAME], menuData[MAX_NAME + 16], menu = menu_create("\ySelect \rItem\w:", "display_items_description_handle");
 
 	for (new i = 1; i < ArraySize(codItems); i++) {
 		get_item_info(i, ITEM_NAME, itemName, charsmax(itemName));
 
-		menu_additem(menu, itemName);
+		if (itemSlots == 2) formatex(menuData, charsmax(menuData), "%s \d[slot %i]", itemName, get_item_info(i, ITEM_SLOT));
+		else copy(menuData, charsmax(menuData), itemName);
+
+		menu_additem(menu, menuData);
 	}
 
 	menu_setprop(menu, MPROP_EXITNAME, "Exit");
@@ -1138,14 +1190,14 @@ public display_items_description_handle(id, menu, item)
 
 	menu_destroy(menu);
 
-	show_item_description(id, item + 1, 1);
+	show_item_description(id, item + 1, 1, 0);
 
 	display_items_description(id, item / 7, 1);
 
 	return PLUGIN_HANDLED;
 }
 
-public show_item_description(id, item, info)
+public show_item_description(id, item, info, slot)
 {
 	new itemDescription[MAX_DESC], itemName[MAX_NAME], valueRandom[MAX_NAME / 4];
 
@@ -1154,11 +1206,12 @@ public show_item_description(id, item, info)
 
 	new valueMin = get_item_info(item, ITEM_RANDOM_MIN), valueMax = get_item_info(item, ITEM_RANDOM_MAX);
 
-	chat_print(id, "Item:^x03 %s^x01.", itemName);
+	if (slot) chat_print(id, "%s:^x03 %s^x01.", itemSlots == 2 ? (slot == 2 ? "Item 2" : "Item 1") : "Item", itemName);
+	else chat_print(id, "Item:^x03 %s^x01.", itemName);
 
 	if (get_item_info(item, ITEM_VALUE) > 0) {
 		if (!info) {
-			new itemValue[6], itemTempValue = _cod_get_user_item_value(id);
+			new itemValue[6], itemTempValue = get_slot_item_value(id, slot ? slot : 1);
 
 			num_to_str(itemTempValue, itemValue, charsmax(itemValue));
 
@@ -1181,17 +1234,49 @@ public show_item_description(id, item, info)
 
 public drop_item(id)
 {
-	if (codPlayer[id][PLAYER_ITEM]) {
-		new itemName[MAX_NAME];
+	if (codPlayer[id][PLAYER_ITEM] && codPlayer[id][PLAYER_ITEM2]) {
+		new itemName[MAX_NAME], menuData[MAX_NAME + 16], menu = menu_create("\yDrop which \ritem\w?", "drop_item_handle");
 
 		get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_NAME, itemName, charsmax(itemName));
+		formatex(menuData, charsmax(menuData), "%s \d[slot 1]", itemName);
+		menu_additem(menu, menuData);
 
-		chat_print(id, "You dropped the item:^x03 %s^x01.", itemName);
+		get_item_info(codPlayer[id][PLAYER_ITEM2], ITEM_NAME, itemName, charsmax(itemName));
+		formatex(menuData, charsmax(menuData), "%s \d[slot 2]", itemName);
+		menu_additem(menu, menuData);
 
-		set_item(id);
-	} else chat_print(id, "You don't have any^x03 item^x01.");
+		menu_setprop(menu, MPROP_EXITNAME, "Exit");
+
+		menu_display(id, menu);
+	} else if (codPlayer[id][PLAYER_ITEM]) drop_slot_item(id, 1);
+	else if (codPlayer[id][PLAYER_ITEM2]) drop_slot_item(id, 2);
+	else chat_print(id, "You don't have any^x03 item^x01.");
 
 	return PLUGIN_HANDLED;
+}
+
+public drop_item_handle(id, menu, item)
+{
+	menu_destroy(menu);
+
+	if (!is_user_connected(id) || item == MENU_EXIT) return PLUGIN_HANDLED;
+
+	drop_slot_item(id, item + 1);
+
+	return PLUGIN_HANDLED;
+}
+
+stock drop_slot_item(id, slot)
+{
+	if (!SLOT_ITEM(id, slot)) return;
+
+	new itemName[MAX_NAME];
+
+	get_item_info(SLOT_ITEM(id, slot), ITEM_NAME, itemName, charsmax(itemName));
+
+	chat_print(id, "You dropped the item:^x03 %s^x01.", itemName);
+
+	set_item(id, 0, 0, false, slot);
 }
 
 public reset_stats(id)
@@ -1451,9 +1536,11 @@ public show_binds(id, sound)
 	menu_additem(menu, "\wTeleport \y[\r+teleport\y]");
 	menu_additem(menu, "\wClass \y[\r+class\y]");
 	menu_additem(menu, "\wItem \y[\r+item\y]");
+	if (itemSlots == 2) menu_additem(menu, "\wItem 2 \y[\r+item2\y]");
 	menu_addtext(menu, "^n\rE\y - class skill (no skill: uses your rockets, mines...)", 0);
 	menu_addtext(menu, "\rCrouch + E\y - always uses rockets, mines, dynamite...", 0);
 	menu_addtext(menu, "\rF\y - use your item. Chat: \w/rocket /mine /dynamite /medkit", 0);
+	if (itemSlots == 2) menu_addtext(menu, "\r+item2\y or \w/item2\y - use your second item", 0);
 	menu_addtext(menu, "\yOptional own key: \rbind ^"z^" ^"+rocket^"\y in console.", 0);
 
 	menu_setprop(menu, MPROP_EXITNAME, "Exit");
@@ -2112,11 +2199,32 @@ public use_teleport(id)
 
 public use_item(id)
 {
-	if (!is_user_alive(id) || !codPlayer[id][PLAYER_ITEM] || freezeTime || skills_blocked(id)) return PLUGIN_HANDLED;
+	new slot = (!item_has_skill(codPlayer[id][PLAYER_ITEM]) && item_has_skill(codPlayer[id][PLAYER_ITEM2])) ? 2 : 1;
 
-	execute_forward_ignore_one_param(get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_SKILL_USED), id);
+	use_slot_item(id, slot);
 
 	return PLUGIN_HANDLED;
+}
+
+public use_item2(id)
+{
+	use_slot_item(id, 2);
+
+	return PLUGIN_HANDLED;
+}
+
+stock use_slot_item(id, slot)
+{
+	if (!is_user_alive(id) || !SLOT_ITEM(id, slot) || freezeTime || skills_blocked(id)) return;
+
+	execute_forward_ignore_one_param(get_item_info(SLOT_ITEM(id, slot), ITEM_SKILL_USED), id);
+}
+
+stock bool:item_has_skill(item)
+{
+	if (item <= 0) return false;
+
+	return get_func_id("cod_item_skill_used", get_item_info(item, ITEM_PLUGIN)) != -1;
 }
 
 public use_class(id)
@@ -2191,6 +2299,7 @@ public player_spawn(id)
 
 	if (codPlayer[id][PLAYER_CLASS]) execute_forward_ignore_two_params(get_class_info(codPlayer[id][PLAYER_CLASS], CLASS_SPAWNED), id, codPlayer[id][PLAYER_SPAWNED]);
 	if (codPlayer[id][PLAYER_ITEM]) execute_forward_ignore_two_params(get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_SPAWNED), id, codPlayer[id][PLAYER_SPAWNED]);
+	if (codPlayer[id][PLAYER_ITEM2]) execute_forward_ignore_two_params(get_item_info(codPlayer[id][PLAYER_ITEM2], ITEM_SPAWNED), id, codPlayer[id][PLAYER_SPAWNED]);
 
 	execute_forward_ignore_two_params(codForwards[SPAWNED], id, codPlayer[id][PLAYER_SPAWNED]);
 
@@ -2236,11 +2345,13 @@ public player_take_damage_pre(victim, inflictor, attacker, Float:damage, damageB
 		}
 	}
 
-	if (codPlayer[victim][PLAYER_ITEM]) {
-		function = get_item_info(codPlayer[victim][PLAYER_ITEM], ITEM_DAMAGE_VICTIM);
+	for (new slot = 1; slot <= 2; slot++) {
+		if (!SLOT_ITEM(victim, slot)) continue;
+
+		function = get_item_info(SLOT_ITEM(victim, slot), ITEM_DAMAGE_VICTIM);
 
 		if (function != NONE) {
-			callfunc_begin_i(function, get_item_info(codPlayer[victim][PLAYER_ITEM], ITEM_PLUGIN));
+			callfunc_begin_i(function, get_item_info(SLOT_ITEM(victim, slot), ITEM_PLUGIN));
 			callfunc_push_int(attacker);
 			callfunc_push_int(victim);
 			callfunc_push_int(weapon);
@@ -2282,13 +2393,15 @@ public player_take_damage_pre(victim, inflictor, attacker, Float:damage, damageB
 		}
 	}
 
-	if (codPlayer[attacker][PLAYER_ITEM]) {
+	for (new slot = 1; slot <= 2; slot++) {
+		if (!SLOT_ITEM(attacker, slot)) continue;
+
 		baseDamage = damage;
 
-		function = get_item_info(codPlayer[attacker][PLAYER_ITEM], ITEM_DAMAGE_ATTACKER);
+		function = get_item_info(SLOT_ITEM(attacker, slot), ITEM_DAMAGE_ATTACKER);
 
 		if (function != NONE) {
-			callfunc_begin_i(function, get_item_info(codPlayer[attacker][PLAYER_ITEM], ITEM_PLUGIN));
+			callfunc_begin_i(function, get_item_info(SLOT_ITEM(attacker, slot), ITEM_PLUGIN));
 			callfunc_push_int(attacker);
 			callfunc_push_int(victim);
 			callfunc_push_int(weapon);
@@ -2403,33 +2516,50 @@ public player_death(killer, victim, weapon, hitPlace)
 
 	get_user_class_info(killer, codPlayer[killer][PLAYER_CLASS], CLASS_NAME, className, charsmax(className));
 
-	if (!codPlayer[killer][PLAYER_ITEM]) {
+	if (!codPlayer[killer][PLAYER_ITEM] && !codPlayer[killer][PLAYER_ITEM2]) {
 		set_item(killer, RANDOM, RANDOM);
 
 		chat_print(victim, "You were killed by^x03 %s^x04 (%s - %i)^x01, who had^x04 %i^x01 HP left.", codPlayer[killer][PLAYER_NAME], className, codPlayer[killer][PLAYER_LEVEL], get_user_health(killer));
 	} else {
-		get_item_info(codPlayer[killer][PLAYER_ITEM], ITEM_NAME, itemName, charsmax(itemName));
+		get_user_items_text(killer, itemName, charsmax(itemName));
 
 		chat_print(victim, "You were killed by^x03 %s^x04 (%s - %i - %s)^x01, who had^x04 %i^x01 HP left.", codPlayer[killer][PLAYER_NAME], className, codPlayer[killer][PLAYER_LEVEL], itemName, get_user_health(killer));
+
+		// With 2 slots, a kill also fills the free slot
+		new freeSlot = get_free_slot(killer);
+
+		if (freeSlot) set_item(killer, RANDOM, RANDOM, false, freeSlot);
 	}
 
 	check_level(killer);
 
 	if (codPlayer[killer][PLAYER_CLASS]) execute_forward_ignore_three_params(get_class_info(codPlayer[killer][PLAYER_CLASS], CLASS_KILL), killer, victim, hitPlace);
-	if (codPlayer[killer][PLAYER_ITEM]) execute_forward_ignore_three_params(get_item_info(codPlayer[killer][PLAYER_ITEM], ITEM_KILL), killer, victim, hitPlace);
+
+	for (new slot = 1; slot <= 2; slot++) {
+		if (SLOT_ITEM(killer, slot)) execute_forward_ignore_three_params(get_item_info(SLOT_ITEM(killer, slot), ITEM_KILL), killer, victim, hitPlace);
+	}
+
 	if (codPlayer[victim][PLAYER_CLASS]) execute_forward_ignore_three_params(get_class_info(codPlayer[victim][PLAYER_CLASS], CLASS_KILLED), killer, victim, hitPlace);
 
-	if (codPlayer[victim][PLAYER_ITEM]) {
-		execute_forward_ignore_three_params(get_item_info(codPlayer[victim][PLAYER_ITEM], ITEM_KILLED), killer, victim, hitPlace);
+	for (new slot = 1; slot <= 2; slot++) {
+		if (!SLOT_ITEM(victim, slot)) continue;
 
-		if (cvarMaxDurability) {
-			codPlayer[victim][PLAYER_ITEM_DURA] -= random_num(cvarMinDamageDurability, cvarMaxDamageDurability);
+		execute_forward_ignore_three_params(get_item_info(SLOT_ITEM(victim, slot), ITEM_KILLED), killer, victim, hitPlace);
 
-			if (codPlayer[victim][PLAYER_ITEM_DURA] <= 0) {
-				set_item(victim);
+		if (cvarMaxDurability && SLOT_ITEM(victim, slot)) {
+			new slotName[16];
 
-				chat_print(victim, "Your item has been destroyed.");
-			} else chat_print(victim, "Your item's remaining durability is^x03 %i^x01/^x03%i^x01.", codPlayer[victim][PLAYER_ITEM_DURA], cvarMaxDurability);
+			get_item_info(SLOT_ITEM(victim, slot), ITEM_NAME, itemName, charsmax(itemName));
+
+			formatex(slotName, charsmax(slotName), "%s", itemSlots == 2 ? (slot == 2 ? "item 2" : "item 1") : "item");
+
+			SLOT_DURA(victim, slot) -= random_num(cvarMinDamageDurability, cvarMaxDamageDurability);
+
+			if (SLOT_DURA(victim, slot) <= 0) {
+				set_item(victim, 0, 0, false, slot);
+
+				chat_print(victim, "Your %s^x03 %s^x01 has been destroyed.", slotName, itemName);
+			} else chat_print(victim, "Your %s's remaining durability is^x03 %i^x01/^x03%i^x01.", slotName, SLOT_DURA(victim, slot), cvarMaxDurability);
 		}
 	}
 
@@ -2936,9 +3066,9 @@ public show_info(id)
 		return PLUGIN_CONTINUE;
 	}
 
-	static hudData[512], className[MAX_NAME], itemName[MAX_NAME], clanName[MAX_NAME], missionProgress[MAX_NAME], gameTime[MAX_NAME], itemDurability[16], Float:levelPercent, exp, target;
+	static hudData[512], className[MAX_NAME], itemName[MAX_NAME], item2Name[MAX_NAME], clanName[MAX_NAME], missionProgress[MAX_NAME], gameTime[MAX_NAME], itemDurability[16], item2Durability[16], item2Line[MAX_NAME + 32], Float:levelPercent, exp, target;
 
-	clanName = ""; missionProgress = "", itemDurability = "";
+	clanName = ""; missionProgress = "", itemDurability = "", item2Durability = "", item2Line = "";
 
 	target = id;
 
@@ -2981,8 +3111,18 @@ public show_info(id)
 		formatex(itemDurability, charsmax(itemDurability), " (%0.0f%s)", codPlayer[target][PLAYER_ITEM_DURA] * 100.0 / cvarMaxDurability, "%%");
 	}
 
-	formatex(hudData, charsmax(hudData), "[Class : %s]%s^n[Level : %i]^n[Experience : %0.1f%s]^n[Item : %s%s]%s^n[Health : %i]^n[Honor : %i]^n[Play Time : %s]",
-	className, clanName, codPlayer[target][PLAYER_LEVEL], levelPercent, "%%", itemName, itemDurability, missionProgress, get_user_health(target), cod_get_user_honor(target), gameTime);
+	if (itemSlots == 2) {
+		get_item_info(codPlayer[target][PLAYER_ITEM2], ITEM_NAME, item2Name, charsmax(item2Name));
+
+		if (cvarMaxDurability && codPlayer[target][PLAYER_ITEM2]) {
+			formatex(item2Durability, charsmax(item2Durability), " (%0.0f%s)", codPlayer[target][PLAYER_ITEM_DURA2] * 100.0 / cvarMaxDurability, "%%");
+		}
+
+		formatex(item2Line, charsmax(item2Line), "^n[Item 2 : %s%s]", item2Name, item2Durability);
+	}
+
+	formatex(hudData, charsmax(hudData), "[Class : %s]%s^n[Level : %i]^n[Experience : %0.1f%s]^n[Item : %s%s]%s%s^n[Health : %i]^n[Honor : %i]^n[Play Time : %s]",
+	className, clanName, codPlayer[target][PLAYER_LEVEL], levelPercent, "%%", itemName, itemDurability, item2Line, missionProgress, get_user_health(target), cod_get_user_honor(target), gameTime);
 
 	if (get_exp_bonus(target, NONE)) format(hudData, charsmax(hudData), "%s^n[Exp Bonus : %i%s]", hudData, get_exp_bonus(target, NONE), "%%");
 
@@ -3125,27 +3265,35 @@ stock check_item(id, item)
 	return ret == COD_STOP ? false : true;
 }
 
-stock set_item(id, item = 0, value = 0, force = false)
+stock set_item(id, item = 0, value = 0, force = false, slot = 0)
 {
 	if (!ArraySize(codItems) || !is_user_connected(id)) return PLUGIN_CONTINUE;
 
+	if (item == RANDOM) {
+		// A random item goes to the given slot, else a free slot, else one of the slots at random
+		if (!slot) slot = get_free_slot(id);
+		if (!slot) slot = itemSlots == 2 ? random_num(1, 2) : 1;
+
+		item = get_random_item(id, slot, force);
+
+		if (!item) return PLUGIN_CONTINUE;
+	} else if (item) {
+		new targetSlot = get_target_slot(item);
+
+		if (slot && slot != targetSlot) return COD_STOP;
+
+		slot = targetSlot;
+
+		if (!force && !check_item(id, item)) return COD_STOP;
+	} else if (slot != 2) slot = 1;
+
 	reset_attributes(id, ITEM);
 
-	new bool:random = (item == RANDOM);
-
-	item = random ? random_num(1, ArraySize(codItems) - 1): item;
+	// Turn the old item off before the new one on: when both are the same item plugin, the other
+	// order would make cod_item_disabled undo the new item's value instead of the old one
+	if (SLOT_ITEM(id, slot)) execute_forward_ignore_one_param(get_item_info(SLOT_ITEM(id, slot), ITEM_DROP), id);
 
 	if (item) {
-		if (!force && !check_item(id, item)) {
-			if (random) {
-				set_item(id, RANDOM, RANDOM);
-
-				return PLUGIN_CONTINUE;
-			}
-
-			return COD_STOP;
-		}
-
 		if (value == RANDOM) {
 			new valueMin = get_item_info(item, ITEM_RANDOM_MIN), valueMax = get_item_info(item, ITEM_RANDOM_MAX);
 
@@ -3156,16 +3304,17 @@ stock set_item(id, item = 0, value = 0, force = false)
 		execute_forward_ignore_two_params(get_item_info(item, ITEM_GIVE), id, value);
 	}
 
-	if (codPlayer[id][PLAYER_ITEM]) execute_forward_ignore_one_param(get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_DROP), id);
+	SLOT_ITEM(id, slot) = item;
 
-	codPlayer[id][PLAYER_ITEM] = item;
+	// reset_attributes(ITEM) also cleared the other slot's item effects: apply them again
+	refresh_slot_item(id, slot == 2 ? 1 : 2);
 
-	execute_forward_ignore_two_params(codForwards[ITEM_CHANGED], id, codPlayer[id][PLAYER_ITEM]);
+	execute_forward_ignore_two_params(codForwards[ITEM_CHANGED], id, item);
 
-	if (codPlayer[id][PLAYER_ITEM]) {
-		codPlayer[id][PLAYER_ITEM_DURA] = cvarMaxDurability;
+	if (item) {
+		SLOT_DURA(id, slot) = cvarMaxDurability;
 
-		new itemDescription[MAX_DESC], itemName[MAX_NAME], itemValue[6], itemTempValue = _cod_get_user_item_value(id);
+		new itemDescription[MAX_DESC], itemName[MAX_NAME], itemValue[6], itemTempValue = get_slot_item_value(id, slot);
 
 		get_item_info(item, ITEM_DESC, itemDescription, charsmax(itemDescription));
 		get_item_info(item, ITEM_NAME, itemName, charsmax(itemName));
@@ -3176,10 +3325,287 @@ stock set_item(id, item = 0, value = 0, force = false)
 			format(itemDescription, charsmax(itemDescription), itemDescription, itemValue);
 		}
 
-		chat_print(id, "You got^x03 %s^x01 -^x04 %s^x01.", itemName, itemDescription);
-	} else codPlayer[id][PLAYER_ITEM_DURA] = 0;
+		if (itemSlots == 2) chat_print(id, "You got^x03 %s^x01 (item %i) -^x04 %s^x01.", itemName, slot, itemDescription);
+		else chat_print(id, "You got^x03 %s^x01 -^x04 %s^x01.", itemName, itemDescription);
+	} else SLOT_DURA(id, slot) = 0;
 
 	return PLUGIN_CONTINUE;
+}
+
+// Turns the item in a slot off and on again with the same value (durability is kept)
+stock refresh_slot_item(id, slot)
+{
+	new item = SLOT_ITEM(id, slot);
+
+	if (!item) return;
+
+	new value = get_slot_item_value(id, slot);
+
+	execute_forward_ignore_one_param(get_item_info(item, ITEM_DROP), id);
+	execute_forward_ignore_two_params(get_item_info(item, ITEM_GIVE), id, value);
+}
+
+stock get_slot_item_value(id, slot)
+{
+	new value = NONE, item = SLOT_ITEM(id, slot);
+
+	if (item && get_item_info(item, ITEM_VALUE) > 0) ExecuteForward(get_item_info(item, ITEM_VALUE), value, id);
+
+	return value;
+}
+
+// The slot an item goes into right now: always 1 with one slot, its configured slot with two
+stock get_target_slot(item)
+	return (itemSlots == 2 && item > 0) ? get_item_info(item, ITEM_SLOT) : 1;
+
+// First empty slot the player can still fill (0 if none)
+stock get_free_slot(id)
+{
+	if (!codPlayer[id][PLAYER_ITEM]) return 1;
+
+	if (itemSlots == 2 && !codPlayer[id][PLAYER_ITEM2]) return 2;
+
+	return 0;
+}
+
+stock get_random_item(id, slot, force)
+{
+	new candidates[256], count;
+
+	for (new i = 1; i < ArraySize(codItems) && count < sizeof candidates; i++) {
+		if (itemSlots == 2 && get_item_info(i, ITEM_SLOT) != slot) continue;
+
+		if (!force && !check_item(id, i)) continue;
+
+		candidates[count++] = i;
+	}
+
+	return count ? candidates[random(count)] : 0;
+}
+
+stock get_user_items_text(id, dataReturn[], dataLength)
+{
+	new itemName[MAX_NAME];
+
+	dataReturn[0] = EOS;
+
+	for (new slot = 1; slot <= 2; slot++) {
+		if (!SLOT_ITEM(id, slot)) continue;
+
+		get_item_info(SLOT_ITEM(id, slot), ITEM_NAME, itemName, charsmax(itemName));
+
+		if (dataReturn[0]) format(dataReturn, dataLength, "%s + %s", dataReturn, itemName);
+		else copy(dataReturn, dataLength, itemName);
+	}
+}
+
+stock clear_user_items(id)
+{
+	if (codPlayer[id][PLAYER_ITEM2]) set_item(id, 0, 0, false, 2);
+
+	set_item(id, 0, 0, false, 1);
+}
+
+// ---------------------------------------------------------------------------
+// Item slots: setting, switching between 1 and 2, and the slot list
+// ---------------------------------------------------------------------------
+
+public item_slots_changed(pcvar, const oldValue[], const newValue[])
+{
+	new value = clamp(str_to_num(newValue), 1, 2);
+
+	// While the config is loading (map start) just take the value; nobody is connected yet
+	if (!itemSlotsLoaded) {
+		itemSlots = value;
+
+		return;
+	}
+
+	apply_item_slots(value);
+
+	if (settingsVault != INVALID_HANDLE) {
+		new valueData[4];
+
+		num_to_str(itemSlots, valueData, charsmax(valueData));
+
+		nvault_set(settingsVault, "item_slots", valueData);
+	}
+}
+
+stock apply_item_slots(value)
+{
+	if (value == itemSlots) return;
+
+	itemSlots = value;
+
+	new itemName[MAX_NAME];
+
+	for (new id = 1; id <= MAX_PLAYERS; id++) {
+		if (!is_user_connected(id)) continue;
+
+		if (value == 2) {
+			// The single slot becomes slot 1; a slot-2 item held there moves to slot 2
+			if (codPlayer[id][PLAYER_ITEM] && get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_SLOT) == 2) {
+				codPlayer[id][PLAYER_ITEM2] = codPlayer[id][PLAYER_ITEM];
+				codPlayer[id][PLAYER_ITEM_DURA2] = codPlayer[id][PLAYER_ITEM_DURA];
+				codPlayer[id][PLAYER_ITEM] = 0;
+				codPlayer[id][PLAYER_ITEM_DURA] = 0;
+			}
+		} else if (codPlayer[id][PLAYER_ITEM2]) {
+			if (!codPlayer[id][PLAYER_ITEM]) {
+				// Slot 1 is empty: keep the item in the single slot
+				codPlayer[id][PLAYER_ITEM] = codPlayer[id][PLAYER_ITEM2];
+				codPlayer[id][PLAYER_ITEM_DURA] = codPlayer[id][PLAYER_ITEM_DURA2];
+				codPlayer[id][PLAYER_ITEM2] = 0;
+				codPlayer[id][PLAYER_ITEM_DURA2] = 0;
+			} else {
+				get_item_info(codPlayer[id][PLAYER_ITEM2], ITEM_NAME, itemName, charsmax(itemName));
+
+				set_item(id, 0, 0, false, 2);
+
+				chat_print(id, "Item slots were reduced to 1: your second item^x03 %s^x01 was removed.", itemName);
+			}
+		}
+	}
+
+	if (value == 2) chat_print(0, "An admin enabled^x03 2 item slots^x01. Type^x03 /item2^x01 (or bind^x03 +item2^x01) to use your second item.");
+	else chat_print(0, "An admin set item slots back to^x03 1^x01.");
+
+	log_amx("Item slots per player set to %i.", value);
+}
+
+stock load_item_slots_setting()
+{
+	settingsVault = nvault_open("cod_settings");
+
+	if (settingsVault != INVALID_HANDLE) {
+		new valueData[4];
+
+		if (nvault_get(settingsVault, "item_slots", valueData, charsmax(valueData))) set_cvar_num("cod_item_slots", clamp(str_to_num(valueData), 1, 2));
+	}
+
+	itemSlots = clamp(get_cvar_num("cod_item_slots"), 1, 2);
+
+	itemSlotsLoaded = true;
+}
+
+stock get_item_plugin_name(item, dataReturn[], dataLength)
+{
+	new fileName[64], name[2], version[2], author[2], status[2];
+
+	get_plugin(get_item_info(item, ITEM_PLUGIN), fileName, charsmax(fileName), name, charsmax(name), version, charsmax(version), author, charsmax(author), status, charsmax(status));
+
+	replace(fileName, charsmax(fileName), ".amxx", "");
+
+	copy(dataReturn, dataLength, fileName);
+}
+
+stock set_item_slot(item, slot)
+{
+	new codItem[itemInfo];
+
+	ArrayGetArray(codItems, item, codItem);
+
+	codItem[ITEM_SLOT] = slot;
+
+	ArraySetArray(codItems, item, codItem);
+}
+
+stock find_item_by_plugin(const pluginName[])
+{
+	new fileName[64];
+
+	for (new i = 1; i < ArraySize(codItems); i++) {
+		get_item_plugin_name(i, fileName, charsmax(fileName));
+
+		if (equali(fileName, pluginName)) return i;
+	}
+
+	return 0;
+}
+
+stock load_item_slots_config(const configPath[])
+{
+	new filePath[128], lineData[128], pluginName[64], slotData[8], unlisted, item;
+
+	// Items not listed in the file go to slot 1
+	for (new i = 1; i < ArraySize(codItems); i++) set_item_slot(i, 1);
+
+	formatex(filePath, charsmax(filePath), "%s/cod_item_slots.ini", configPath);
+
+	new file = fopen(filePath, "rt");
+
+	if (!file) {
+		log_amx("Missing %s: every item uses slot 1 when 2 item slots are enabled.", filePath);
+	} else {
+		new bool:listed[512];
+
+		while (!feof(file)) {
+			fgets(file, lineData, charsmax(lineData));
+
+			trim(lineData);
+
+			if (!lineData[0] || lineData[0] == ';' || (lineData[0] == '/' && lineData[1] == '/')) continue;
+
+			parse(lineData, pluginName, charsmax(pluginName), slotData, charsmax(slotData));
+
+			replace(pluginName, charsmax(pluginName), ".amxx", "");
+
+			item = find_item_by_plugin(pluginName);
+
+			if (!item) continue;
+
+			set_item_slot(item, str_to_num(slotData) == 2 ? 2 : 1);
+
+			if (item < sizeof listed) listed[item] = true;
+		}
+
+		fclose(file);
+
+		for (new i = 1; i < ArraySize(codItems) && i < sizeof listed; i++) {
+			if (listed[i]) continue;
+
+			get_item_plugin_name(i, pluginName, charsmax(pluginName));
+
+			log_amx("Item %s is not listed in cod_item_slots.ini: it uses slot 1.", pluginName);
+
+			unlisted++;
+		}
+	}
+
+	// Safety net: items that change the same player state must share a slot
+	new groupItems[16], groupCount, bool:split;
+
+	for (new g = 0; g < sizeof itemClashGroups; g++) {
+		new groupData[512], left[64], right[512];
+
+		copy(groupData, charsmax(groupData), itemClashGroups[g]);
+
+		groupCount = 0;
+		split = false;
+
+		while (groupData[0] && groupCount < sizeof groupItems) {
+			strtok(groupData, left, charsmax(left), right, charsmax(right), ' ');
+
+			copy(groupData, charsmax(groupData), right);
+
+			item = find_item_by_plugin(left);
+
+			if (!item) continue;
+
+			if (groupCount && get_item_info(item, ITEM_SLOT) != get_item_info(groupItems[0], ITEM_SLOT)) split = true;
+
+			groupItems[groupCount++] = item;
+		}
+
+		if (!split) continue;
+
+		for (new i = 0; i < groupCount; i++) set_item_slot(groupItems[i], 1);
+
+		log_amx("cod_item_slots.ini splits items that can't be held together (%s): moved them all to slot 1.", itemClashGroups[g]);
+	}
+
+	if (unlisted) log_amx("%i item(s) not listed in cod_item_slots.ini.", unlisted);
 }
 
 public check_level(id)
@@ -3505,7 +3931,7 @@ public reset_player(id)
 	codPlayer[id][PLAYER_HUD_POSY] = 6;
 
 	set_new_class(id);
-	set_item(id);
+	clear_user_items(id);
 }
 
 public end_kill_streak(id)
@@ -3972,13 +4398,7 @@ public _cod_get_user_item_name(id, dataReturn[], dataLength)
 }
 
 public _cod_get_user_item_value(id)
-{
-	new value = NONE;
-
-	if (get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_VALUE) > 0) ExecuteForward(get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_VALUE), value, id);
-
-	return value;
-}
+	return get_slot_item_value(id, 1);
 
 public _cod_set_user_item(id, item, value, force)
 	return set_item(id, item, value, force);
@@ -3987,34 +4407,37 @@ public _cod_check_item(id, item)
 	return check_item(id, item);
 
 public _cod_upgrade_user_item(id, check)
-{
-	if (!ArraySize(codItems)) return false;
+	return upgrade_slot_item(id, 1, check);
 
-	if (check) return get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_UPGRADE) > 0 ? true : false;
+stock upgrade_slot_item(id, slot, check)
+{
+	if (!ArraySize(codItems) || !SLOT_ITEM(id, slot)) return false;
+
+	if (check) return get_item_info(SLOT_ITEM(id, slot), ITEM_UPGRADE) > 0 ? true : false;
 
 	switch (random_num(1, 10)) {
 		case 1 .. 6: {
 			new ret;
 
-			ExecuteForward(get_item_info(codPlayer[id][PLAYER_ITEM], ITEM_UPGRADE), ret, id);
+			ExecuteForward(get_item_info(SLOT_ITEM(id, slot), ITEM_UPGRADE), ret, id);
 
 			if (ret == COD_STOP) return false;
 
-			codPlayer[id][PLAYER_ITEM_DURA] = cvarMaxDurability;
+			SLOT_DURA(id, slot) = cvarMaxDurability;
 
 			chat_print(id, "Your item has been successfully^x03 upgraded^x01.");
 		} case 7 .. 9: {
 			new durability = random_num(cvarMinDamageDurability, cvarMaxDamageDurability);
 
-			codPlayer[id][PLAYER_ITEM_DURA] -= durability;
+			SLOT_DURA(id, slot) -= durability;
 
-			if (codPlayer[id][PLAYER_ITEM_DURA] <= 0) {
-				set_item(id);
+			if (SLOT_DURA(id, slot) <= 0) {
+				set_item(id, 0, 0, false, slot);
 
 				chat_print(id, "Upgrade^x03 failed^x01! Your item has been^x03 destroyed^x01.");
 			} else chat_print(id, "Upgrade^x03 failed^x01! You lost^x03 %i^x01 item durability.", durability);
 		} case 10: {
-			set_item(id);
+			set_item(id, 0, 0, false, slot);
 
 			chat_print(id, "Upgrade^x03 failed^x01! Your item has been^x03 destroyed^x01.");
 		}
@@ -4061,15 +4484,76 @@ public _cod_get_item_durability(id)
 	return codPlayer[id][PLAYER_ITEM_DURA];
 
 public _cod_set_item_durability(id, value)
-{
-	codPlayer[id][PLAYER_ITEM_DURA] = min(max(0, value), cvarMaxDurability);
+	set_slot_item_durability(id, 1, value);
 
-	if (!codPlayer[id][PLAYER_ITEM_DURA]) {
-		set_item(id);
+stock set_slot_item_durability(id, slot, value)
+{
+	SLOT_DURA(id, slot) = min(max(0, value), cvarMaxDurability);
+
+	if (!SLOT_DURA(id, slot) && SLOT_ITEM(id, slot)) {
+		set_item(id, 0, 0, false, slot);
 
 		chat_print(id, "Your item has been^x03 destroyed^x01.");
 	}
 }
+
+// --- Item slot natives ---
+
+public _cod_get_item_slots()
+	return itemSlots;
+
+public _cod_set_item_slots(slots)
+	set_cvar_num("cod_item_slots", clamp(slots, 1, 2));
+
+public _cod_get_item_slot(item)
+	return item > 0 && item < ArraySize(codItems) ? get_item_info(item, ITEM_SLOT) : 0;
+
+public _cod_get_item_target_slot(item)
+	return item > 0 && item < ArraySize(codItems) ? get_target_slot(item) : 0;
+
+public _cod_get_user_slot_item(id, slot, &value)
+{
+	param_convert(3);
+
+	if (slot != 1 && slot != 2) return 0;
+
+	value = get_slot_item_value(id, slot);
+
+	return SLOT_ITEM(id, slot);
+}
+
+public _cod_set_user_slot_item(id, slot, item, value, force)
+{
+	if (slot != 1 && slot != 2) return COD_STOP;
+
+	return set_item(id, item, value, force, slot);
+}
+
+public _cod_get_user_free_slot(id)
+	return get_free_slot(id);
+
+public _cod_get_user_items_count(id)
+	return (codPlayer[id][PLAYER_ITEM] ? 1 : 0) + (codPlayer[id][PLAYER_ITEM2] ? 1 : 0);
+
+public _cod_user_has_item(id, item)
+{
+	if (item <= 0) return 0;
+
+	if (codPlayer[id][PLAYER_ITEM] == item) return 1;
+
+	if (codPlayer[id][PLAYER_ITEM2] == item) return 2;
+
+	return 0;
+}
+
+public _cod_get_slot_item_durability(id, slot)
+	return (slot == 1 || slot == 2) ? SLOT_DURA(id, slot) : 0;
+
+public _cod_set_slot_item_durability(id, slot, value)
+	if (slot == 1 || slot == 2) set_slot_item_durability(id, slot, value);
+
+public _cod_upgrade_user_slot_item(id, slot, check)
+	return (slot == 1 || slot == 2) ? upgrade_slot_item(id, slot, check) : 0;
 
 public _cod_max_item_durability(id)
 	return cvarMaxDurability;

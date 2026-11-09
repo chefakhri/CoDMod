@@ -8,7 +8,7 @@
 new const commandExchange[][] = { "wymien", "say /exchange", "say_team /exchange", "say /zamien", "say_team /zamien", "say /wymien", "say_team /wymien" };
 new const commandGive[][] = { "daj", "say /give", "say_team /give", "say /oddaj", "say_team /oddaj", "say /daj", "say_team /daj" };
 
-new bool:mapEnd, blockExchange, cooldown;
+new bool:mapEnd, blockExchange, cooldown, tradeSlot[MAX_PLAYERS + 1] = { 1, ... }, giveSlot[MAX_PLAYERS + 1] = { 1, ... };
 
 public plugin_init()
 {
@@ -79,7 +79,49 @@ public exchange_menu_handle(id, menu, item)
 	return PLUGIN_HANDLED;
 }
 
+// Trades and gifts work on one slot at a time: slot-1 items for slot-1 items, and so on
 public exchange_item(id, sound)
+{
+	if (!is_user_connected(id) || !cod_check_account(id) || mapEnd) return PLUGIN_HANDLED;
+
+	if (cod_get_user_items_count(id) == 2) return show_slot_menu(id, "\yTrade which \ritem\w?", "exchange_slot_handle");
+
+	tradeSlot[id] = cod_get_user_slot_item(id, 2) ? 2 : 1;
+
+	return exchange_item_list(id, sound);
+}
+
+public exchange_slot_handle(id, menu, item)
+{
+	menu_destroy(menu);
+
+	if (!is_user_connected(id) || item == MENU_EXIT) return PLUGIN_HANDLED;
+
+	tradeSlot[id] = item + 1;
+
+	return exchange_item_list(id, 1);
+}
+
+show_slot_menu(id, const title[], const handler[])
+{
+	new itemName[MAX_NAME], menuData[MAX_NAME + 16], menu = menu_create(title, handler);
+
+	for (new slot = 1; slot <= 2; slot++) {
+		cod_get_item_name(cod_get_user_slot_item(id, slot), itemName, charsmax(itemName));
+
+		formatex(menuData, charsmax(menuData), "%s \d[slot %i]", itemName, slot);
+
+		menu_additem(menu, menuData);
+	}
+
+	menu_setprop(menu, MPROP_EXITNAME, "Exit");
+
+	menu_display(id, menu);
+
+	return PLUGIN_HANDLED;
+}
+
+public exchange_item_list(id, sound)
 {
 	if (!is_user_connected(id) || !cod_check_account(id) || mapEnd) return PLUGIN_HANDLED;
 
@@ -88,9 +130,9 @@ public exchange_item(id, sound)
 	new menuData[128], playerName[MAX_NAME], itemName[MAX_NAME], playerId[3], players, menu = menu_create("\yTrade \rItem", "exchange_item_handle");
 
 	for (new player = 1; player <= MAX_PLAYERS; player++) {
-		if (!is_user_connected(player) || id == player || !cod_get_user_class(player) || !cod_get_user_item(player) || get_bit(player, blockExchange)) continue;
+		if (!is_user_connected(player) || id == player || !cod_get_user_class(player) || !cod_get_user_slot_item(player, tradeSlot[id]) || get_bit(player, blockExchange)) continue;
 
-		cod_get_item_name(cod_get_user_item(player), itemName, charsmax(itemName));
+		cod_get_item_name(cod_get_user_slot_item(player, tradeSlot[id]), itemName, charsmax(itemName));
 
 		get_user_name(player, playerName, charsmax(playerName));
 
@@ -156,25 +198,25 @@ public exchange_item_handle(id, menu, item)
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_get_user_item(player)) {
+	if (!cod_get_user_slot_item(player, tradeSlot[id])) {
 		cod_print_chat(id, "The selected player doesn't have any item.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_get_user_item(id)) {
+	if (!cod_get_user_slot_item(id, tradeSlot[id])) {
 		cod_print_chat(id, "You don't have any item.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_check_item(id, cod_get_user_item(player))) {
+	if (!cod_check_item(id, cod_get_user_slot_item(player, tradeSlot[id]))) {
 		cod_print_chat(id, "You don't have access to the item you want to trade for.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_check_item(player, cod_get_user_item(id))) {
+	if (!cod_check_item(player, cod_get_user_slot_item(id, tradeSlot[id]))) {
 		cod_print_chat(id, "The player you want to trade with doesn't have access to your item.");
 
 		return PLUGIN_HANDLED;
@@ -182,7 +224,7 @@ public exchange_item_handle(id, menu, item)
 
 	new menuData[128], playerName[MAX_NAME], itemName[MAX_NAME];
 
-	cod_get_item_name(cod_get_user_item(id), itemName, charsmax(itemName));
+	cod_get_item_name(cod_get_user_slot_item(id, tradeSlot[id]), itemName, charsmax(itemName));
 	get_user_name(id, playerName, charsmax(playerName));
 
 	formatex(menuData, charsmax(menuData), "\wTrade items with \y%s \w(\r%s\w):", playerName, itemName);
@@ -235,25 +277,25 @@ public exchange_item_question(id, menu, item)
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_get_user_item(player)) {
+	if (!cod_get_user_slot_item(player, tradeSlot[player])) {
 		cod_print_chat(id, "The player offering the trade no longer has an item.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_get_user_item(id)) {
+	if (!cod_get_user_slot_item(id, tradeSlot[player])) {
 		cod_print_chat(id, "You don't have any item.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_check_item(id, cod_get_user_item(player))) {
+	if (!cod_check_item(id, cod_get_user_slot_item(player, tradeSlot[player]))) {
 		cod_print_chat(id, "You don't have access to the item owned by the player offering the trade.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_check_item(player, cod_get_user_item(id))) {
+	if (!cod_check_item(player, cod_get_user_slot_item(id, tradeSlot[player]))) {
 		cod_print_chat(id, "The player offering the trade doesn't have access to your item.");
 
 		return PLUGIN_HANDLED;
@@ -262,20 +304,20 @@ public exchange_item_question(id, menu, item)
 	switch (item) {
 		case 0: {
 			new name[MAX_NAME], playerName[MAX_NAME], itemName[MAX_NAME], playerItemName[MAX_NAME],
-				itemValue, itemId = cod_get_user_item(id, itemValue), itemDurability = cod_get_item_durability(id),
-				playerItemValue, playerItemId = cod_get_user_item(player, playerItemValue), playerItemDurability = cod_get_item_durability(player);
+				itemValue, itemId = cod_get_user_slot_item(id, tradeSlot[player], itemValue), itemDurability = cod_get_slot_item_durability(id, tradeSlot[player]),
+				playerItemValue, playerItemId = cod_get_user_slot_item(player, tradeSlot[player], playerItemValue), playerItemDurability = cod_get_slot_item_durability(player, tradeSlot[player]);
 
 			get_user_name(player, playerName, charsmax(playerName));
 			get_user_name(id, name, charsmax(name));
 
-			cod_get_item_name(cod_get_user_item(player), playerItemName, charsmax(playerItemName));
-			cod_get_item_name(cod_get_user_item(id), itemName, charsmax(itemName));
+			cod_get_item_name(playerItemId, playerItemName, charsmax(playerItemName));
+			cod_get_item_name(itemId, itemName, charsmax(itemName));
 
-			cod_set_user_item(player, itemId, itemValue);
-			cod_set_user_item(id, playerItemId, playerItemValue);
+			cod_set_user_slot_item(player, tradeSlot[player], itemId, itemValue);
+			cod_set_user_slot_item(id, tradeSlot[player], playerItemId, playerItemValue);
 
-			cod_set_item_durability(player, itemDurability);
-			cod_set_item_durability(id, playerItemDurability);
+			cod_set_slot_item_durability(player, tradeSlot[player], itemDurability);
+			cod_set_slot_item_durability(id, tradeSlot[player], playerItemDurability);
 
 			set_bit(player, cooldown);
 			set_bit(id, cooldown);
@@ -292,12 +334,34 @@ public give_item(id)
 {
 	if (!is_user_connected(id) || !cod_check_account(id) || mapEnd) return PLUGIN_HANDLED;
 
+	if (cod_get_user_items_count(id) == 2) return show_slot_menu(id, "\yGive which \ritem\w?", "give_slot_handle");
+
+	giveSlot[id] = cod_get_user_slot_item(id, 2) ? 2 : 1;
+
+	return give_item_list(id);
+}
+
+public give_slot_handle(id, menu, item)
+{
+	menu_destroy(menu);
+
+	if (!is_user_connected(id) || item == MENU_EXIT) return PLUGIN_HANDLED;
+
+	giveSlot[id] = item + 1;
+
+	return give_item_list(id);
+}
+
+public give_item_list(id)
+{
+	if (!is_user_connected(id) || !cod_check_account(id) || mapEnd) return PLUGIN_HANDLED;
+
 	client_cmd(id, "spk %s", codSounds[SOUND_SELECT]);
 
 	new playerName[MAX_NAME], playerId[3], players, menu = menu_create("\yGive \rItem", "give_item_handle");
 
 	for (new player = 1; player <= MAX_PLAYERS; player++) {
-		if (!is_user_connected(player) || player == id || !cod_get_user_class(player) || cod_get_user_item(player)) continue;
+		if (!is_user_connected(player) || player == id || !cod_get_user_class(player) || cod_get_user_slot_item(player, giveSlot[id])) continue;
 
 		get_user_name(player, playerName, charsmax(playerName));
 
@@ -355,39 +419,39 @@ public give_item_handle(id, menu, item)
 		return PLUGIN_HANDLED;
 	}
 
-	if (cod_get_user_item(player))
+	if (cod_get_user_slot_item(player, giveSlot[id]))
 	{
 		cod_print_chat(id, "The selected player already has an item.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_get_user_item(id)) {
+	if (!cod_get_user_slot_item(id, giveSlot[id])) {
 		cod_print_chat(id, "You don't have any item.");
 
 		return PLUGIN_HANDLED;
 	}
 
-	if (!cod_check_item(player, cod_get_user_item(id))) {
+	if (!cod_check_item(player, cod_get_user_slot_item(id, giveSlot[id]))) {
 		cod_print_chat(id, "The player you want to give the item to doesn't have access to it.");
 
 		return PLUGIN_HANDLED;
 	}
 
 	new name[MAX_NAME], playerName[MAX_NAME], itemName[MAX_NAME],
-		itemValue, itemId = cod_get_user_item(id, itemValue), itemDurability = cod_get_item_durability(id);
+		itemValue, itemId = cod_get_user_slot_item(id, giveSlot[id], itemValue), itemDurability = cod_get_slot_item_durability(id, giveSlot[id]);
 
 	get_user_name(id, name, charsmax(name));
 	get_user_name(player, playerName, charsmax(playerName));
 
-	cod_get_item_name(cod_get_user_item(id), itemName, charsmax(itemName));
+	cod_get_item_name(itemId, itemName, charsmax(itemName));
 
 	set_bit(player, cooldown);
 	rem_bit(id, cooldown);
 
-	cod_set_user_item(player, itemId, itemValue);
-	cod_set_item_durability(player, itemDurability);
-	cod_set_user_item(id);
+	cod_set_user_slot_item(player, giveSlot[id], itemId, itemValue);
+	cod_set_slot_item_durability(player, giveSlot[id], itemDurability);
+	cod_set_user_slot_item(id, giveSlot[id]);
 
 	cod_print_chat(id, "You gave the item^x03 %s^x01 to player^x03 %s^x01.", itemName, name);
 	cod_print_chat(player, "You received the item^x03 %s^x01 from player^x03 %s^x01.", itemName, playerName);

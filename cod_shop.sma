@@ -16,6 +16,8 @@ new cvarCostRepair, cvarCostItem, cvarCostUpgrade, cvarCostSmallBandage, cvarCos
 	cvarCostInvisible,cvarDurabilityAmount, cvarSmallExp, cvarMediumExp,cvarBigExp, cvarMinRandomExp, cvarMaxRandomExp,
 	cvarSmallBandageHP,cvarBigBandageHP, cvarArmorAmount, cvarDamageAmount, cvarMaxDurability, bool:mapEnd, damageBonus;
 
+new shopSlot[MAX_PLAYERS + 1], pendingOption[MAX_PLAYERS + 1], pendingPrice[MAX_PLAYERS + 1];
+
 public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR);
@@ -235,15 +237,65 @@ public shop_menu_handle(id, menu, item)
 		return PLUGIN_HANDLED;
 	}
 
+	shopSlot[id] = 1;
+
+	if (item == REPAIR || item == UPGRADE) {
+		if (cod_get_user_items_count(id) == 2) {
+			// Two items: ask which one to repair / upgrade
+			new itemName[MAX_NAME], menuData[MAX_NAME + 16], slotMenu = menu_create(item == REPAIR ? "\yRepair which \ritem\w?" : "\yUpgrade which \ritem\w?", "shop_slot_handle");
+
+			for (new slot = 1; slot <= 2; slot++) {
+				cod_get_item_name(cod_get_user_slot_item(id, slot), itemName, charsmax(itemName));
+
+				formatex(menuData, charsmax(menuData), "%s \d[slot %i]", itemName, slot);
+
+				menu_additem(slotMenu, menuData);
+			}
+
+			menu_setprop(slotMenu, MPROP_EXITNAME, "Exit");
+
+			pendingOption[id] = item;
+			pendingPrice[id] = price;
+
+			menu_display(id, slotMenu);
+
+			return PLUGIN_HANDLED;
+		}
+
+		if (!cod_get_user_slot_item(id, 1) && cod_get_user_slot_item(id, 2)) shopSlot[id] = 2;
+	}
+
+	return shop_purchase(id, item, price);
+}
+
+public shop_slot_handle(id, menu, item)
+{
+	menu_destroy(menu);
+
+	if (!is_user_connected(id) || !cod_check_account(id) || mapEnd || item == MENU_EXIT) return PLUGIN_HANDLED;
+
+	if (cod_get_user_honor(id) < pendingPrice[id]) {
+		cod_print_chat(id, "You don't have enough^x03 Honor^x01!");
+
+		return PLUGIN_HANDLED;
+	}
+
+	shopSlot[id] = item + 1;
+
+	return shop_purchase(id, pendingOption[id], pendingPrice[id]);
+}
+
+public shop_purchase(id, item, price)
+{
 	switch (item) {
 		case REPAIR: {
-			if (!cod_get_user_item(id)) {
+			if (!cod_get_user_slot_item(id, shopSlot[id])) {
 				cod_print_chat(id, "You don't have any item^x01!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			if (cod_get_item_durability(id) >= cod_max_item_durability()) {
+			if (cod_get_slot_item_durability(id, shopSlot[id]) >= cod_max_item_durability()) {
 				cod_print_chat(id, "Your item is already fully^x03 repaired^x01!");
 
 				return PLUGIN_HANDLED;
@@ -251,27 +303,27 @@ public shop_menu_handle(id, menu, item)
 
 			cod_print_chat(id, "You bought^x03 +%i^x01 item durability!", cvarDurabilityAmount);
 
-			if (cod_get_item_durability(id) + cvarDurabilityAmount >= cod_max_item_durability()) {
-				cod_set_item_durability(id, cod_max_item_durability());
+			if (cod_get_slot_item_durability(id, shopSlot[id]) + cvarDurabilityAmount >= cod_max_item_durability()) {
+				cod_set_slot_item_durability(id, shopSlot[id], cod_max_item_durability());
 
 				cod_print_chat(id, "Your item is now fully repaired!");
 			} else {
-				cod_set_item_durability(id, cod_get_item_durability(id) + cvarDurabilityAmount);
+				cod_set_slot_item_durability(id, shopSlot[id], cod_get_slot_item_durability(id, shopSlot[id]) + cvarDurabilityAmount);
 
-				cod_print_chat(id, "Your item's durability is now^x03 %i^x01!", cod_get_item_durability(id));
+				cod_print_chat(id, "Your item's durability is now^x03 %i^x01!", cod_get_slot_item_durability(id, shopSlot[id]));
 			}
 		} case BUY: {
 			cod_print_chat(id, "You bought a^x03 Random Item^x01!");
 
 			cod_set_user_item(id, RANDOM);
 		} case UPGRADE: {
-			if (!cod_get_user_item(id)) {
+			if (!cod_get_user_slot_item(id, shopSlot[id])) {
 				cod_print_chat(id, "You don't have any item!");
 
 				return PLUGIN_HANDLED;
 			}
 
-			if (!cod_upgrade_user_item(id, 1)) {
+			if (!cod_upgrade_user_slot_item(id, shopSlot[id], 1)) {
 				cod_print_chat(id, "Your item can't be upgraded!");
 
 				return PLUGIN_HANDLED;
@@ -279,7 +331,7 @@ public shop_menu_handle(id, menu, item)
 
 			cod_print_chat(id, "You bought an^x03 Item Upgrade^x01!");
 
-			if (!cod_upgrade_user_item(id)) {
+			if (!cod_upgrade_user_slot_item(id, shopSlot[id])) {
 				cod_print_chat(id, "Your item can no longer be^x03 upgraded^x01. No honor was charged.");
 
 				return PLUGIN_HANDLED;

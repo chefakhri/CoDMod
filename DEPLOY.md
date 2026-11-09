@@ -305,7 +305,8 @@ amx_plugins     // last line should read "N plugins, N running"
 |---|---|
 | E | Class skill. If the class has none, uses stocked rockets/mines/dynamite/medkits/poison/lightning |
 | Crouch + E | Always uses stocked rockets/mines/... |
-| F | Use your item |
+| F | Use your item. With 2 item slots: your first item, or the second if the first has no use effect |
+| `+item2` / `/item2` | Use your second item (only with 2 item slots) |
 | Chat | `/menu`, `/class`, `/shop`, `/clan`, `/missions`, `/market`, `/casino`, `/binds` |
 | Chat | `/rocket`, `/mine`, `/dynamite`, `/medkit`, `/poison`, `/thunder`, `/teleport` |
 
@@ -340,6 +341,7 @@ bind "g"   "+medkit"
 bind "h"   "+poison"
 bind "j"   "+thunder"
 bind "k"   "+teleport"
+bind "MOUSE4" "+item2"     // second item (only when the server has 2 item slots)
 bind "="   "yb menu"       // bot menu (needs _ybpw)
 bind "F10" "amxmodmenu"    // admin menu (needs _pw)
 bind "F11" "say /ca"       // CoD admin menu (needs _pw and flag g)
@@ -512,6 +514,82 @@ the range shown when the item is received, and some items can be upgraded in gam
 | Veteran's AWP | `coditem_awpweterana` | You have a 50 percent chance to instantly kill with AWP and 30 percent visibility with it. You get +20–25 health | strong |
 | Veteran's Galil | `coditem_galilweterana` | You have a 1/6–8 chance to instantly kill with Galil | strong |
 | Wolf in Sheep's Clothing | `coditem_farbowanylis` | You have a 1/3–4 chance to respawn at the enemy spawn. You wear the enemy uniform. | strong |
+
+## 16. Item slots (1 or 2 items per player)
+
+By default every player holds **one** item. Admins can give everyone a **second item slot**:
+in game, `/ca` → **Item Slots**, or the server command `cod_item_slots 2`. The choice is saved
+(in the `cod_settings` nvault) and stays after map changes and restarts. `cod_item_slots` in
+`cod_mod.cfg` is only the starting value for a new server.
+
+With 2 slots:
+- Every item belongs to **one** slot (`addons/amxmodx/configs/cod_item_slots.ini`):
+  **slot 1 = combat** (weapons, damage, invisibility, and all items marked *strong* in step 15),
+  **slot 2 = support** (healing, defence, mobility, equipment, experience). So a player can hold
+  at most one strong item.
+- A kill gives a random item for your empty slot. The shop's random item and the mystery box fill
+  an empty slot; if both are full, the shop replaces one of your two items at random.
+- `F` uses your first item (or the second, if the first has no use effect); `+item2` or `/item2`
+  uses the second. The HUD, `/item` and `/drop` show both; `/items` and the admin menu show each
+  item's slot.
+- Repairing, upgrading, selling, trading and giving ask which item when you hold two. Trades swap
+  items of the same slot only.
+- Anti Item destroys one of the target's items at random. The Plunderer class steals an item that
+  fits one of its free slots when it can; otherwise one at random (replacing its item in that slot).
+
+Switching:
+- **1 → 2**: a support item held in the single slot moves to slot 2. Nobody loses anything.
+- **2 → 1**: the second item is removed, unless slot 1 is empty; then it moves into the single
+  slot. Players are told in chat.
+
+With 1 slot the slot list is ignored and the game works exactly as before.
+
+### Changing the slot list
+
+Edit `cod_item_slots.ini` (`<item plugin> <slot>` per line), then change map. Some items change
+the same thing on the player and would cancel each other out if held together, so they must stay
+in the **same** slot:
+
+| Group | Items |
+|---|---|
+| Invisibility | Veteran's AWP, Shadow, Camouflage, Croucher, Camper's Jacket, Ghost's MAC10, Invisibility Cloak, Jumping Madness, Ninja Suit |
+| Bunny hop | Rabbit's Foot, Jumping Madness |
+| Gravity | Space Slippers, Archangel's Wings |
+| Enemy slow | Slowing Bullets, Cold Bullets |
+| Recoil eliminator | Divine P90, Recoil Eliminator |
+| Unlimited ammo | Divine P90, Endless Ammo |
+| Rocket stock | Rocket Generator, Support Equipment |
+| Dynamite stock | Dynamite Generator, Bag of TNT |
+| Enemy uniform | Desertion, Wolf in Sheep's Clothing |
+| Primary weapon | every item that gives a rifle, SMG, sniper or machine gun |
+| Pistol | Epic Deagle, Russian Roulette, Agent 007, Devil's P228 |
+
+The mod checks these groups at every map start: if the file splits a group, the whole group is
+moved to slot 1 and the server log says so. Items missing from the file use slot 1 (also logged).
+
+Known side effect: when one slot's item changes, the core turns the other slot's item off and on
+again so its effects stay applied. That resets its once-per-round use (for example a First Aid Kit
+can be used again) and ends a timed effect that is running (for example the Invisibility Cloak).
+It only happens when an item is gained, lost or replaced.
+
+### The default slot list
+
+**Slot 1, combat (65 items):** Agent 007, Aimbot, Alien, Bloody Bullets, Brotherhood, Camouflage, Camper's Jacket, Captain's Notes, Cold Bullets, Commando's Knife, Concrete Body, Corporal's Ghost, Croucher, Cursed Bullets, Deadly AUG, Deadly MP5, Deathly Silence, Desertion, Devil's P228, Divine P90, Dose of LSD, Electromagnet, Endless Ammo, Epic Deagle, Fury, General's Secret, Ghost's MAC10, Good Cow, Headhunter Bullets, Invisibility Cloak, Jedi Sword, Jumping Madness, Last Breath, Master AWP, Master Scout, Morphine, Nano Vest, Ninja Suit, Nomex Armor, O'Zone's Intellect, Platinum Bullets, Rabbit's Foot, Rapid Fire, Recoil Eliminator, Recoil Limiter, Russian Hat, Russian Roulette, Self Destruct, Shadow, Shocking Bullets, Slowing Bullets, Sniper's AWP, Sniper's Secret, Speedhack, Spy's Handbook, Stalker's Secret, Strong AK47, Sunbeam, Terrorist's Armband, Titanium Bullets, Triple Power, Upgraded M4A1, Veteran's AWP, Veteran's Galil, Wolf in Sheep's Clothing.
+
+**Slot 2, support (35 items):** Adrenaline, Amulet of Agility, Anti Item, Archangel's Wings, Bag of TNT, Book of Experience, Boots of Hephaestus, Chemist's Apron, Commando's Secret, Dark Glasses, Dynamite Generator, Extended Kit, First Aid Kit, Flashlight, Grenade Pack, Hawk Eye, Headless, Health Meter, Jumper's Ring, Medic's Backpack, Medic's Knife, Mine Generator, Plunderer's Gloves, Radar, Regeneration, Reversal, Ring of Experience, Ring of Zeus, Rocket Generator, Space Slippers, Stormtrooper's Boots, Support, Support Equipment, Thief's Sense, Unexpected Blow.
+
+Of the 10 items enabled by default, Electromagnet, Recoil Limiter and Titanium Bullets are slot 1;
+Adrenaline, Boots of Hephaestus, Dark Glasses, First Aid Kit, Hawk Eye, Regeneration and Ring of
+Experience are slot 2.
+
+### For plugin developers
+
+`cod.inc` has slot versions of the item natives: `cod_get_item_slots`, `cod_set_item_slots`,
+`cod_get_item_slot`, `cod_get_item_target_slot`, `cod_get_user_slot_item`, `cod_set_user_slot_item`,
+`cod_get_user_free_slot`, `cod_get_user_items_count`, `cod_user_has_item`,
+`cod_get_slot_item_durability`, `cod_set_slot_item_durability`, `cod_upgrade_user_slot_item`.
+The original natives (`cod_get_user_item`, `cod_get_item_durability`, ...) work on slot 1, and
+`cod_set_user_item` puts an item into the slot it belongs to.
 
 ## Docker
 

@@ -133,7 +133,7 @@ public get_box(id)
 
 			cod_print_chat(id, "You have^x04 %i death%s^x01 less!", deaths, deaths == 1 ? "" : "s");
 		} case 3: {
-			if (cod_get_user_item(id)) {
+			if (!cod_get_user_free_slot(id)) {
 				get_box(id);
 
 				return PLUGIN_CONTINUE;

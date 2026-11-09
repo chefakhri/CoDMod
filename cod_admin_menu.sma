@@ -14,7 +14,8 @@ new const menuOptions[][] = {
 	"Add \rExperience",
 	"Swap \rExperience",
 	"Move \rExperience",
-	"Add \rHonor"
+	"Add \rHonor",
+	"Item \rSlots"
 };
 
 enum _:options {
@@ -24,7 +25,8 @@ enum _:options {
 	ADD_EXP,
 	EXCHANGE_EXP,
 	TRANSFER_EXP,
-	ADD_HONOR
+	ADD_HONOR,
+	ITEM_SLOTS
 };
 
 new const commandMenu[][] = { "codadmin", "say /codadmin", "say /ca", "say_team /codadmin", "say_team /ca" };
@@ -46,7 +48,15 @@ public admin_menu(id)
 
 	new menu = menu_create("\yAdmin \rMenu\w:", "admin_menu_handle");
 
-	for (new i; i < sizeof(menuOptions); i++) menu_additem(menu, menuOptions[i]);
+	new menuData[64];
+
+	for (new i; i < sizeof(menuOptions); i++) {
+		if (i == ITEM_SLOTS) {
+			formatex(menuData, charsmax(menuData), "Item \rSlots \d[\y%i\d] \w-> switch to \r%i", cod_get_item_slots(), cod_get_item_slots() == 2 ? 1 : 2);
+
+			menu_additem(menu, menuData);
+		} else menu_additem(menu, menuOptions[i]);
+	}
 
 	menu_display(id, menu);
 
@@ -70,6 +80,22 @@ public admin_menu_handle(id, menu, item)
 	selectedOption[id] = item;
 
 	menu_destroy(menu);
+
+	if (item == ITEM_SLOTS) {
+		new adminName[MAX_NAME], slots = cod_get_item_slots() == 2 ? 1 : 2;
+
+		get_user_name(id, adminName, charsmax(adminName));
+
+		cod_set_item_slots(slots);
+
+		cod_print_chat(id, "Item slots set to^x03 %i^x01.", slots);
+
+		log_amx("Admin %s set item slots to %i.", adminName, slots);
+
+		admin_menu(id);
+
+		return PLUGIN_HANDLED;
+	}
 
 	player_menu(id);
 
@@ -177,7 +203,8 @@ public select_item_menu(id)
 	for (new i = 1; i <= cod_get_items_num(); i++) {
 		cod_get_item_name(i, itemName, charsmax(itemName));
 
-		formatex(menuData,charsmax(menuData), itemName);
+		if (cod_get_item_slots() == 2) formatex(menuData, charsmax(menuData), "%s \d[slot %i]", itemName, cod_get_item_slot(i));
+		else formatex(menuData, charsmax(menuData), itemName);
 
 		num_to_str(i, itemId, charsmax(itemId));
 
@@ -264,7 +291,10 @@ public select_menu_handle(id, menu, item)
 		case GIVE_ITEM: {
 			cod_set_user_item(selectedPlayer[id], selected, RANDOM, true);
 
-			cod_print_chat(id, "You gave the item^x04 %s^x01 to player^x03 %s^x01.", itemName, playerName);
+			cod_get_item_name(selected, itemName, charsmax(itemName));
+
+			if (cod_get_item_slots() == 2) cod_print_chat(id, "You gave the item^x04 %s^x01 (slot %i) to player^x03 %s^x01.", itemName, cod_get_item_slot(selected), playerName);
+			else cod_print_chat(id, "You gave the item^x04 %s^x01 to player^x03 %s^x01.", itemName, playerName);
 		} case EXCHANGE_EXP: {
 			new firstClassName[MAX_NAME], secondClassName[MAX_NAME],
 				firstClassExp = cod_get_user_exp(selectedPlayer[id]),
