@@ -11,7 +11,7 @@
 #include <cod>
 
 #define PLUGIN "CoD Mod"
-#define VERSION "1.5.1"
+#define VERSION "1.6.0"
 #define AUTHOR "O'Zone"
 
 #pragma dynamic              65536
