@@ -39,6 +39,7 @@ DEF=/home/steam/defaults
 : "${YAPB_PASSWORD:=}"
 : "${YAPB_CAMP_MIN:=5}"
 : "${YAPB_CAMP_MAX:=15}"
+: "${YAPB_NAMES:=}"
 : "${COD_ITEMS:=default}"
 : "${EXTRA_ARGS:=}"
 
@@ -51,6 +52,7 @@ cp "$DEF/cod_mod.cfg" "$CFG/cod_mod.cfg"
 cp "$DEF/users.ini"   "$CFG/users.ini"
 cp "$DEF/yapb.cfg"    "$CSTRIKE/addons/yapb/conf/yapb.cfg"
 cp "$DEF/plugins-cod.ini" "$CFG/plugins-cod.ini"
+cp "$DEF/en_names.cfg" "$CSTRIKE/addons/yapb/conf/lang/en_names.cfg"
 
 # 2. Overlay: anything mounted at /overlay is copied over cstrike/
 #    (extra maps, mapcycle.txt, your own plugins-cod.ini, ...)
@@ -117,6 +119,11 @@ yb_password "$(q "$YAPB_PASSWORD")"
 yb_camping_time_min "$YAPB_CAMP_MIN"
 yb_camping_time_max "$YAPB_CAMP_MAX"
 EOF
+  # Bot names: YAPB_NAMES="Name 1,Name 2,..." replaces YaPB's own list (one name per line in en_names.cfg)
+  if [ -n "$YAPB_NAMES" ]; then
+    printf '; Bot names from YAPB_NAMES (docker/entrypoint.sh)\n' > "$CSTRIKE/addons/yapb/conf/lang/en_names.cfg"
+    printf '%s\n' "$YAPB_NAMES" | tr ',' '\n' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | grep -v '^$' >> "$CSTRIKE/addons/yapb/conf/lang/en_names.cfg"
+  fi
 else
   sed -i '/yapb.so/d' "$CSTRIKE/addons/metamod/plugins.ini"
 fi

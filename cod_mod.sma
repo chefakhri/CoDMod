@@ -137,6 +137,9 @@ new botPlayer, cvarBotLevel;
 
 new itemSlots = 1, bool:itemSlotsLoaded, settingsVault = INVALID_HANDLE;
 
+// Server owner/maintainer shown in the welcome message, next to the original author's credit
+new cvarServerOwner[MAX_NAME];
+
 // Groups of items that write the same per-item player state. A group must sit in one slot.
 new const itemClashGroups[][] = {
 	"coditem_awpweterana coditem_cien coditem_kamuflarz coditem_kucacz coditem_kurtkakampera coditem_mac10ducha coditem_pelerynaniewidka coditem_skoczneszalenstwo coditem_strojninjy",
@@ -192,6 +195,8 @@ public plugin_init()
 	bind_pcvar_num(create_cvar("cod_min_damage_durability", "20"), cvarMinDamageDurability);
 	bind_pcvar_num(create_cvar("cod_max_damage_durability", "30"), cvarMaxDamageDurability);
 	bind_pcvar_num(create_cvar("cod_block_skills_time", "5"), cvarBlockSkillsTime);
+
+	bind_pcvar_string(create_cvar("cod_server_owner", "MaskMan", _, "Server owner shown in the welcome message (empty: original credit only)"), cvarServerOwner, charsmax(cvarServerOwner));
 
 	hook_cvar_change(create_cvar("cod_item_slots", "1", _, "Item slots per player (1 or 2)", true, 1.0, true, 2.0), "item_slots_changed");
 
@@ -536,7 +541,8 @@ public plugin_cfg()
 		set_task(300.0, "night_exp_info", _, _, _, "b");
 	}
 
-	log_amx("Call of Duty Mod by O'Zone (v%s).", VERSION);
+	if (cvarServerOwner[0]) log_amx("Call of Duty Mod by O'Zone, maintained by %s (v%s).", cvarServerOwner, VERSION);
+	else log_amx("Call of Duty Mod by O'Zone (v%s).", VERSION);
 	log_amx("Loaded %i classes and %i items.", ArraySize(codClasses) - 1, ArraySize(codItems) - 1);
 	log_amx("Item slots per player: %i.", itemSlots);
 }
@@ -3148,7 +3154,8 @@ public show_advertisement(id)
 {
 	id -= TASK_SHOW_AD;
 
-	chat_print(id, "Welcome to the^x03 Call of Duty Mod^x01 server created by^x03 O'Zone^x01.");
+	if (cvarServerOwner[0]) chat_print(id, "Welcome to the^x03 Call of Duty Mod^x01 server by^x03 %s^x01 (original mod by O'Zone).", cvarServerOwner);
+	else chat_print(id, "Welcome to the^x03 Call of Duty Mod^x01 server created by^x03 O'Zone^x01.");
 	chat_print(id, "For information about commands type^x03 /menu^x01 (key^x03 ^"v^"^x01).");
 }
 

@@ -80,7 +80,7 @@ RUN cp -r /tmp/codmod/resources/. "$CSTRIKE/" \
 RUN mkdir -p /home/steam/defaults \
  && cp "$CSTRIKE/server.cfg" "$CSTRIKE/addons/amxmodx/configs/cod_mod.cfg" \
        "$CSTRIKE/addons/amxmodx/configs/users.ini" "$CSTRIKE/addons/yapb/conf/yapb.cfg" \
-       "$CSTRIKE/addons/amxmodx/configs/plugins-cod.ini" \
+       "$CSTRIKE/addons/amxmodx/configs/plugins-cod.ini" "$CSTRIKE/addons/yapb/conf/lang/en_names.cfg" \
        /home/steam/defaults/ \
  && mkdir -p "$CSTRIKE/addons/amxmodx/data/vault" "$CSTRIKE/addons/amxmodx/logs" "$CSTRIKE/logs"
 

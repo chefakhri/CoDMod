@@ -158,6 +158,7 @@ cod_sql_pass "choose-a-strong-password"
 cod_sql_db "codmod"
 ```
 Every other cvar in that file has a short description. Defaults in this branch:
+- `cod_server_owner "MaskMan"`: name in the welcome message ("server by MaskMan (original mod by O'Zone)"). Set your own, or `""` for the original message.
 - `cod_points_limit "0"`: no per-stat point cap.
 - `cod_bot_level "0"`: bots copy the average level of the human players.
 
@@ -254,6 +255,9 @@ yb_password "BotMenuPassword" // lets you open the bot menu in game
 yb_camping_time_min "5"       // seconds a bot waits in one spot (YaPB default 15)
 yb_camping_time_max "15"      // (YaPB default 45)
 ```
+
+Bot names come from `addons/yapb/conf/lang/en_names.cfg`, one name per line; bots only use the
+names in that file. Replace its contents to give bots your own names (with Docker: `YAPB_NAMES`).
 
 Bots sometimes stop and wait in one spot ("camping"); from spectator view that can look like a
 stuck bot. It is normal YaPB behaviour. The two `yb_camping_time` lines keep the waits short;
@@ -690,6 +694,8 @@ docker compose -f docker/compose.yaml up -d --build
   restart, or `amx_reloadadmins` after editing the file inside the container.
 - The bot menu password is `YAPB_PASSWORD`, shared by everyone who uses the bot menu (step 10).
 - `YAPB_CAMP_MIN` / `YAPB_CAMP_MAX` (default 5 / 15 seconds) set how long bots wait in one spot.
+- `YAPB_NAMES`: bot names, comma separated, e.g. `YAPB_NAMES=Ahmad,Hafiz,Faizal,Wei Jie,Ah Seng,Kumar`.
+  Bots only use these names. Empty means YaPB's own list. Give at least as many names as `YAPB_QUOTA`.
 - The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
   `restart: unless-stopped` policy starts it again, so the `hlds_run`/`-pidfile` issue from step 11 doesn't apply here.
 - Only `27015/udp` needs to be published: GoldSrc uses UDP for both the game and rcon.
