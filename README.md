@@ -9,6 +9,7 @@
 > - Bot support (YaPB): bots get classes, levels and items
 > - Gameplay fixes, and 10 balanced items enabled by default
 > - Optional second item slot per player, switchable in game (`/ca`)
+> - `/rtv` map change vote (with "Keep current map" option) and `/commands` list of all chat commands
 > - Docker deployment with MariaDB and FastDL
 >
 > See [DEPLOY.md](DEPLOY.md) for a step-by-step Linux and Docker server setup.

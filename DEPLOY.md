@@ -313,6 +313,8 @@ amx_plugins     // last line should read "N plugins, N running"
 | `+item2` / `/item2` | Use your second item (only with 2 item slots) |
 | Chat | `/menu`, `/class`, `/shop`, `/clan`, `/missions`, `/market`, `/casino`, `/binds` |
 | Chat | `/rocket`, `/mine`, `/dynamite`, `/medkit`, `/poison`, `/thunder`, `/teleport` |
+| Chat | `/commands` (or `/cmds`): **every chat command**, by category; pick one to run it |
+| Chat | `/rtv`: vote to change the map (step 17). `/timeleft`, `/thetime`, `/nextmap`, `/currentmap` |
 
 Optional, in each player's `cstrike/userconfig.cfg`, to use speeds above 400:
 ```
@@ -363,7 +365,7 @@ alias cod "connect your.server.address:27015"
   Your name is your login, so always play with the same name.
 - To check a value: type `setinfo` in the console with no arguments.
 
-All the in-game chat commands are listed in step 13. `/binds` shows the key list in game.
+Type `/commands` in game for the full list of chat commands (also in the `/menu`). `/binds` shows the key list.
 
 ## 15. Items (perks): enabling and disabling
 
@@ -595,6 +597,69 @@ Experience are slot 2.
 The original natives (`cod_get_user_item`, `cod_get_item_durability`, ...) work on slot 1, and
 `cod_set_user_item` puts an item into the slot it belongs to.
 
+## 17. Map vote (/rtv) and the command list (/commands)
+
+Two plugins of this fork, enabled in `plugins-cod.ini`: `cod_mapvote.amxx` and `cod_commands.amxx`.
+
+### Changing the map on demand: /rtv
+
+Any player can type `/rtv` (also `rtv` or `/rockthevote`) to ask for a map change. Chat shows how
+many are needed, for example `(2/4)`. When enough **human** players have asked (60% by default,
+bots don't count), everyone gets a vote:
+
+```
+Change the map?
+1. Keep current map
+2. de_aztec
+3. cs_office
+...
+```
+
+- **Option 1 is always "Keep current map".** The map changes only if the votes for new maps
+  together are **more** than the votes to keep it; otherwise it stays. So a few players can start a
+  vote, but they can't change the map against the majority. Players who don't vote don't count.
+- If a map wins, the map ends like a normal map end: the scoreboard shows, the mod saves everyone's
+  progress, and 5 seconds later the server changes to the winning map.
+- If the map is kept, `/rtv` is locked for 5 minutes. It is also locked for the first 3 minutes of a
+  map and in the last 2.5 minutes, when the normal end-of-map vote (`mapchooser.amxx`) runs anyway.
+- The vote offers random maps from the map cycle (`mapcycle.txt`, or the file in the `mapcyclefile`
+  cvar), never the current one. Maps that aren't on the server are skipped. To change the list, edit
+  `mapcycle.txt` (with Docker: put your own in `docker/data/overlay/mapcycle.txt`) and change map.
+
+Settings, in `cod_mod.cfg`:
+
+| Cvar | Default | Meaning |
+|---|---|---|
+| `cod_rtv_ratio` | `0.6` | Share of human players who must type `/rtv`. `0.05` lets one player start the vote |
+| `cod_rtv_delay` | `180` | Seconds after map start before `/rtv` works |
+| `cod_rtv_maps` | `5` | Maps offered, next to "Keep current map" (max 7) |
+| `cod_rtv_vote_time` | `15` | Seconds the vote lasts |
+| `cod_rtv_cooldown` | `300` | Seconds `/rtv` stays locked after a vote kept the map |
+| `cod_rtv_block_end` | `150` | No `/rtv` when fewer seconds than this are left |
+| `cod_rtv_change_delay` | `5` | Seconds between the result and the map change |
+
+Admins can still change the map directly with `amx_map <map>` or `amxmodmenu` → Maps.
+
+### Time and map info
+
+| Chat | Shows |
+|---|---|
+| `/timeleft` | Time left on this map (`mp_timelimit` in `server.cfg`) |
+| `/thetime` | Server time and date (set the timezone with `TZ`, see Docker) |
+| `/nextmap` | Next map: the vote winner, or the next one in the map cycle |
+| `/currentmap` | Current map |
+
+### All chat commands: /commands
+
+`/commands` (or `/cmds`, or "Chat Commands" at the top of `/menu`) opens a menu of categories:
+General, Class and Level, Items, Abilities, Honor/Shop/Market, Clan and Missions, Stats, Settings,
+Map and Time. Each entry shows the command and what it does; picking it runs the command. The full
+list is also printed to the player's console. Commands of disabled plugins aren't listed, and
+`/item2` only appears when 2 item slots are on.
+
+When you add a plugin with its own chat commands, add them to the `commands` table at the top of
+`cod_commands.sma` so they appear in the list.
+
 ## Docker
 
 `docker/` contains a Dockerfile that builds steps 1–7 and 10 into one image (the plugins are
@@ -669,6 +734,8 @@ clients on an internet server. This image doesn't include them.
 
 | Symptom | Cause / fix |
 |---|---|
+| `/rtv` says "no other maps in the map cycle" | `mapcycle.txt` lists no other map that exists in `cstrike/maps/`. Add maps to it (step 17). |
+| `/rtv` does nothing, or players never reach the needed count | It's locked at map start, after a kept vote and near the map end (chat says why). Lower `cod_rtv_ratio` for small groups. |
 | `SteamAPI_Init() failed` / `steamclient.so` errors at start | Copy `steamclient.so` to `~/.steam/sdk32/` (step 1). |
 | `meta list` says "Unknown command" (Metamod not loaded) | Check the `gamedll_linux` line in `liblist.gam`, and strip Windows line endings with `sed -i 's/\r$//' liblist.gam` (step 2). |
 | amxmodx.org download hangs or fails | Use `wget -4` to force IPv4 (step 3). |
