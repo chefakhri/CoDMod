@@ -2517,19 +2517,19 @@ public player_death(killer, victim, weapon, hitPlace)
 	get_user_class_info(killer, codPlayer[killer][PLAYER_CLASS], CLASS_NAME, className, charsmax(className));
 
 	if (!codPlayer[killer][PLAYER_ITEM] && !codPlayer[killer][PLAYER_ITEM2]) {
-		set_item(killer, RANDOM, RANDOM);
-
 		chat_print(victim, "You were killed by^x03 %s^x04 (%s - %i)^x01, who had^x04 %i^x01 HP left.", codPlayer[killer][PLAYER_NAME], className, codPlayer[killer][PLAYER_LEVEL], get_user_health(killer));
 	} else {
 		get_user_items_text(killer, itemName, charsmax(itemName));
 
 		chat_print(victim, "You were killed by^x03 %s^x04 (%s - %i - %s)^x01, who had^x04 %i^x01 HP left.", codPlayer[killer][PLAYER_NAME], className, codPlayer[killer][PLAYER_LEVEL], itemName, get_user_health(killer));
-
-		// With 2 slots, a kill also fills the free slot
-		new freeSlot = get_free_slot(killer);
-
-		if (freeSlot) set_item(killer, RANDOM, RANDOM, false, freeSlot);
 	}
+
+	// The kill item (a free slot gets a random item) is given on the next frame. This function can run
+	// in the middle of the killer's shot (the victim dies inside the weapon's fire function). Giving an
+	// item there can make the killer drop and get back an item weapon (e.g. Strong AK47, when the other
+	// slot's item is re-applied), and the weapon that is still firing loses its owner: the game then
+	// crashes in CAK47::AK47Fire / CM249::M249Fire (null m_pPlayer right after FireBullets3).
+	if (get_free_slot(killer)) RequestFrame("give_kill_item", get_user_userid(killer));
 
 	check_level(killer);
 
@@ -2570,6 +2570,17 @@ public player_death(killer, victim, weapon, hitPlace)
 	ExecuteForward(codForwards[KILLED], ret, killer, victim, weapon, hitPlace);
 
 	return PLUGIN_CONTINUE;
+}
+
+public give_kill_item(userId)
+{
+	new id = find_player("k", userId);
+
+	if (!id || !is_user_connected(id) || !codPlayer[id][PLAYER_CLASS]) return;
+
+	new freeSlot = get_free_slot(id);
+
+	if (freeSlot) set_item(id, RANDOM, RANDOM, false, freeSlot);
 }
 
 public touch_weapon(weapon, id)
