@@ -15,7 +15,7 @@ RUN dpkg --add-architecture i386 \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
       lib32gcc-s1 lib32stdc++6 libc6:i386 \
-      ca-certificates curl unzip xz-utils \
+      ca-certificates curl unzip xz-utils tzdata \
  && rm -rf /var/lib/apt/lists/* \
  && useradd -m -u 1000 steam \
  && mkdir /fastdl && chown steam:steam /fastdl

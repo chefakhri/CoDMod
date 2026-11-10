@@ -49,6 +49,7 @@ services:
       MARIADB_USER: ${DB_USER:-codmod}
       MARIADB_PASSWORD: ${DB_PASS:?set DB_PASS in .env}
       MARIADB_RANDOM_ROOT_PASSWORD: "1"
+      TZ: ${TZ:-UTC}        # same timezone as the game server (from .env)
     volumes:
       - ./data/db:/var/lib/mysql
 

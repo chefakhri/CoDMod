@@ -284,6 +284,10 @@ screen -S cs16 ./hlds_run -game cstrike -console -pidfile hlds.pid +ip 0.0.0.0 +
   a tunnel such as playit.gg. `+sv_lan 0` makes Steam validate every player, which kicks
   non-Steam clients.
 
+The server uses the machine's timezone. The night exp bonus hours (`cod_night_exp_from` /
+`cod_night_exp_to`) are local time, so check it with `timedatectl` and set it if needed, e.g.
+`sudo timedatectl set-timezone Asia/Kuala_Lumpur`, then restart the server.
+
 Check that everything loaded, in the server console:
 ```
 meta list       // AMX Mod X (and YaPB) should show RUN
@@ -617,6 +621,10 @@ docker compose -f docker/compose.yaml up -d --build
 - The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
   `restart: unless-stopped` policy starts it again, so the `hlds_run`/`-pidfile` issue from step 11 doesn't apply here.
 - Only `27015/udp` needs to be published: GoldSrc uses UDP for both the game and rcon.
+- Set `TZ` in `.env` to your timezone (for example `TZ=Asia/Kuala_Lumpur`); the default is UTC.
+  It sets the server clock, so log times, the "current time" and last-visit messages, and the
+  night exp bonus hours (`cod_night_exp_from` / `cod_night_exp_to` in `cod_mod.cfg`) use local time.
+  Saved data is not affected: the mod stores times as Unix timestamps.
 
 ### FastDL (fast downloads of models, sounds and maps)
 
