@@ -259,6 +259,11 @@ yb_camping_time_max "15"      // (YaPB default 45)
 Bot names come from `addons/yapb/conf/lang/en_names.cfg`, one name per line; bots only use the
 names in that file. Replace its contents to give bots your own names (with Docker: `YAPB_NAMES`).
 
+Bot chat (greetings, kill messages, dead chat, replies) comes from `addons/yapb/conf/lang/en_chat.cfg`.
+This fork ships a casual Malay-English version with some Penang loghat, `ms_chat.cfg` (copied in with the resources in step 6):
+to use it, copy it over `en_chat.cfg` and restart the server (with Docker: `YAPB_CHAT=ms`). Turn bot
+chat off completely with `yb_chat "0"`; `yb_chat_percent` sets how often dead bots chat.
+
 Bots sometimes stop and wait in one spot ("camping"); from spectator view that can look like a
 stuck bot. It is normal YaPB behaviour. The two `yb_camping_time` lines keep the waits short;
 `yb_camping_allowed "0"` turns camping off completely (bots then never hold positions).
@@ -694,6 +699,7 @@ docker compose -f docker/compose.yaml up -d --build
   restart, or `amx_reloadadmins` after editing the file inside the container.
 - The bot menu password is `YAPB_PASSWORD`, shared by everyone who uses the bot menu (step 10).
 - `YAPB_CAMP_MIN` / `YAPB_CAMP_MAX` (default 5 / 15 seconds) set how long bots wait in one spot.
+- `YAPB_CHAT=ms`: bots chat in casual Malay-English with some Penang loghat (`ms_chat.cfg`); empty for YaPB's English.
 - `YAPB_NAMES`: bot names, comma separated, e.g. `YAPB_NAMES=Ahmad,Hafiz,Faizal,Wei Jie,Ah Seng,Kumar`.
   Bots only use these names. Empty means YaPB's own list. Give at least as many names as `YAPB_QUOTA`.
 - The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
