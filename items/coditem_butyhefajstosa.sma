@@ -1,4 +1,5 @@
 #include <amxmodx>
+#include <hamsandwich>
 #include <cod>
 
 #define PLUGIN "CoD Item Buty Hefajstosa"
@@ -20,6 +21,8 @@ public plugin_init()
 	register_plugin(PLUGIN, VERSION, AUTHOR);
 
 	cod_register_item(NAME, DESCRIPTION, RANDOM_MIN, RANDOM_MAX);
+
+	RegisterHam(Ham_TakeDamage, "player", "player_take_damage", 0);
 }
 
 public cod_item_enabled(id, value)
@@ -47,11 +50,15 @@ public cod_item_upgrade(id)
 	cod_add_user_bonus_condition(id, itemValue[id]);
 }
 
-public cod_damage_pre(attacker, victim, weapon, Float:damage, damageBits, hitPlace)
+// Fall damage comes from the world, not from a player, so cod_damage_pre never sees it:
+// block it directly in the damage hook.
+public player_take_damage(victim, inflictor, attacker, Float:damage, damageBits)
 {
-	if (damageBits == DMG_FALL && get_bit(victim, itemActive)) {
-		damage = COD_BLOCK;
-	}
+	if (!(damageBits & DMG_FALL) || !get_bit(victim, itemActive)) return HAM_IGNORED;
+
+	SetHamParamFloat(4, 0.0);
+
+	return HAM_SUPERCEDE;
 }
 
 public cod_item_value(id)

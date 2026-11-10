@@ -2114,7 +2114,7 @@ public use_thunder(id)
 
 	ExecuteForward(codForwards[THUNDER_REACH], ret, id, victim, 65.0 + get_intelligence(id) * 0.5);
 
-	if (float(ret) != COD_BLOCK) {
+	if (!forward_blocked(ret)) {
 		_cod_inflict_damage(id, victim, 65.0, 0.5, DMG_CODSKILL | DMG_THUNDER);
 
 		codPlayer[id][PLAYER_LAST_THUNDER] += ret;
@@ -2430,7 +2430,7 @@ public player_take_damage_pre(victim, inflictor, attacker, Float:damage, damageB
 
 	ExecuteForward(codForwards[DAMAGE_PRE], ret, attacker, victim, weapon, damage, damageBits, hitPlace);
 
-	if (damage <= 0.0 || float(ret) == COD_BLOCK) {
+	if (damage <= 0.0 || forward_blocked(ret)) {
 		SetHamParamFloat(4, 0.0);
 
 		return HAM_SUPERCEDE;
@@ -5557,7 +5557,7 @@ public _cod_inflict_damage(attacker, victim, Float:damage, Float:factor, flags)
 
 		ExecuteForward(codForwards[DAMAGE_INFLICT], ret, attacker, victim, Float:damage, Float:factor, flags);
 
-		if (float(ret) == COD_BLOCK || damage <= 0.0) return;
+		if (forward_blocked(ret) || damage <= 0.0) return;
 
 		ExecuteHam(Ham_TakeDamage, victim, attacker, attacker, damage + get_intelligence(attacker) * factor, DMG_CODSKILL | flags);
 
@@ -6168,7 +6168,7 @@ stock make_explosion(ent, distance = 0, explosion = 1, Float:damageDistance = 0.
 			if (type != NONE) {
 				ExecuteForward(codForwards[type], ret, id, player, floatabs(damage) + get_intelligence(id) * factor);
 
-				if (float(ret) == COD_BLOCK) continue;
+				if (forward_blocked(ret)) continue;
 
 				switch (type) {
 					case MEDKIT_HEAL: codPlayer[id][PLAYER_LAST_MEDKIT] += ret;
@@ -6623,6 +6623,13 @@ stock bot_assign_points(id)
 // ---------------------------------------------------------------------------
 // E-key fallback (added): lets players use rockets, mines etc. without binds.
 // ---------------------------------------------------------------------------
+
+// A plugin blocks the damage by returning COD_STOP from the forward. These forwards return the
+// LARGEST value any plugin returned (ET_CONTINUE), so the old negative COD_BLOCK loses as soon as
+// another plugin returns COD_CONTINUE (0); COD_STOP (positive) always wins. The old forms are
+// still accepted for plugins that are the only listener.
+stock bool:forward_blocked(ret)
+	return ret == COD_STOP || ret == _:COD_BLOCK || float(ret) == COD_BLOCK;
 
 stock bool:class_has_skill(class)
 {

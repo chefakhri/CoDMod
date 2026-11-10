@@ -2550,7 +2550,7 @@ forward cod_speed_changed(id, Float:speed);
  * @param damageBits    Damage flags in DMG_* format
  * @param hitPlace      Body hit place in HIT_* format
  *
- * @return              Set to COD_BLOCK (-1.0) to block damage
+ * @return              COD_STOP to block the damage (COD_CONTINUE otherwise)
  */
 forward cod_damage_pre(attacker, victim, weapon, Float:damage, damageBits, hitPlace);
 
@@ -2582,7 +2582,7 @@ forward cod_damage_post(attacker, victim, weapon, Float:damage, damageBits, hitP
  * @param factor        Intelligence bonus for damage
  * @param flags         Damage flags in DMG_* format
  *
- * @return              Set to COD_BLOCK (-1.0) to block damage
+ * @return              COD_STOP to block the damage (COD_CONTINUE otherwise)
  */
 forward cod_damage_inflict(attacker, victim, Float:damage, Float:factor, flags);
 
@@ -2828,7 +2828,7 @@ forward cod_reset_all_data();
  *
  * @return          Value greater than 0 will reduce time to next use,
  *                  lower than 0 will make this period longer,
- *                  healing will be blocked if COD_BLOCK (-1.0) is returned
+ *                  healing will be blocked if COD_STOP is returned (COD_BLOCK works if it is the only listener)
  */
 forward cod_medkit_heal(id, player, Float:healed);
 
@@ -2841,7 +2841,7 @@ forward cod_medkit_heal(id, player, Float:healed);
  *
  * @return          Value greater than 0 will reduce time to next use,
  *                  lower than 0 will make this period longer,
- *                  damage will be blocked if COD_BLOCK (-1.0) is returned
+ *                  damage will be blocked if COD_STOP is returned (COD_BLOCK works if it is the only listener)
  */
 forward cod_poison_infect(id, player, Float:damage);
 
@@ -2854,7 +2854,7 @@ forward cod_poison_infect(id, player, Float:damage);
  *
  * @return          Value greater than 0 will reduce time to next use,
  *                  lower than 0 will make this period longer,
- *                  damage will be blocked if COD_BLOCK (-1.0) is returned
+ *                  damage will be blocked if COD_STOP is returned (COD_BLOCK works if it is the only listener)
  */
 forward cod_rocket_explode(id, player, Float:damage);
 
@@ -2867,7 +2867,7 @@ forward cod_rocket_explode(id, player, Float:damage);
  *
  * @return          Value greater than 0 will reduce time to next use,
  *                  lower than 0 will make this period longer,
- *                  damage will be blocked if COD_BLOCK (-1.0) is returned
+ *                  damage will be blocked if COD_STOP is returned (COD_BLOCK works if it is the only listener)
  */
 forward cod_mine_explode(id, player, Float:damage);
 
@@ -2880,7 +2880,7 @@ forward cod_mine_explode(id, player, Float:damage);
  *
  * @return          Value greater than 0 will reduce time to next use,
  *                  lower than 0 will make this period longer,
- *                  damage will be blocked if COD_BLOCK (-1.0) is returned
+ *                  damage will be blocked if COD_STOP is returned (COD_BLOCK works if it is the only listener)
  */
 forward cod_dynamite_explode(id, player, Float:damage);
 
@@ -2893,7 +2893,7 @@ forward cod_dynamite_explode(id, player, Float:damage);
  *
  * @return          Value greater than 0 will reduce time to next use,
  *                  lower than 0 will make this period longer,
- *                  damage will be blocked if COD_BLOCK (-1.0) is returned
+ *                  damage will be blocked if COD_STOP is returned (COD_BLOCK works if it is the only listener)
  */
 forward cod_thunder_reach(id, player, Float:damage);
 

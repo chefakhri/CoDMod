@@ -79,5 +79,5 @@ public handle_damage(attacker, victim, Float:damage, damageBits)
 
 	cod_add_user_health(victim, floatround(damage));
 
-	return _:COD_BLOCK;
+	return COD_STOP;
 }
