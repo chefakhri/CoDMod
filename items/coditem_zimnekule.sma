@@ -46,8 +46,18 @@ public cod_item_damage_attacker(attacker, victim, weapon, &Float:damage, damageB
 	}
 }
 
+// A new round must also undo the freeze: only cancelling the timer left players frozen
+// (speed stored as an item effect, which a new round does not reset) until their item changed.
 public cod_new_round()
-	for(new id = 1; id <= MAX_PLAYERS; id++) remove_task(id + TASK_FREEZE);
+{
+	for (new id = 1; id <= MAX_PLAYERS; id++) {
+		if (!task_exists(id + TASK_FREEZE)) continue;
+
+		remove_task(id + TASK_FREEZE);
+
+		remove_freeze_effect(id + TASK_FREEZE);
+	}
+}
 
 public remove_freeze_effect(id)
 {

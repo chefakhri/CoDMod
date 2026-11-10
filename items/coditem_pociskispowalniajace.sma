@@ -45,8 +45,18 @@ public cod_item_damage_attacker(attacker, victim, weapon, &Float:damage, damageB
 	}
 }
 
+// A new round must also undo the slow: only cancelling the timer left players slowed
+// (speed stored as an item effect, which a new round does not reset) until their item changed.
 public cod_new_round()
-	for (new id = 1; id <= MAX_PLAYERS; id++) remove_task(id + TASK_SLOW);
+{
+	for (new id = 1; id <= MAX_PLAYERS; id++) {
+		if (!task_exists(id + TASK_SLOW)) continue;
+
+		remove_task(id + TASK_SLOW);
+
+		remove_slow_effect(id + TASK_SLOW);
+	}
+}
 
 public remove_slow_effect(id)
 {

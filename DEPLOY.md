@@ -251,7 +251,13 @@ yb_difficulty "2"             // normal
 yb_check_enemy_rendering "1"  // bots respect the mod's invisibility
 yb_display_welcome_text "0"
 yb_password "BotMenuPassword" // lets you open the bot menu in game
+yb_camping_time_min "5"       // seconds a bot waits in one spot (YaPB default 15)
+yb_camping_time_max "15"      // (YaPB default 45)
 ```
+
+Bots sometimes stop and wait in one spot ("camping"); from spectator view that can look like a
+stuck bot. It is normal YaPB behaviour. The two `yb_camping_time` lines keep the waits short;
+`yb_camping_allowed "0"` turns camping off completely (bots then never hold positions).
 
 The mod gives every bot a random (non-premium) class and assigns its stat points.
 Bots are never saved to the database or shown in the Top15.
@@ -683,6 +689,7 @@ docker compose -f docker/compose.yaml up -d --build
   It replaces the default file, and the `.env` admin is still added to it. Apply with a container
   restart, or `amx_reloadadmins` after editing the file inside the container.
 - The bot menu password is `YAPB_PASSWORD`, shared by everyone who uses the bot menu (step 10).
+- `YAPB_CAMP_MIN` / `YAPB_CAMP_MAX` (default 5 / 15 seconds) set how long bots wait in one spot.
 - The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
   `restart: unless-stopped` policy starts it again, so the `hlds_run`/`-pidfile` issue from step 11 doesn't apply here.
 - Only `27015/udp` needs to be published: GoldSrc uses UDP for both the game and rcon.

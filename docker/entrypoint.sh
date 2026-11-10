@@ -37,6 +37,8 @@ DEF=/home/steam/defaults
 : "${YAPB_QUOTA:=6}"
 : "${YAPB_DIFFICULTY:=2}"
 : "${YAPB_PASSWORD:=}"
+: "${YAPB_CAMP_MIN:=5}"
+: "${YAPB_CAMP_MAX:=15}"
 : "${COD_ITEMS:=default}"
 : "${EXTRA_ARGS:=}"
 
@@ -112,6 +114,8 @@ yb_difficulty "$YAPB_DIFFICULTY"
 yb_check_enemy_rendering "1"
 yb_display_welcome_text "0"
 yb_password "$(q "$YAPB_PASSWORD")"
+yb_camping_time_min "$YAPB_CAMP_MIN"
+yb_camping_time_max "$YAPB_CAMP_MAX"
 EOF
 else
   sed -i '/yapb.so/d' "$CSTRIKE/addons/metamod/plugins.ini"
