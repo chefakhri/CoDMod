@@ -10,7 +10,7 @@
 > - Gameplay fixes, and 10 balanced items enabled by default
 > - Optional second item slot per player, switchable in game (`/ca`)
 > - `/rtv` map change vote (with "Keep current map" option) and `/commands` list of all chat commands
-> - Docker deployment with MariaDB and FastDL
+> - Docker deployment with MariaDB and FastDL, on the ReHLDS engine with Reunion (Steam and non-Steam players)
 >
 > See [DEPLOY.md](DEPLOY.md) for a step-by-step Linux and Docker server setup.
 > The release pack and online documentation linked below belong to the original project.

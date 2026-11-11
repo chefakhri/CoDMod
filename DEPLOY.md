@@ -6,8 +6,9 @@ setup with these versions:
 | Component | Version used |
 |---|---|
 | OS | Debian/Ubuntu Linux (64-bit, with 32-bit libraries) |
-| Game server | Standard HLDS, Counter-Strike 1.6 (SteamCMD app `90`) |
+| Game server | HLDS, Counter-Strike 1.6 (SteamCMD app `90`) with the ReHLDS 3.15.0.896 engine |
 | Metamod | Metamod-r 1.3.0.149 |
+| Non-Steam clients (public server) | Reunion 0.2.0.25 |
 | AMX Mod X | 1.10.0.5474 |
 | Database | MariaDB 10.11 (MySQL works too) |
 | Bots (optional) | YaPB 4.4.957 |
@@ -15,8 +16,12 @@ setup with these versions:
 In the commands below, `~/cs16` is the server folder and `~/cs16/cstrike` is the game folder.
 Adjust the paths to your own layout.
 
-ReHLDS and ReGameDLL (recommended by the original mod author) are optional: this setup runs on
-the standard engine and game DLL from SteamCMD.
+**ReHLDS is required.** AMX Mod X 1.10 was built for the engine layout from before Valve's 2023
+(25th anniversary) update. On the current Valve engine, setting or resetting a player model
+(`cs_set_user_model`, which the mod does at every spawn) makes AMX Mod X write into the wrong
+memory: other players' network state. Symptoms include lag spikes for everyone and broken names.
+With ReHLDS, AMX Mod X uses the ReHLDS API instead. ReGameDLL stays optional; the game DLL is
+the standard one from SteamCMD.
 
 ---
 
@@ -30,7 +35,7 @@ sudo apt install lib32gcc-s1 lib32stdc++6 screen git curl wget unzip xz-utils
 mkdir -p ~/steamcmd && cd ~/steamcmd
 curl -sqL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar zxvf -
 ./steamcmd.sh +force_install_dir ~/cs16 +login anonymous \
-  +app_set_config 90 mod cstrike +app_update 90 validate +quit
+  +app_set_config 90 mod cstrike +app_update 90 -beta steam_legacy validate +quit
 
 # The server needs Steam's client library here, or it logs "SteamAPI_Init() failed"
 mkdir -p ~/.steam/sdk32
@@ -42,6 +47,19 @@ run the same command again until it reports success. Quick check:
 ```bash
 test -f ~/cs16/hlds_run && test -f ~/cs16/cstrike/maps/de_dust2.bsp && echo "Server files OK"
 ```
+
+### Replace the engine with ReHLDS
+
+```bash
+mkdir -p ~/downloads/rehlds && cd ~/downloads/rehlds
+wget https://github.com/rehlds/ReHLDS/releases/download/3.15.0.896/rehlds-bin-3.15.0.896.zip
+unzip -qo rehlds-bin-3.15.0.896.zip
+cp -r bin/linux32/. ~/cs16/
+```
+ReHLDS needs the `steam_legacy` branch of app 90 (installed above). On Valve's current branch
+it fails with `undefined symbol: SteamGameServer_Init`. Current Steam clients connect to it normally.
+`version` in the console shows the ReHLDS build. SteamCMD updates put Valve's engine back, so copy
+the ReHLDS files again after each one (always with `-beta steam_legacy`).
 
 ## 2. Install Metamod-r
 
@@ -86,6 +104,33 @@ Optional, in `addons/amxmodx/configs/amxx.cfg`, to keep the standard AMX Mod X p
 amx_language "en"
 amx_client_languages 0
 ```
+
+### Reunion (non-Steam players on a public server)
+
+Only needed with `sv_lan 0`. Reunion is a Metamod plugin that lets non-Steam clients join a
+ReHLDS server and gives them a stable SteamID. It only works on ReHLDS, and it only runs while
+a player connects, so it costs nothing during play.
+
+```bash
+mkdir -p ~/downloads/reunion && cd ~/downloads/reunion
+wget https://github.com/rehlds/ReUnion/releases/download/0.2.0.25/reunion-0.2.0.25.zip
+unzip -qo reunion-0.2.0.25.zip
+mkdir -p ~/cs16/cstrike/addons/reunion
+cp bin/Linux/reunion_mm_i386.so ~/cs16/cstrike/addons/reunion/
+# Reunion must be the first line of Metamod's plugins.ini
+sed -i '1i linux addons/reunion/reunion_mm_i386.so' ~/cs16/cstrike/addons/metamod/plugins.ini
+cp ~/CoDMod/resources/reunion.cfg ~/cs16/cstrike/reunion.cfg
+```
+Set `SteamIdHashSalt` in `~/cs16/cstrike/reunion.cfg` to a secret of 16+ characters
+(`openssl rand -hex 16`); Reunion doesn't start without it. Keep it: changing it changes every
+non-Steam player's SteamID. The mod's `reunion.cfg` differs from the default in three settings:
+- `cid_NoSteam47` / `cid_NoSteam48 = 3`: non-Steam clients without an emulator get an IP-based
+  SteamID instead of being dropped.
+- `IDClientsLimit = 0`: several players may share a SteamID. Behind a proxy that hides player IPs,
+  IP-based IDs collide. Set it back to `1` once players connect with their real IPs.
+- `LoggingMode = 1`: Reunion logs each connection's client type to the console.
+
+`meta list` in the console should show Reunion as `RUN`.
 
 ## 4. Create the database
 
@@ -296,8 +341,8 @@ screen -S cs16 ./hlds_run -game cstrike -console -pidfile hlds.pid +ip 0.0.0.0 +
   with no file name and waits for keyboard input), so after a crash the server stays down instead
   of restarting. With it, the server is back within about 10 seconds.
 - `+sv_lan 1` (LAN mode) lets non-Steam clients join, but only from private addresses or through
-  a tunnel such as playit.gg. `+sv_lan 0` makes Steam validate every player, which kicks
-  non-Steam clients.
+  a tunnel such as playit.gg. `+sv_lan 0` makes Steam validate every player; non-Steam clients
+  then need Reunion (step 3).
 
 The server uses the machine's timezone. The night exp bonus hours (`cod_night_exp_from` /
 `cod_night_exp_to`) are local time, so check it with `timedatectl` and set it if needed, e.g.
@@ -705,6 +750,9 @@ docker compose -f docker/compose.yaml up -d --build
 - The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
   `restart: unless-stopped` policy starts it again, so the `hlds_run`/`-pidfile` issue from step 11 doesn't apply here.
 - Only `27015/udp` needs to be published: GoldSrc uses UDP for both the game and rcon.
+- The image runs the ReHLDS engine and loads Reunion. Set `REUNION_SALT` in `.env` to a secret
+  of 16+ characters (`openssl rand -hex 16`) and keep it: it changes every non-Steam player's
+  SteamID. Without it the container uses a random salt at each start and logs a warning.
 - Set `TZ` in `.env` to your timezone (for example `TZ=Asia/Kuala_Lumpur`); the default is UTC.
   It sets the server clock, so log times, the "current time" and last-visit messages, and the
   night exp bonus hours (`cod_night_exp_from` / `cod_night_exp_to` in `cod_mod.cfg`) use local time.
@@ -746,8 +794,16 @@ Trade-offs of this setup:
 - The server is not listed in the public server browser. Players connect with
   `connect <public-address>:27015` in the console, or add it to their favourites.
 
-The alternative is `sv_lan 0` with ReHLDS + ReUnion, which accepts both Steam and non-Steam
-clients on an internet server. This image doesn't include them.
+### Going public (sv_lan 0)
+
+The image already has ReHLDS and Reunion, so Steam and non-Steam clients can join a public server:
+1. Forward the game port so the server sees each player's **real** IP (not a userspace proxy
+   like the setup above). Otherwise IP bans, anti-flood and Reunion's IP-based SteamIDs treat
+   everyone as one player.
+2. Set `SV_LAN=0` in `.env`.
+3. Set `IDClientsLimit = 1` in `resources/reunion.cfg` (rebuild), or put your own `reunion.cfg`
+   in `docker/data/overlay/`.
+4. `docker compose ... up -d`, then check the console: Reunion logs each player's client type.
 
 ## Troubleshooting
 

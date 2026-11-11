@@ -2,11 +2,13 @@
 # Build from the repository root:
 #   docker build -f docker/Dockerfile -t codmod .
 #
-# Same stack as DEPLOY.md: standard HLDS (SteamCMD app 90), Metamod-r,
-# AMX Mod X 1.10, YaPB. The mod's plugins are compiled during the build.
+# Same stack as DEPLOY.md: HLDS (SteamCMD app 90) with the ReHLDS engine, Metamod-r,
+# Reunion, AMX Mod X 1.10, YaPB. The mod's plugins are compiled during the build.
 
 FROM debian:bookworm-slim
 
+ARG REHLDS_VERSION=3.15.0.896
+ARG REUNION_VERSION=0.2.0.25
 ARG METAMOD_VERSION=1.3.0.149
 ARG AMXX_BUILD=1.10.0-git5474
 ARG YAPB_VERSION=4.4.957
@@ -26,17 +28,31 @@ ENV HLDS=/home/steam/hlds
 ENV CSTRIKE=/home/steam/hlds/cstrike
 
 # --- 1. Game server ----------------------------------------------------------
+# The steam_legacy branch (pre-2023 build 8684): ReHLDS is built on it, and Valve's current
+# branch ships a Steam API library ReHLDS can't load ("undefined symbol: SteamGameServer_Init").
+# Current Steam clients connect to it normally (same protocol 48).
 # SteamCMD often stops early on app 90, so retry until the files are there.
 RUN mkdir steamcmd \
  && curl -fsSL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar xz -C steamcmd \
  && for i in 1 2 3 4 5 6; do \
       ./steamcmd/steamcmd.sh +force_install_dir "$HLDS" +login anonymous \
-        +app_set_config 90 mod cstrike +app_update 90 validate +quit || true; \
+        +app_set_config 90 mod cstrike +app_update 90 -beta steam_legacy validate +quit || true; \
       test -f "$HLDS/hlds_linux" && test -f "$CSTRIKE/maps/de_dust2.bsp" && break; \
     done \
  && test -f "$HLDS/hlds_linux" && test -f "$CSTRIKE/maps/de_dust2.bsp" \
  && mkdir -p .steam/sdk32 && cp steamcmd/linux32/steamclient.so .steam/sdk32/ \
  && rm -rf steamcmd/package /home/steam/Steam/logs
+
+# --- 1b. ReHLDS engine -------------------------------------------------------
+# Replaces Valve's engine files. AMX Mod X 1.10 was built for the pre-2023 engine layout and
+# writes into the wrong memory on the current Valve engine (cs_set_user_model); with ReHLDS it
+# uses the ReHLDS API instead. ReHLDS is also required by Reunion (non-Steam clients).
+RUN mkdir -p /tmp/rehlds && cd /tmp/rehlds \
+ && curl -fsSL -o rehlds.zip "https://github.com/rehlds/ReHLDS/releases/download/${REHLDS_VERSION}/rehlds-bin-${REHLDS_VERSION}.zip" \
+ && unzip -q rehlds.zip \
+ && cp -r bin/linux32/. "$HLDS/" \
+ && chmod +x "$HLDS/hlds_linux" \
+ && cd / && rm -rf /tmp/rehlds
 
 # --- 2. Metamod-r ------------------------------------------------------------
 RUN mkdir -p /tmp/mm "$CSTRIKE/addons/metamod/dlls" && cd /tmp/mm \
@@ -54,6 +70,15 @@ RUN curl -4 -fsSL "https://www.amxmodx.org/amxxdrop/1.10/amxmodx-${AMXX_BUILD}-b
  && echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' >  "$CSTRIKE/addons/metamod/plugins.ini" \
  && sed -i 's/^;mysql/mysql/' "$CSTRIKE/addons/amxmodx/configs/modules.ini" \
  && printf '\namx_language "en"\namx_client_languages 0\n' >> "$CSTRIKE/addons/amxmodx/configs/amxx.cfg"
+
+# --- 3b. Reunion (non-Steam clients on a public server, sv_lan 0) -------------
+# Loaded first by Metamod. Its config (resources/reunion.cfg) gets SteamIdHashSalt from REUNION_SALT.
+RUN mkdir -p /tmp/reu "$CSTRIKE/addons/reunion" && cd /tmp/reu \
+ && curl -fsSL -o reu.zip "https://github.com/rehlds/ReUnion/releases/download/${REUNION_VERSION}/reunion-${REUNION_VERSION}.zip" \
+ && unzip -q reu.zip \
+ && cp bin/Linux/reunion_mm_i386.so "$CSTRIKE/addons/reunion/" \
+ && sed -i '1i linux addons/reunion/reunion_mm_i386.so' "$CSTRIKE/addons/metamod/plugins.ini" \
+ && cd / && rm -rf /tmp/reu
 
 # --- 4. YaPB bots (enabled/disabled at runtime with YAPB_ENABLED) ------------
 RUN curl -fsSL "https://github.com/yapb/yapb/releases/download/${YAPB_VERSION}/yapb-${YAPB_VERSION}-linux.tar.xz" | tar xJ -C "$CSTRIKE" \
@@ -81,7 +106,7 @@ RUN mkdir -p /home/steam/defaults \
  && cp "$CSTRIKE/server.cfg" "$CSTRIKE/addons/amxmodx/configs/cod_mod.cfg" \
        "$CSTRIKE/addons/amxmodx/configs/users.ini" "$CSTRIKE/addons/yapb/conf/yapb.cfg" \
        "$CSTRIKE/addons/amxmodx/configs/plugins-cod.ini" "$CSTRIKE/addons/yapb/conf/lang/en_names.cfg" \
-       "$CSTRIKE/addons/yapb/conf/lang/en_chat.cfg" \
+       "$CSTRIKE/addons/yapb/conf/lang/en_chat.cfg" "$CSTRIKE/reunion.cfg" \
        /home/steam/defaults/ \
  && mkdir -p "$CSTRIKE/addons/amxmodx/data/vault" "$CSTRIKE/addons/amxmodx/logs" "$CSTRIKE/logs"
 

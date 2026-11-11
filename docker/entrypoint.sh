@@ -42,6 +42,7 @@ DEF=/home/steam/defaults
 : "${YAPB_NAMES:=}"
 : "${YAPB_CHAT:=}"
 : "${COD_ITEMS:=default}"
+: "${REUNION_SALT:=}"
 : "${EXTRA_ARGS:=}"
 
 # Escape a value for use inside a "quoted" cfg string
@@ -55,6 +56,18 @@ cp "$DEF/yapb.cfg"    "$CSTRIKE/addons/yapb/conf/yapb.cfg"
 cp "$DEF/plugins-cod.ini" "$CFG/plugins-cod.ini"
 cp "$DEF/en_names.cfg" "$CSTRIKE/addons/yapb/conf/lang/en_names.cfg"
 cp "$DEF/en_chat.cfg"  "$CSTRIKE/addons/yapb/conf/lang/en_chat.cfg"
+cp "$DEF/reunion.cfg"  "$CSTRIKE/reunion.cfg"
+
+# Reunion refuses to start without a salt (>= 16 chars). The salt changes every non-Steam
+# player's SteamID, so keep it fixed in .env; a random one is used only as a fallback.
+if [ -z "$REUNION_SALT" ]; then
+  REUNION_SALT=$(od -An -tx1 -N16 /dev/urandom | tr -d ' \n')
+  echo "[entrypoint] WARNING: REUNION_SALT not set, using a random salt (non-Steam SteamIDs change on every restart)"
+elif [ ${#REUNION_SALT} -lt 16 ]; then
+  echo "[entrypoint] ERROR: REUNION_SALT must be at least 16 characters" >&2; exit 1
+fi
+awk -v salt="$REUNION_SALT" '/^SteamIdHashSalt[ =]/ { print "SteamIdHashSalt = " salt; next } { print }' \
+  "$CSTRIKE/reunion.cfg" > "$CSTRIKE/reunion.cfg.tmp" && mv "$CSTRIKE/reunion.cfg.tmp" "$CSTRIKE/reunion.cfg"
 
 # 2. Overlay: anything mounted at /overlay is copied over cstrike/
 #    (extra maps, mapcycle.txt, your own plugins-cod.ini, ...)

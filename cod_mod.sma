@@ -5546,7 +5546,8 @@ public repeat_damage(data[])
 
 public _cod_inflict_damage(attacker, victim, Float:damage, Float:factor, flags)
 {
-	if (!(0 <= attacker <= MAX_PLAYERS)) attacker = 0;
+	// The attacker may have left since a burn/poison tick was scheduled: count it as world damage.
+	if (!(0 <= attacker <= MAX_PLAYERS) || (attacker && !is_user_connected(attacker))) attacker = 0;
 
 	if (!is_user_alive(victim) || !codPlayer[victim][PLAYER_ALIVE] || get_user_health(victim) <= 0 || codPlayer[victim][PLAYER_GODMODE][ALL]) {
 		return;
