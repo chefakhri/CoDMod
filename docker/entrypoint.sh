@@ -44,6 +44,9 @@ DEF=/home/steam/defaults
 : "${COD_ITEMS:=default}"
 : "${REUNION_SALT:=}"
 : "${EXTRA_ARGS:=}"
+# Engine memory pool in KB. ReHLDS starts with a small one; the mod's models and sounds plus the
+# next map then don't fit and the server dies at map change ("Cache_TryAlloc ... free hunk").
+: "${HEAPSIZE:=131072}"
 
 # Escape a value for use inside a "quoted" cfg string
 q() { printf '%s' "$1" | sed 's/"/'"'"'/g'; }
@@ -104,6 +107,11 @@ mp_forcecamera 1
 mp_forcechasecam 1
 sv_allowdownload 1
 sv_allowupload 1
+// Network rates: ReHLDS defaults to 30 updates per second, which feels jerky
+sv_maxupdaterate 101
+sv_minupdaterate 20
+sv_maxrate 0
+sv_minrate 25000
 EOF
 if [ -n "$SV_DOWNLOADURL" ]; then
   echo "sv_downloadurl \"$(q "$SV_DOWNLOADURL")\"" >> "$CSTRIKE/server.cfg"
@@ -178,5 +186,5 @@ echo "[entrypoint] starting HLDS: map=$START_MAP maxplayers=$MAXPLAYERS sv_lan=$
 cd "$HLDS"
 export LD_LIBRARY_PATH="$HLDS:${LD_LIBRARY_PATH:-}"
 # shellcheck disable=SC2086
-exec ./hlds_linux -game cstrike -console +ip 0.0.0.0 -port "$PORT" \
+exec ./hlds_linux -game cstrike -console -heapsize "$HEAPSIZE" +ip 0.0.0.0 -port "$PORT" \
   +maxplayers "$MAXPLAYERS" +sv_lan "$SV_LAN" +map "$START_MAP" $EXTRA_ARGS

@@ -333,7 +333,7 @@ Then press `=`.
 ```bash
 cd ~/cs16
 screen -S cs16 ./hlds_run -game cstrike -console -pidfile hlds.pid +ip 0.0.0.0 +port 27015 \
-  +maxplayers 12 +map de_dust2 +sv_lan 1
+  +maxplayers 12 +map de_dust2 +sv_lan 1 -heapsize 131072
 ```
 - Detach with `Ctrl+A`, then `D`. Reattach with `screen -r cs16`.
 - `hlds_run` restarts the server automatically when it exits, so `quit` in the console is a restart.
@@ -811,6 +811,7 @@ The image already has ReHLDS and Reunion, so Steam and non-Steam clients can joi
 |---|---|
 | `/rtv` says "no other maps in the map cycle" | `mapcycle.txt` lists no other map that exists in `cstrike/maps/`. Add maps to it (step 17). |
 | `/rtv` does nothing, or players never reach the needed count | It's locked at map start, after a kept vote and near the map end (chat says why). Lower `cod_rtv_ratio` for small groups. |
+| Server crashes at map change with `Cache_TryAlloc: ... is greater then free hunk` | The engine's memory pool is too small for the mod's models and sounds. Start with `-heapsize 131072` (KB; Docker: `HEAPSIZE` in `.env`, default 131072). |
 | `SteamAPI_Init() failed` / `steamclient.so` errors at start | Copy `steamclient.so` to `~/.steam/sdk32/` (step 1). |
 | `meta list` says "Unknown command" (Metamod not loaded) | Check the `gamedll_linux` line in `liblist.gam`, and strip Windows line endings with `sed -i 's/\r$//' liblist.gam` (step 2). |
 | amxmodx.org download hangs or fails | Use `wget -4` to force IPv4 (step 3). |
