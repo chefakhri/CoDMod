@@ -42,6 +42,7 @@ DEF=/home/steam/defaults
 : "${YAPB_NAMES:=}"
 : "${YAPB_CHAT:=}"
 : "${COD_ITEMS:=default}"
+: "${COD_CLASSES:=default}"
 : "${REUNION_SALT:=}"
 : "${EXTRA_ARGS:=}"
 # Engine memory pool in KB. ReHLDS starts with a small one; the mod's models and sounds plus the
@@ -79,9 +80,12 @@ if [ -d /overlay ] && [ -n "$(ls -A /overlay 2>/dev/null)" ]; then
   cp -r /overlay/. "$CSTRIKE/"
 fi
 
-# 3. Items: "default" keeps plugins-cod.ini as it is, "all" enables every item plugin
+# 3. Items and classes: "default" keeps plugins-cod.ini as it is, "all" enables every item / class plugin
 if [ "$COD_ITEMS" = all ]; then
   sed -i 's/^;[[:space:]]*\(coditem_\)/\1/' "$CFG/plugins-cod.ini"
+fi
+if [ "$COD_CLASSES" = all ]; then
+  sed -i 's/^;[[:space:]]*\(codclass_\)/\1/' "$CFG/plugins-cod.ini"
 fi
 
 # 4. Database login for the mod

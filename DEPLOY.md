@@ -208,8 +208,8 @@ Every other cvar in that file has a short description. Defaults in this branch:
 - `cod_bot_level "0"`: bots copy the average level of the human players.
 
 **`addons/amxmodx/configs/plugins-cod.ini`**: turn plugins on or off. A line starting with
-`;` is disabled. In this branch all classes, the admin menu and 10 balanced items are on
-(see [step 15](#15-items-perks-enabling-and-disabling)).
+`;` is disabled. In this branch the admin menu, 10 beginner-friendly classes and 10 balanced items
+are on (see [step 15](#15-items-perks-enabling-and-disabling) and [step 16](#16-classes-enabling-and-disabling)).
 Keep a newline at the end of the file: if you append a line to a file without one,
 the two entries merge and both fail to load.
 
@@ -374,7 +374,7 @@ amx_plugins     // last line should read "N plugins, N running"
 | Chat | `/menu`, `/class`, `/shop`, `/clan`, `/missions`, `/market`, `/casino`, `/binds` |
 | Chat | `/rocket`, `/mine`, `/dynamite`, `/medkit`, `/poison`, `/thunder`, `/teleport` |
 | Chat | `/commands` (or `/cmds`): **every chat command**, by category; pick one to run it |
-| Chat | `/rtv`: vote to change the map (step 17). `/timeleft`, `/thetime`, `/nextmap`, `/currentmap` |
+| Chat | `/rtv`: vote to change the map (step 18). `/timeleft`, `/thetime`, `/nextmap`, `/currentmap` |
 
 Optional, in each player's `cstrike/userconfig.cfg`, to use speeds above 400:
 ```
@@ -454,7 +454,7 @@ Enable every item at once:
 ```bash
 sed -i 's/^;\(coditem_\)/\1/' addons/amxmodx/configs/plugins-cod.ini
 ```
-Classes (`codclass_*`) work the same way. All of them are enabled by default.
+Classes (`codclass_*`) work the same way (step 16).
 
 With Docker, set `COD_ITEMS=all` in `.env` to enable every item without editing the file, or
 `COD_ITEMS=default` to use the list in `plugins-cod.ini`. To choose your own list, edit
@@ -581,7 +581,46 @@ the range shown when the item is received, and some items can be upgraded in gam
 | Veteran's Galil | `coditem_galilweterana` | You have a 1/6–8 chance to instantly kill with Galil | strong |
 | Wolf in Sheep's Clothing | `coditem_farbowanylis` | You have a 1/3–4 chance to respawn at the enemy spawn. You wear the enemy uniform. | strong |
 
-## 16. Item slots (1 or 2 items per player)
+## 16. Classes: enabling and disabling
+
+Like items, every class is its own plugin in `classes/`, and only the classes enabled in
+`plugins-cod.ini` appear in the class menu (`/class`). Bots pick their class from the enabled
+ones too. A disabled class keeps its saved levels in the database, so enabling it again later
+gives players their progress back.
+
+Enable or disable a class by adding or removing the `;` in front of its line, then change map.
+Enable every class at once:
+```bash
+sed -i 's/^;\(codclass_\)/\1/' addons/amxmodx/configs/plugins-cod.ini
+```
+With Docker, set `COD_CLASSES=all` in `.env` to enable every class (including the premium ones),
+or `COD_CLASSES=default` to use the list in `plugins-cod.ini`. Your own list works as for items:
+edit `resources/addons/amxmodx/configs/plugins-cod.ini` and rebuild, or use an overlay copy.
+
+### The default set
+
+This branch enables 10 classes that are easy to learn: plain rifles, SMGs or machine guns,
+abilities that work on their own or with one key, no instant kills, no invisibility and no
+tricky movement. Defender and Mage can also see invisible players, in case you enable those classes.
+
+| Class | Plugin | Weapons | Ability |
+|---|---|---|---|
+| Captain | `codclass_kapitan` | M4A1, USP | Immune to 3 bullets every round |
+| Chemist | `codclass_chemik` | M4A1, Deagle | 2 poisons, 10% chance to poison on hit |
+| Colonel | `codclass_pulkownik` | M249, Glock | More damage as the M249 magazine empties; 1 mine, 1 rocket |
+| Defender | `codclass_obronca` | M249, MAC-10, P228 | Sees mines and invisible players |
+| Electrician | `codclass_elektryk` | M4A1, USP | 3 lightning bolts, 20% chance to set on fire with USP |
+| Mage | `codclass_mag` | AUG, Five-SeveN | Flashlight that reveals invisible players, heals with knife out |
+| Medic | `codclass_medyk` | UMP45, Glock | 3 medkits for himself and others, full magazine after a kill |
+| Rambo | `codclass_rambo` | M4A1, Famas, USP | +30% Famas damage, silent footsteps, 4 flashbangs |
+| Soldier | `codclass_wojskowy` | Famas, XM1014, P228 | 1/7 chance to blind on hit, 3 rockets |
+| Stormtrooper | `codclass_szturmowiec` | M4A1, Deagle | +3 M4A1 damage, 1 rocket, silent footsteps |
+
+The other 20 basic classes have instant-kill chances, invisibility, respawns, bunny hop or
+other tricks that take practice to play or to play against. The 6 premium and super premium
+classes (`*_premium`, `*_superpremium`) also need access flag `p` (premium) or `q` (super premium); they are off by default.
+
+## 17. Item slots (1 or 2 items per player)
 
 By default every player holds **one** item. Admins can give everyone a **second item slot**:
 in game, `/ca` → **Item Slots**, or the server command `cod_item_slots 2`. The choice is saved
@@ -657,7 +696,7 @@ Experience are slot 2.
 The original natives (`cod_get_user_item`, `cod_get_item_durability`, ...) work on slot 1, and
 `cod_set_user_item` puts an item into the slot it belongs to.
 
-## 17. Map vote (/rtv) and the command list (/commands)
+## 18. Map vote (/rtv) and the command list (/commands)
 
 Two plugins of this fork, enabled in `plugins-cod.ini`: `cod_mapvote.amxx` and `cod_commands.amxx`.
 
@@ -743,6 +782,8 @@ docker compose -f docker/compose.yaml up -d --build
   It replaces the default file, and the `.env` admin is still added to it. Apply with a container
   restart, or `amx_reloadadmins` after editing the file inside the container.
 - The bot menu password is `YAPB_PASSWORD`, shared by everyone who uses the bot menu (step 10).
+- `COD_ITEMS` / `COD_CLASSES`: `default` uses the lists in `plugins-cod.ini` (10 balanced items,
+  10 beginner-friendly classes), `all` enables every item / class (steps 15 and 16).
 - `YAPB_CAMP_MIN` / `YAPB_CAMP_MAX` (default 5 / 15 seconds) set how long bots wait in one spot.
 - `YAPB_CHAT=ms`: bots chat in casual Malay-English with some Penang loghat (`ms_chat.cfg`); empty for YaPB's English.
 - `YAPB_NAMES`: bot names, comma separated, e.g. `YAPB_NAMES=Ahmad,Hafiz,Faizal,Wei Jie,Ah Seng,Kumar`.
@@ -809,7 +850,7 @@ The image already has ReHLDS and Reunion, so Steam and non-Steam clients can joi
 
 | Symptom | Cause / fix |
 |---|---|
-| `/rtv` says "no other maps in the map cycle" | `mapcycle.txt` lists no other map that exists in `cstrike/maps/`. Add maps to it (step 17). |
+| `/rtv` says "no other maps in the map cycle" | `mapcycle.txt` lists no other map that exists in `cstrike/maps/`. Add maps to it (step 18). |
 | `/rtv` does nothing, or players never reach the needed count | It's locked at map start, after a kept vote and near the map end (chat says why). Lower `cod_rtv_ratio` for small groups. |
 | Server crashes at map change with `Cache_TryAlloc: ... is greater then free hunk` | The engine's memory pool is too small for the mod's models and sounds. Start with `-heapsize 131072` (KB; Docker: `HEAPSIZE` in `.env`, default 131072). |
 | `SteamAPI_Init() failed` / `steamclient.so` errors at start | Copy `steamclient.so` to `~/.steam/sdk32/` (step 1). |
