@@ -7,10 +7,13 @@
 > Changes in this fork:
 > - The whole mod translated to English
 > - Bot support (YaPB): bots get classes, levels and items
-> - Gameplay fixes, and 10 balanced items enabled by default
+> - Gameplay fixes, and 10 balanced items and 10 beginner-friendly classes enabled by default
+>   (`COD_ITEMS=all` / `COD_CLASSES=all` in Docker enables everything)
 > - Optional second item slot per player, switchable in game (`/ca`)
 > - `/rtv` map change vote (with "Keep current map" option) and `/commands` list of all chat commands
+> - Bot names and casual Malay-English bot chat (`YAPB_NAMES`, `YAPB_CHAT=ms`), server owner in the welcome message
 > - Docker deployment with MariaDB and FastDL, on the ReHLDS engine with Reunion (Steam and non-Steam players)
+> - ReChecker file checks for known cheats (log-only by default)
 >
 > See [DEPLOY.md](DEPLOY.md) for a step-by-step Linux and Docker server setup.
 > The release pack and online documentation linked below belong to the original project.

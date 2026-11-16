@@ -253,6 +253,12 @@ mp_limitteams 1
 // Dead players can only spectate their own team
 mp_forcecamera 1
 mp_forcechasecam 1
+
+// Network rates: ReHLDS defaults to 30 updates per second, which feels jerky
+sv_maxupdaterate 101
+sv_minupdaterate 20
+sv_maxrate 0
+sv_minrate 25000
 ```
 
 ## 9. Admins
@@ -843,6 +849,10 @@ for this:
 - Use **plain HTTP**. Many CS 1.6 clients can't download over HTTPS, so if a proxy is in front
   (for example a Zoraxy HTTP rule pointing to `<server>:27080`), turn off its redirect to HTTPS
   for this host.
+- The proxy must not limit how long a response may take. Big maps take several seconds to
+  download, longer on slow connections. Zoraxy before v3.3.3 (including the v3.3.3-rc4 build,
+  which also reports "3.3.3") ends every plain-HTTP response after 3 seconds; use v3.3.4 or
+  newer and keep **Write Timeout** at `0` in its global settings.
 - If the URL can't be reached, clients fall back to downloading from the game server.
 - Check it: `curl -I http://fastdl.example.com/models/CoDMod/bazooka.mdl` should return `200`.
 
@@ -858,9 +868,11 @@ This does **not** work with a plain iptables DNAT port forward, because that kee
 public IP. Add a MASQUERADE/SNAT rule for that traffic, or use a userspace proxy.
 
 Trade-offs of this setup:
-- Every internet player has the proxy's IP, and in LAN mode everyone's SteamID is `STEAM_ID_LAN`.
-  The mod saves progress by name and protects names with `/account` passwords, so saving still
-  works, but IP or SteamID bans would hit everyone. Ban by name instead.
+- Every internet player has the proxy's IP, so an IP ban would hit everyone. Reunion gives each
+  player a SteamID: Steam players and clients with an ID emulator get their own, but clients
+  without one get an IP-based ID, which is the same for everyone behind the proxy. Ban by
+  SteamID only when the ID is unique (check `status`), otherwise by name. The mod saves progress
+  by name and protects names with `/account` passwords, so saving works either way.
 - The server is not listed in the public server browser. Players connect with
   `connect <public-address>:27015` in the console, or add it to their favourites.
 
@@ -881,6 +893,7 @@ The image already has ReHLDS and Reunion, so Steam and non-Steam clients can joi
 |---|---|
 | `/rtv` says "no other maps in the map cycle" | `mapcycle.txt` lists no other map that exists in `cstrike/maps/`. Add maps to it (step 18). |
 | `/rtv` does nothing, or players never reach the needed count | It's locked at map start, after a kept vote and near the map end (chat says why). Lower `cod_rtv_ratio` for small groups. |
+| Players can't join a map: "Your map [maps/....bsp] differs from the server's", even after deleting it | The FastDL download was cut off and the game kept the partial file. A proxy in front of FastDL is ending long downloads (Zoraxy before v3.3.3 does after 3 seconds; see "FastDL"). Test with `curl -o /dev/null -w '%{size_download}\n' http://<fastdl>/maps/<map>.bsp`: the size must match the server's file. |
 | Server crashes at map change with `Cache_TryAlloc: ... is greater then free hunk` | The engine's memory pool is too small for the mod's models and sounds. Start with `-heapsize 131072` (KB; Docker: `HEAPSIZE` in `.env`, default 131072). |
 | `SteamAPI_Init() failed` / `steamclient.so` errors at start | Copy `steamclient.so` to `~/.steam/sdk32/` (step 1). |
 | `meta list` says "Unknown command" (Metamod not loaded) | Check the `gamedll_linux` line in `liblist.gam`, and strip Windows line endings with `sed -i 's/\r$//' liblist.gam` (step 2). |
