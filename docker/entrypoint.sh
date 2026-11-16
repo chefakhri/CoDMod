@@ -7,7 +7,7 @@ set -euo pipefail
 # bind-mount folders (data/logs/...) as root, and the server can't write logs there. Fix the
 # owner, then run the rest of this script as the unprivileged "steam" user.
 if [ "$(id -u)" = 0 ]; then
-  for d in "$CSTRIKE/addons/amxmodx/logs" "$CSTRIKE/logs" \
+  for d in "$CSTRIKE/addons/amxmodx/logs" "$CSTRIKE/logs" "$CSTRIKE/addons/rechecker/logs" \
            "$CSTRIKE/addons/amxmodx/data/vault" "$CSTRIKE/addons/yapb/data" /fastdl; do
     mkdir -p "$d"
     [ "$(stat -c %u "$d")" = 1000 ] || chown -R steam:steam "$d"
@@ -116,6 +116,8 @@ sv_maxupdaterate 101
 sv_minupdaterate 20
 sv_maxrate 0
 sv_minrate 25000
+// ReChecker: write rule matches to addons/rechecker/logs/
+rch_log 1
 EOF
 if [ -n "$SV_DOWNLOADURL" ]; then
   echo "sv_downloadurl \"$(q "$SV_DOWNLOADURL")\"" >> "$CSTRIKE/server.cfg"
