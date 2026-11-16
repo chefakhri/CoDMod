@@ -9,6 +9,7 @@ setup with these versions:
 | Game server | HLDS, Counter-Strike 1.6 (SteamCMD app `90`) with the ReHLDS 3.15.0.896 engine |
 | Metamod | Metamod-r 1.3.0.149 |
 | Non-Steam clients (public server) | Reunion 0.2.0.25 |
+| Cheat file checks (optional) | ReChecker 2.7 |
 | AMX Mod X | 1.10.0.5474 |
 | Database | MariaDB 10.11 (MySQL works too) |
 | Bots (optional) | YaPB 4.4.957 |
@@ -131,6 +132,33 @@ non-Steam player's SteamID. The mod's `reunion.cfg` differs from the default in 
 - `LoggingMode = 1`: Reunion logs each connection's client type to the console.
 
 `meta list` in the console should show Reunion as `RUN`.
+
+### ReChecker (optional: checks players' files for known cheats)
+
+ReChecker is a Metamod plugin for ReHLDS. When a player connects, it asks their game for the
+hash of the files in `addons/rechecker/resources.ini` and runs that line's command on a match.
+It only checks the files listed there: the mod's models, sprites and sounds aren't touched,
+and the engine's own file checks keep working as before. It only runs while a player connects.
+
+```bash
+mkdir -p ~/downloads/rechecker && cd ~/downloads/rechecker
+wget https://github.com/rehlds/ReChecker/releases/download/2.7/rechecker_2_7.zip
+unzip -qo rechecker_2_7.zip
+mkdir -p ~/cs16/cstrike/addons/rechecker/logs
+cp bin/addons/rechecker/rechecker_mm_i386.so ~/cs16/cstrike/addons/rechecker/
+cp ~/CoDMod/resources/addons/rechecker/resources.ini ~/cs16/cstrike/addons/rechecker/
+echo 'linux addons/rechecker/rechecker_mm_i386.so' >> ~/cs16/cstrike/addons/metamod/plugins.ini
+echo 'rch_log 1' >> ~/cs16/cstrike/server.cfg
+```
+The mod's `resources.ini` is **log-only**: every rule runs `echo`, so nobody is kicked. Matches
+go to `addons/rechecker/logs/L_DD_MM_YYYY.log` with the player's name and SteamID. The
+`../hw.dll` rule matches every Windows player on purpose, so the log shows ReChecker is working.
+Some rules (for example `../opengl32.dll`) can also match harmless graphics tools, so watch the
+log for a while before changing a rule's `echo ...` into `kick [userid] 'reason'`.
+Never use `[name]` in a command: players choose their names, and a name containing `;` would
+run server commands.
+
+`meta list` should show Rechecker as `RUN`.
 
 ## 4. Create the database
 
@@ -791,6 +819,7 @@ docker compose -f docker/compose.yaml up -d --build
 - The container runs `hlds_linux` directly. `quit` or a crash stops the container and the
   `restart: unless-stopped` policy starts it again, so the `hlds_run`/`-pidfile` issue from step 11 doesn't apply here.
 - Only `27015/udp` needs to be published: GoldSrc uses UDP for both the game and rcon.
+- ReChecker runs in log-only mode (step 3); its log is in `docker/data/logs/rechecker/`.
 - The image runs the ReHLDS engine and loads Reunion. Set `REUNION_SALT` in `.env` to a secret
   of 16+ characters (`openssl rand -hex 16`) and keep it: it changes every non-Steam player's
   SteamID. Without it the container uses a random salt at each start and logs a warning.

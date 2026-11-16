@@ -18,6 +18,7 @@ services:
       - ./data/overlay:/overlay:ro                                       # optional extra files copied over cstrike/
       - ./data/logs/amxmodx:/home/steam/hlds/cstrike/addons/amxmodx/logs
       - ./data/logs/hlds:/home/steam/hlds/cstrike/logs
+      - ./data/logs/rechecker:/home/steam/hlds/cstrike/addons/rechecker/logs
       - vault:/home/steam/hlds/cstrike/addons/amxmodx/data/vault        # nvault (missions, icons, knives, ...)
       - yapb:/home/steam/hlds/cstrike/addons/yapb/data                  # bot navigation graphs
       - fastdl:/fastdl                                                   # files served by the fastdl service

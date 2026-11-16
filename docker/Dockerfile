@@ -3,12 +3,13 @@
 #   docker build -f docker/Dockerfile -t codmod .
 #
 # Same stack as DEPLOY.md: HLDS (SteamCMD app 90) with the ReHLDS engine, Metamod-r,
-# Reunion, AMX Mod X 1.10, YaPB. The mod's plugins are compiled during the build.
+# Reunion, ReChecker, AMX Mod X 1.10, YaPB. The mod's plugins are compiled during the build.
 
 FROM debian:bookworm-slim
 
 ARG REHLDS_VERSION=3.15.0.896
 ARG REUNION_VERSION=0.2.0.25
+ARG RECHECKER_VERSION=2.7
 ARG METAMOD_VERSION=1.3.0.149
 ARG AMXX_BUILD=1.10.0-git5474
 ARG YAPB_VERSION=4.4.957
@@ -79,6 +80,15 @@ RUN mkdir -p /tmp/reu "$CSTRIKE/addons/reunion" && cd /tmp/reu \
  && cp bin/Linux/reunion_mm_i386.so "$CSTRIKE/addons/reunion/" \
  && sed -i '1i linux addons/reunion/reunion_mm_i386.so' "$CSTRIKE/addons/metamod/plugins.ini" \
  && cd / && rm -rf /tmp/reu
+
+# --- 3c. ReChecker (checks players' game files for known cheats) ------------
+# Its rule list is resources/addons/rechecker/resources.ini (copied in step 5), log-only for now.
+RUN mkdir -p /tmp/rch "$CSTRIKE/addons/rechecker/logs" && cd /tmp/rch \
+ && curl -fsSL -o rch.zip "https://github.com/rehlds/ReChecker/releases/download/${RECHECKER_VERSION}/rechecker_$(echo "$RECHECKER_VERSION" | tr . _).zip" \
+ && unzip -q rch.zip \
+ && cp bin/addons/rechecker/rechecker_mm_i386.so "$CSTRIKE/addons/rechecker/" \
+ && echo 'linux addons/rechecker/rechecker_mm_i386.so' >> "$CSTRIKE/addons/metamod/plugins.ini" \
+ && cd / && rm -rf /tmp/rch
 
 # --- 4. YaPB bots (enabled/disabled at runtime with YAPB_ENABLED) ------------
 RUN curl -fsSL "https://github.com/yapb/yapb/releases/download/${YAPB_VERSION}/yapb-${YAPB_VERSION}-linux.tar.xz" | tar xJ -C "$CSTRIKE" \
